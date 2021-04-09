@@ -537,7 +537,7 @@ module.exports = class FLevelLoader {
       switch (tile.id) { // id = z, where lower values are closer to the camera. 4095 = layer 0, 4096 = layer 2, 0 = layer 3
         case 4095: tile.layerID = 0; tile.param = 0; tile.state = 0; break; // Reset params for layer 0, shouldn't really be set
         case 4096: tile.layerID = 2; break;
-        case 0: tile.layerID = 3; break;
+        case 0: tile.layerID = 3; break; // TODO - This needs to be looked at more... ujunon1, hill
         default: tile.layerID = 1; break;
       }
       tile.z = tile.id

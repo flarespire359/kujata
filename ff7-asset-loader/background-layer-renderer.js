@@ -142,7 +142,7 @@ const saveTileGroupImage = (flevel, folder, name, tiles, sizeMeta, setBlackBackg
         let sourceY = tile.sourceY
         let textureId = tile.textureId
 
-        if (tile.layerID > 0 && tile.textureId2 > 0 && tile.depth !== 0) { // This solves the blending tiles
+        if (tile.layerID > 0 && tile.textureId2 > 0 && tile.depth !== 0) { // TODO - This needs to be looked at more... ujunon1, hill
             sourceX = tile.sourceX2
             sourceY = tile.sourceY2
             textureId = tile.textureId2
