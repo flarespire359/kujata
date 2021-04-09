@@ -1,0 +1,21 @@
+{
+  "profiles": [
+    {"id":0,"description":"Cloud","file":"cloud", "x":0,"y":0,"w":84,"h":96},
+    {"id":1,"description":"Barret","file":"barre", "x":0,"y":0,"w":84,"h":96},
+    {"id":2,"description":"Tifa","file":"tifa", "x":0,"y":0,"w":84,"h":96},
+    {"id":3,"description":"Aeris","file":"earith", "x":0,"y":0,"w":84,"h":96},
+    {"id":4,"description":"RedXIII","file":"red", "x":0,"y":0,"w":84,"h":96},
+    {"id":5,"description":"Yuffie","file":"yufi", "x":0,"y":0,"w":84,"h":96},
+    {"id":6,"description":"Yuffie","file":"yufi", "x":0,"y":0,"w":84,"h":96},
+    {"id":7,"description":"CaitSith","file":"ketc", "x":0,"y":0,"w":84,"h":96},
+    {"id":8,"description":"Vincent","file":"bins", "x":0,"y":0,"w":84,"h":96},
+    {"id":9,"description":"Cid","file":"cido", "x":0,"y":0,"w":84,"h":96},
+    {"id":10,"description":"YoungCloud","file":"pcloud", "x":0,"y":0,"w":84,"h":96},
+    {"id":11,"description":"Sephiroth","file":"pcefi", "x":0,"y":0,"w":84,"h":96},
+    {"id":12,"description":"Choco","file":"choco", "x":0,"y":0,"w":84,"h":96}
+  ],
+  "misc": [
+    {"id":0,"description":"Zeni","file":"zeni_h", "x":0,"y":0,"w":128,"h":64},
+    {"id":1,"description":"Buster","file":"buster", "x":0,"y":0,"w":150,"h":150}
+  ]
+}
