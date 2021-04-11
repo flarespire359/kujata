@@ -173,8 +173,12 @@ const extractMetadataAssets = async (
   const fontMetaDataFiles = [
     'usfont_a_h',
     'usfont_b_h',
+    'btl_win_b_h',
+    'btl_win_d_h',
     'usfont_a_l',
-    'usfont_b_l'
+    'usfont_b_l',
+    'btl_win_b_l',
+    'btl_win_d_l'
   ]
   for (let i = 0; i < fontMetaDataFiles.length; i++) {
     console.log(`Extracting font ${i + 1} of ${fontMetaDataFiles.length}`)
