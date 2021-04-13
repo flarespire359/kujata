@@ -1,0 +1,6 @@
+{
+    "pointers": [
+        {"id":1,"description":"hand-right-small-shadow-only", "x":51,"y":128,"w":37,"h":32, "palette": 2},
+        {"id":1,"description":"hand-cancel-with-shadow", "x":80,"y":32,"w":48,"h":32, "palette": 8}
+    ]
+}

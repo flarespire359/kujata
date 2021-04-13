@@ -12,5 +12,9 @@
         {"id":9,"description":"battle text stats 009","x":160,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"9"},
         {"id":10,"description":"battle text stats 010","x":175,"y":0,"w":9,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"/"},
         {"id":11,"description":"battle text stats 011","x":184,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":" "}
+    ],
+    "pointers": [
+        {"id":0,"description":"hand-right-small-no-shadow", "x":192,"y":16,"w":40,"h":32, "palette": 2},
+        {"id":1,"description":"hand-left-big-with-shadow", "x":144,"y":16,"w":48,"h":32, "palette": 2}
     ]
 }

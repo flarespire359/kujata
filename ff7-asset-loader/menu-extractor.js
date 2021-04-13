@@ -47,16 +47,20 @@ const extractFontElement = async (
     const colorElements = []
     for (let i = 0; i < assetMap[assetType].length; i++) {
       const element = assetMap[assetType][i]
-      // console.log('element for color', element)
-      for (let j = 0; j < element.colors.length; j++) {
-        const color = element.colors[j][0]
-        const palette = element.colors[j][1]
-        const colorElement = { ...element }
-        delete colorElement.colors
-        colorElement.palette = palette
-        colorElement.description = `${colorElement.description} ${color}`
-        colorElement.color = color
-        colorElements.push(colorElement)
+      if (element.colors) {
+        // console.log('element for color', element)
+        for (let j = 0; j < element.colors.length; j++) {
+          const color = element.colors[j][0]
+          const palette = element.colors[j][1]
+          const colorElement = { ...element }
+          delete colorElement.colors
+          colorElement.palette = palette
+          colorElement.description = `${colorElement.description} ${color}`
+          colorElement.color = color
+          colorElements.push(colorElement)
+        }
+      } else if (element.palette) {
+        colorElements.push(element)
       }
     }
     assetMap[assetType] = colorElements
@@ -173,10 +177,12 @@ const extractMetadataAssets = async (
   const fontMetaDataFiles = [
     'usfont_a_h',
     'usfont_b_h',
+    'btl_win_a_h',
     'btl_win_b_h',
     'btl_win_d_h',
     'usfont_a_l',
     'usfont_b_l',
+    'btl_win_a_l',
     'btl_win_b_l',
     'btl_win_d_l'
   ]
