@@ -1,6 +1,6 @@
 {
     "menu-base-font": [
-        {"id":0,"description":"menu base font 000","x":0,"y":0,"w":3,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":" "},
+        {"id":0,"description":"menu base font 000","x":0,"y":0,"w":5,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":" "},
         {"id":1,"description":"menu base font 001","x":24,"y":0,"w":4,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"!"},
         {"id":2,"description":"menu base font 002","x":48,"y":0,"w":8,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"&quot;"},
         {"id":3,"description":"menu base font 003","x":72,"y":0,"w":17,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"#"},

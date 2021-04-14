@@ -1,4 +1,7 @@
 {
+    "bars": [
+        {"id":0,"description":"battle", "x":32,"y":0,"w":76,"h":18, "palette": 2}
+    ],
     "pointers": [
         {"id":1,"description":"hand-left-big-shadow-only", "x":4,"y":128,"w":48,"h":32, "palette": 2},
         {"id":1,"description":"hand-right-big-shadow-only", "x":52,"y":128,"w":44,"h":32, "palette": 2},

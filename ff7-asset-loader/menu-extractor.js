@@ -179,11 +179,13 @@ const extractMetadataAssets = async (
     'usfont_b_h',
     'btl_win_a_h',
     'btl_win_b_h',
+    'btl_win_c_h',
     'btl_win_d_h',
     'usfont_a_l',
     'usfont_b_l',
     'btl_win_a_l',
     'btl_win_b_l',
+    'btl_win_c_l',
     'btl_win_d_l'
   ]
   for (let i = 0; i < fontMetaDataFiles.length; i++) {

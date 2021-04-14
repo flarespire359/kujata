@@ -1,0 +1,13 @@
+{
+    "borders": [
+        {"id": 0, "description": "border bl", "x": 32, "y": 192, "w": 16, "h": 16, "palette": 1},
+        {"id": 0, "description": "border br", "x": 48, "y": 192, "w": 16, "h": 16, "palette": 1},
+        {"id": 0, "description": "border tl", "x": 0, "y": 208, "w": 16, "h": 16, "palette": 1},
+        {"id": 0, "description": "border tr", "x": 16, "y": 208, "w": 16, "h": 16, "palette": 1},
+
+        {"id": 0, "description": "border t", "x": 0, "y": 192, "w": 32, "h": 16, "palette": 1},
+        {"id": 0, "description": "border b", "x": 32, "y": 208, "w": 32, "h": 16, "palette": 1},
+        {"id": 0, "description": "border l", "x": 0, "y": 224, "w": 16, "h": 32, "palette": 1},
+        {"id": 0, "description": "border r", "x": 48, "y": 224, "w": 16, "h": 32, "palette": 1}
+    ]
+}

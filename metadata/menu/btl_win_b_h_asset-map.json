@@ -1,17 +1,17 @@
 {
-    "battle-text-stats": [
-        {"id":0,"description":"battle text stats 000","x":16,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"0"},
-        {"id":1,"description":"battle text stats 001","x":32,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"1"},
-        {"id":2,"description":"battle text stats 002","x":48,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"2"},
-        {"id":3,"description":"battle text stats 003","x":64,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"3"},
-        {"id":4,"description":"battle text stats 004","x":80,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"4"},
-        {"id":5,"description":"battle text stats 005","x":96,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"5"},
-        {"id":6,"description":"battle text stats 006","x":112,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"6"},
-        {"id":7,"description":"battle text stats 007","x":128,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"7"},
-        {"id":8,"description":"battle text stats 008","x":144,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"8"},
-        {"id":9,"description":"battle text stats 009","x":160,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"9"},
-        {"id":10,"description":"battle text stats 010","x":175,"y":0,"w":9,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"/"},
-        {"id":11,"description":"battle text stats 011","x":184,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":" "}
+    "menu-text-stats": [
+        {"id":0,"description":"menu text stats 000","x":16,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"0"},
+        {"id":1,"description":"menu text stats 001","x":32,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"1"},
+        {"id":2,"description":"menu text stats 002","x":48,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"2"},
+        {"id":3,"description":"menu text stats 003","x":64,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"3"},
+        {"id":4,"description":"menu text stats 004","x":80,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"4"},
+        {"id":5,"description":"menu text stats 005","x":96,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"5"},
+        {"id":6,"description":"menu text stats 006","x":112,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"6"},
+        {"id":7,"description":"menu text stats 007","x":128,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"7"},
+        {"id":8,"description":"menu text stats 008","x":144,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"8"},
+        {"id":9,"description":"menu text stats 009","x":160,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"9"},
+        {"id":10,"description":"menu text stats 010","x":175,"y":0,"w":9,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"/"},
+        {"id":11,"description":"menu text stats 011","x":184,"y":0,"w":12,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":" "}
     ],
     "pointers": [
         {"id":0,"description":"hand-right-small-no-shadow", "x":192,"y":16,"w":40,"h":32, "palette": 2},
