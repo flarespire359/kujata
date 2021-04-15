@@ -43,10 +43,10 @@ const getCharacterRecord = (r, materiaNames, materiaDescriptions, weaponNames, w
     const currentHP = r.readUShort()
     const baseHP = r.readUShort()
     const currentMP = r.readUShort()
-    const baseMP = r.readUShort()
+    const baseMP = r.readUShort() 
     const unknown1 = r.readUInt()
-    const maximumHP = r.readUShort()
-    const maximumMP = r.readUShort()
+    const maximumHP = r.readUShort() // Note: This is not set correctly, as this is applying materia adjustments to the baseHP/MP
+    const maximumMP = r.readUShort() // Note: This is not set correctly, as this is applying materia adjustments to the baseHP/MP
     const currentEXP = r.readUInt()
 
     const weaponMateria1 = getMateria(r, materiaNames, materiaDescriptions)
