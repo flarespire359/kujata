@@ -3,8 +3,12 @@
         {"id":0,"description":"battle", "x":32,"y":0,"w":76,"h":18, "palette": 2}
     ],
     "pointers": [
-        {"id":1,"description":"hand-left-big-shadow-only", "x":4,"y":128,"w":48,"h":32, "palette": 2},
+        {"id":0,"description":"hand-left-big-shadow-only", "x":4,"y":128,"w":48,"h":32, "palette": 2},
         {"id":1,"description":"hand-right-big-shadow-only", "x":52,"y":128,"w":44,"h":32, "palette": 2},
-        {"id":1,"description":"hand-cancel-no-shadow", "x":80,"y":32,"w":48,"h":32, "palette": 8}
+        {"id":2,"description":"hand-cancel-no-shadow", "x":80,"y":32,"w":48,"h":32, "palette": 8}
+    ],
+    "icons-battle": [
+        {"id":1, "description":"item", "x":192,"y":224,"w":32,"h":32, "palette": 2},
+        {"id":1, "description":"sword", "x":224,"y":224,"w":32,"h":32, "palette": 2}
     ]
 }

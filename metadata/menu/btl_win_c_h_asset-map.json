@@ -9,5 +9,17 @@
         {"id": 0, "description": "border b", "x": 32, "y": 208, "w": 32, "h": 16, "palette": 1},
         {"id": 0, "description": "border l", "x": 0, "y": 224, "w": 16, "h": 32, "palette": 1},
         {"id": 0, "description": "border r", "x": 48, "y": 224, "w": 16, "h": 32, "palette": 1}
+    ],
+    "icons-menu": [
+        {"id":1, "description":"gun", "x":192,"y":0,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"glove", "x":224,"y":0,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"staff", "x":192,"y":32,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"clip", "x":224,"y":32,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"shruiken", "x":192,"y":64,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"megaphone", "x":224,"y":64,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"pistol", "x":192,"y":96,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"spear", "x":224,"y":96,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"armor", "x":192,"y":128,"w":26,"h":32, "palette": 2},
+        {"id":1, "description":"accessory", "x":224,"y":128,"w":26,"h":32, "palette": 2}
     ]
 }
