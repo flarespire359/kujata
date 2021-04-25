@@ -64,9 +64,10 @@ const getItemSectionData = (sectionData, names, descriptions) => {
         const element = r.readUShort()
         const specialAttack = r.readUShort()
         let object = {
-            index: i,
+            itemId: i,
             name: names[i],
             description: descriptions[i],
+            type: 'Item',
             cameraMovement: cameraMovementId,
             restrictions: parseKernelEnums(Enums.Restrictions, restrictions),
             targetData: parseKernelEnums(Enums.TargetData, targetData),
@@ -139,10 +140,10 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
 
 
         let object = {
-            index: i,
             itemId: i + 128,
             name: names[i],
             description: descriptions[i],
+            type: 'Weapon',
             targets: parseKernelEnums(Enums.TargetData, targetData),
             damageCalculationId: damageCalculationId,
             attackStrength: attackStrength,
@@ -216,10 +217,10 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
         const unknown4 = r.readUShort()
 
         let object = {
-            index: i,
             itemId: i + 256,
             name: names[i],
             description: descriptions[i],
+            type: 'Armor',
             elementDamageModifier: parseKernelEnums(Enums.DamageModifier, elementDamageModifier),//?
             defense: defense,
             magicDefense: magicDefense,
@@ -265,10 +266,10 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
         const restrictions = r.readUShort()
 
         let object = {
-            index: i,
             itemId: i + 288,
             name: names[i],
             description: descriptions[i],
+            type: 'Accessory',
             boostedStat1: parseKernelEnums(Enums.CharacterStat, boostedStat1),
             boostedStat2: parseKernelEnums(Enums.CharacterStat, boostedStat2),
             boostedStat1Bonus: boostedStat1Bonus,

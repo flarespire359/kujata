@@ -26,9 +26,9 @@ const getCharacterRecord = (r, materiaNames, materiaDescriptions, weaponNames, w
     const currentLimitBar = r.readUByte()
     const name = r.readKernelString(12)
     r.offset = r.offset + 12 // readKernelString doesn't move the buffer position
-    const weapon = getWeapon(r, weaponNames, weaponDescriptions)
-    const armor = getArmor(r, armorNames, armorDescriptions)
-    const accessory = getAccessory(r, accessoryNames, accessoryDescriptions)
+    const weapon = getWeapon(r, weaponNames)
+    const armor = getArmor(r, armorNames)
+    const accessory = getAccessory(r, accessoryNames)
 
     const statusFlags = parseKernelEnums(Enums.Character.Flags, r.readUByte()) // 0x10-Sadness 0x20-Fury 
     const battleOrderRaw = r.readUByte() // 0xFF-Normal 0xFE-Back row
@@ -143,50 +143,42 @@ const getCharacterRecord = (r, materiaNames, materiaDescriptions, weaponNames, w
     return characterRecord
 }
 
-const getWeapon = (r, weaponNames, weaponDescriptions) => {
+const getWeapon = (r, weaponNames) => {
     const id = r.readUByte()
     return {
-        index: id,
         itemId: id + 128,
-        name: weaponNames[id],
-        description: weaponDescriptions[id]
+        name: weaponNames[id]
     }
 }
-const getArmor = (r, armorNames, armorDescriptions) => {
+const getArmor = (r, armorNames) => {
     const id = r.readUByte()
     return {
-        index: id,
         itemId: id + 256,
-        name: armorNames[id],
-        description: armorDescriptions[id]
+        name: armorNames[id]
     }
 }
-const getAccessory = (r, accessoryNames, accessoryDescriptions) => {
+const getAccessory = (r, accessoryNames) => {
     const id = r.readUByte()
     return {
-        index: id,
         itemId: id + 288,
-        name: accessoryNames[id],
-        description: accessoryDescriptions[id]
+        name: accessoryNames[id]
     }
 }
-const getItem = (r, itemNames, itemDescriptions) => {
+const getItem = (r, itemNames) => {
     const itemBinary = r.readUShort()
     const id = itemBinary & 0b1111111
     const quantity = itemBinary >> 9
     const item = {
-        index: id,
         itemId: id,
         quantity,
-        name: itemNames[id],
-        description: itemDescriptions[id]
+        name: itemNames[id]
     }
     return item
 }
-const getItemStock = (r, itemNames, itemDescriptions) => { // 320 x 2 bytes
-    let items = []
+const getItemStock = (r, itemNames) => { // 320 x 2 bytes
+    const items = []
     for (let i = 0; i < 320; i++) {
-        const item = getItem(r, itemNames, itemDescriptions)
+        const item = getItem(r, itemNames)
         items.push(item)
     }
     return items
