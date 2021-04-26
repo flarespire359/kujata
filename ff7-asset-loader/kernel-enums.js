@@ -190,7 +190,8 @@ const Enums = {
     Restrictions: {
         CanBeSold: 1,
         CanBeUsedInBattle: 2,
-        CanBeUsedInMenu: 4
+        CanBeUsedInMenu: 4,
+        CanBeThrown: 8
     },
     MateriaType: {
         Independent: 'Independent',
