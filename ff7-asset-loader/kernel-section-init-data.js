@@ -303,9 +303,9 @@ const getInitSectionData = (sectionData, itemNames, itemDescriptions, materiaNam
     const battleSpeed = 0x7E
     const battleMessageSpeed = 0x7E
     const sound = { Mono: false, Stereo: true }
-    const controller = { Normal: true, Customise: false }
+    const controller = { Normal: false, Customise: true }
     const cursor = { Initial: true, Memory: false }
-    const atb = { Active: true, Recommended: false, Wait: false }
+    const atb = { Active: false, Recommended: true, Wait: false }
     const cameraAngle = { Auto: true, Fixed: false }
     const magicOrder = {
         RestoreAttackIndirect: true,
