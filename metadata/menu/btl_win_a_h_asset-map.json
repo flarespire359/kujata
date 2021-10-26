@@ -9,6 +9,6 @@
     ],
     "materia": [
         {"id":1, "description":"slot-nogrowth", "x":224,"y":64,"w":24,"h":24, "palette": 2},
-        {"id":1, "description":"slot-join", "x":227,"y":96,"w":14,"h":24, "palette": 2}
+        {"id":1, "description":"slot-link", "x":227,"y":96,"w":14,"h":24, "palette": 2}
     ]
 }
