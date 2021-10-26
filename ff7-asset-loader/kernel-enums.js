@@ -265,37 +265,37 @@ const getMateriaEquipEffects = (equipEffectBytes) => {
         case 0x00:
             return []
         case 0x01:
-            return [['Strength',-2],['Vitality',-1],['Magic',2],['Spirit',1],['HP',-5],['MP',5]]
+            return [[Enums.CharacterStat.Strength,-2],[Enums.CharacterStat.Vitality,-1],[Enums.CharacterStat.Magic,2],[Enums.CharacterStat.Spirit,1],[,-5],['MP',5]]
         case 0x02:
-            return [['Strength',-4],['Vitality',-2],['Magic',4],['Spirit',2],['HP',-10],['MP',10]]
+            return [[Enums.CharacterStat.Strength,-4],[Enums.CharacterStat.Vitality,-2],[Enums.CharacterStat.Magic,4],[Enums.CharacterStat.Spirit,2],['HP',-10],['MP',10]]
         case 0x03:
-            return [['Dexterity',2],['Luck',-2]]
+            return [[Enums.CharacterStat.Dexterity,2],[Enums.CharacterStat.Luck,-2]]
         case 0x04:
-            return [['Strength',-1],['Vitality',-1],['Magic',1],['Spirit',1]]
+            return [[Enums.CharacterStat.Strength,-1],[Enums.CharacterStat.Vitality,-1],[Enums.CharacterStat.Magic,1],[Enums.CharacterStat.Spirit,1]]
         case 0x05:
-            return [['Strength',1],['Vitality',1],['Magic',-1],['Spirit',-1]]
+            return [[Enums.CharacterStat.Strength,1],[Enums.CharacterStat.Vitality,1],[Enums.CharacterStat.Magic,-1],[Enums.CharacterStat.Spirit,-1]]
         case 0x06:
-            return [['Vitality',1]]
+            return [[Enums.CharacterStat.Vitality,1]]
         case 0x07:
-            return [['Luck',1]]
+            return [[Enums.CharacterStat.Luck,1]]
         case 0x08:
-            return [['Luck',-1]]
+            return [[Enums.CharacterStat.Luck,-1]]
         case 0x09:
-            return [['Dexterity',-2]]
+            return [[Enums.CharacterStat.Dexterity,-2]]
         case 0x0A:
-            return [['Dexterity',2]]
+            return [[Enums.CharacterStat.Dexterity,2]]
         case 0x0B:
-            return [['Strength',-1],['Magic',1],['HP',-2],['MP',2]]
+            return [[Enums.CharacterStat.Strength,-1],[Enums.CharacterStat.Magic,1],['HP',-2],['MP',2]]
         case 0x0C:
-            return [['Magic',1],['HP',-2],['MP',2]]
+            return [[Enums.CharacterStat.Magic,1],['HP',-2],['MP',2]]
         case 0x0D:
-            return [['Magic',1],['Spirit',1],['HP',-5],['MP',5]]
+            return [[Enums.CharacterStat.Magic,1],[Enums.CharacterStat.Spirit,1],['HP',-5],['MP',5]]
         case 0x0E:
-            return [['Magic',2],['Spirit',2],['HP',-10],['MP',10]]
+            return [[Enums.CharacterStat.Magic,2],[Enums.CharacterStat.Spirit,2],['HP',-10],['MP',10]]
         case 0x0F:
-            return [['Magic',4],['Spirit',4],['HP',-10],['MP',15]]
+            return [[Enums.CharacterStat.Magic,4],[Enums.CharacterStat.Spirit,4],['HP',-10],['MP',15]]
         case 0x10:
-            return [['Magic',8],['Spirit',8],['HP',-10],['MP',20]]
+            return [[Enums.CharacterStat.Magic,8],[Enums.CharacterStat.Spirit,8],['HP',-10],['MP',20]]
     }
     return []
 }
