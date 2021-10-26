@@ -259,13 +259,55 @@ const getMateriaType = (materiaTypeData) => {
     }
     return baseType
 }
-const parseMateriaData = (materiaType, materiaAttribute, equipEffect) => {
+const getMateriaEquipEffects = (equipEffectBytes) => {
+    console.log('getMateriaEquipEffects', equipEffectBytes)
+    switch (equipEffectBytes) {
+        case 0x00:
+            return []
+        case 0x01:
+            return [['Strength',-2],['Vitality',-1],['Magic',2],['Spirit',1],['HP',-5],['MP',5]]
+        case 0x02:
+            return [['Strength',-4],['Vitality',-2],['Magic',4],['Spirit',2],['HP',-10],['MP',10]]
+        case 0x03:
+            return [['Dexterity',2],['Luck',-2]]
+        case 0x04:
+            return [['Strength',-1],['Vitality',-1],['Magic',1],['Spirit',1]]
+        case 0x05:
+            return [['Strength',1],['Vitality',1],['Magic',-1],['Spirit',-1]]
+        case 0x06:
+            return [['Vitality',1]]
+        case 0x07:
+            return [['Luck',1]]
+        case 0x08:
+            return [['Luck',-1]]
+        case 0x09:
+            return [['Dexterity',-2]]
+        case 0x0A:
+            return [['Dexterity',2]]
+        case 0x0B:
+            return [['Strength',-1],['Magic',1],['HP',-2],['MP',2]]
+        case 0x0C:
+            return [['Magic',1],['HP',-2],['MP',2]]
+        case 0x0D:
+            return [['Magic',1],['Spirit',1],['HP',-5],['MP',5]]
+        case 0x0E:
+            return [['Magic',2],['Spirit',2],['HP',-10],['MP',10]]
+        case 0x0F:
+            return [['Magic',4],['Spirit',4],['HP',-10],['MP',15]]
+        case 0x10:
+            return [['Magic',8],['Spirit',8],['HP',-10],['MP',20]]
+    }
+    return []
+}
+const parseMateriaData = (materiaType, materiaAttribute, equipEffectBytes) => {
     const type = getMateriaType(materiaType)
-
+    const equipEffect = getMateriaEquipEffects(equipEffectBytes)
+    
     // TODO - There are a lot more options that should also be included - http://wiki.ffrtt.ru/index.php?title=FF7/Materia_Types
 
     return {
-        type
+        type,
+        equipEffect
     }
 }
 const parseKernelEnums = (type, val) => {

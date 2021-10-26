@@ -300,13 +300,13 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
         const level3Ap = r.readUShort()
         const level4Ap = r.readUShort()
         const level5Ap = r.readUShort()
-        const equipEffect = r.readUByte()
+        const equipEffectBytes = r.readUByte()
         const statusEffect = r.readUInt() >>> 8 // Should only read first 24 bits
         r.offset = r.offset - 1
         const element = r.readUByte()
         const materiaType = r.readUByte()
         const materiaAttribute = r.readUByteArray(6)
-        const materiaData = parseMateriaData(materiaType, materiaAttribute, equipEffect)
+        const materiaData = parseMateriaData(materiaType, materiaAttribute, equipEffectBytes)
 
         let object = {
             index: i,
@@ -320,7 +320,8 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
             statusEffect: parseKernelEnums(Enums.Statuses, statusEffect), // Not sure this is really giving what we want, eg Fire === 0
             element: parseKernelEnums(Enums.MateriaElements, element),
 
-            type: materiaData.type
+            type: materiaData.type,
+            equipEffect: materiaData.equipEffect
             // TODO - Lots more materiaData based attributes, see `kernel-enums.parseMateriaData(...)`
         }
         objects.push(object)
