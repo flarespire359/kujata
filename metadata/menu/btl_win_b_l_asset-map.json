@@ -23,5 +23,9 @@
         {"id":1,"description":"hand-right-big-no-shadow", "x":192,"y":16,"w":48,"h":32, "palette": 2},
         {"id":1,"description":"hand-left-big-no-shadow", "x":144,"y":16,"w":48,"h":32, "palette": 2},
         {"id":1,"description":"here", "x":0,"y":192,"w":32,"h":26, "palette": 2}
+    ],
+    "labels": [
+        {"id":0,"description":"points-big", "x":242,"y":18,"w":14,"h":14, "palette": 8},
+        {"id":1,"description":"gil-big", "x":240,"y":34,"w":16,"h":14, "palette": 8}
     ]
 }

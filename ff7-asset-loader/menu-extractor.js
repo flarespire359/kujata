@@ -10,15 +10,15 @@ const extractAllAssetsAndPalettes = async (
   fs.emptyDirSync(outputMenuDirectory)
   const texFileNames = fs
     .readdirSync(path.join(inputMenuDirectory))
-    .filter(f => f.endsWith('.tex'))
-  //   console.log('texFileNames', texFileNames)
+    .filter(f => f.toLowerCase().endsWith('.tex'))
+    // console.log('texFileNames', texFileNames)
   for (let i = 0; i < texFileNames.length; i++) {
     const texFileName = texFileNames[i]
     const tex = new TexFile().loadTexFileFromPath(
       path.join(inputMenuDirectory, texFileName)
     )
     tex.saveAllPalettesAsPngs(
-      path.join(outputMenuDirectory, texFileName.replace('.tex', '.png'))
+      path.join(outputMenuDirectory, texFileName.replace('.tex', '.png').replace('.TEX', '.png'))
     )
   }
 }
@@ -189,8 +189,8 @@ const extractMetadataAssets = async (
     'btl_win_d_l'
   ]
   for (let i = 0; i < fontMetaDataFiles.length; i++) {
-    console.log(`Extracting font ${i + 1} of ${fontMetaDataFiles.length}`)
     const fontMetaDataFile = fontMetaDataFiles[i]
+    console.log(`Extracting font ${i + 1} of ${fontMetaDataFiles.length} - ${fontMetaDataFile}`)
     const fontMenuMetaData = await extractFontElement(
       fontMetaDataFile,
       outputMenuDirectory,
@@ -233,7 +233,7 @@ const extractMenuAssets = async (
   outputMenuDirectory,
   metadataDirectory
 ) => {
-  console.log('extractMenuAssets: START')
+  console.log('extractMenuAssets: START', inputMenuDirectory, outputMenuDirectory)
   await extractAllAssetsAndPalettes(inputMenuDirectory, outputMenuDirectory)
   await extractMetadataAssets(outputMenuDirectory, metadataDirectory)
 
