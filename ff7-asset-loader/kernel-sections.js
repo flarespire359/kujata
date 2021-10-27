@@ -79,7 +79,7 @@ const getItemSectionData = (sectionData, names, descriptions) => {
             attackSpecialEffects: attackSpecialEffects, // TODO 
             additionalEffectsModifier: additionalEffectsModifier,
             status: parseKernelEnums(Enums.Statuses, status), // Not sure if this is right, or if it should be inversed
-            element: parseKernelEnums(Enums.Elements, element),
+            elements: parseKernelEnums(Enums.Elements, element),
             specialAttack: parseKernelEnums(Enums.SpecialEffects, specialAttack),
             // unknown: {
             //     unknown1
@@ -154,15 +154,13 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
             weaponModelId: weaponModelId, // Maybe split into nybbles if required
             highSoundId: highSoundId,
             equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
-            attackElements: parseKernelEnums(Enums.Elements, attackElements), // Is this array of single?
-            boostedStat1: parseKernelEnums(Enums.CharacterStat, boostedStat1),
-            boostedStat2: parseKernelEnums(Enums.CharacterStat, boostedStat2),
-            boostedStat3: parseKernelEnums(Enums.CharacterStat, boostedStat3),
-            boostedStat4: parseKernelEnums(Enums.CharacterStat, boostedStat4),
-            boostedStat1Bonus: boostedStat1Bonus,
-            boostedStat2Bonus: boostedStat2Bonus,
-            boostedStat3Bonus: boostedStat3Bonus,
-            boostedStat4Bonus: boostedStat4Bonus,
+            elements: parseKernelEnums(Enums.Elements, attackElements), // Is this array of single?
+            boostedStats: filterUnneededBoostedStats([
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat1), value: boostedStat1Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat2), value: boostedStat2Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat3), value: boostedStat3Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat4), value: boostedStat4Bonus}
+            ]),
             materiaSlots: materiaSlots,
             soundEffectIdNormalHit: soundEffectIdNormalHit,
             soundEffectIdNormalCritical: soundEffectIdNormalCritical,
@@ -221,7 +219,6 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
             name: names[i],
             description: descriptions[i],
             type: 'Armor',
-            elementDamageModifier: parseKernelEnums(Enums.DamageModifier, elementDamageModifier),//?
             defense: defense,
             magicDefense: magicDefense,
             evade: evade,
@@ -230,15 +227,14 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
             materiaSlots: materiaSlots,
             growthRate: parseKernelEnums(Enums.GrowthRate, growthRate),
             equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
-            elementalDefense: parseKernelEnums(Enums.Elements, elementalDefense),
-            boostedStat1: parseKernelEnums(Enums.CharacterStat, boostedStat1),
-            boostedStat2: parseKernelEnums(Enums.CharacterStat, boostedStat2),
-            boostedStat3: parseKernelEnums(Enums.CharacterStat, boostedStat3),
-            boostedStat4: parseKernelEnums(Enums.CharacterStat, boostedStat4),
-            boostedStat1Bonus: boostedStat1Bonus,
-            boostedStat2Bonus: boostedStat2Bonus,
-            boostedStat3Bonus: boostedStat3Bonus,
-            boostedStat4Bonus: boostedStat4Bonus,
+            elementDamageModifier: parseKernelEnums(Enums.DamageModifier, elementDamageModifier),
+            elements: parseKernelEnums(Enums.Elements, elementalDefense),
+            boostedStats: filterUnneededBoostedStats([
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat1), value: boostedStat1Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat2), value: boostedStat2Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat3), value: boostedStat3Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat4), value: boostedStat4Bonus}
+            ]),
             restrictions: parseKernelEnums(Enums.Restrictions, restrictions),
             // unknown: {
             //     unknown1, unknown2, unknown3, unknown4
@@ -270,18 +266,20 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
             name: names[i],
             description: descriptions[i],
             type: 'Accessory',
-            boostedStat1: parseKernelEnums(Enums.CharacterStat, boostedStat1),
-            boostedStat2: parseKernelEnums(Enums.CharacterStat, boostedStat2),
-            boostedStat1Bonus: boostedStat1Bonus,
-            boostedStat2Bonus: boostedStat2Bonus,
+            boostedStats: filterUnneededBoostedStats([
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat1), value: boostedStat1Bonus},
+                {stat: parseKernelEnums(Enums.CharacterStat, boostedStat2), value: boostedStat2Bonus}
+            ]),
             elementDamageModifier: parseKernelEnums(Enums.DamageModifier, elementDamageModifier),
-            accessoryEffect: parseKernelEnums(Enums.AccessoryEffect, accessoryEffect),
             elements: parseKernelEnums(Enums.Elements, elements),
+            accessoryEffect: parseKernelEnums(Enums.AccessoryEffect, accessoryEffect),
             status: parseKernelEnums(Enums.Statuses, status),
             equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
             restrictions: parseKernelEnums(Enums.Restrictions, restrictions),
-
         }
+        // if (object.name.includes('Tetra') || object.name.includes('Safety')) {
+        //     console.log(object.name,elementDamageModifier, elements, object.elements )
+        // }
         objects.push(object)
     }
     return objects
@@ -318,7 +316,7 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
             level4Ap: level4Ap * 100,
             level5Ap: level5Ap * 100,
             statusEffect: parseKernelEnums(Enums.Statuses, statusEffect), // Not sure this is really giving what we want, eg Fire === 0
-            element: parseKernelEnums(Enums.MateriaElements, element),
+            elements: parseKernelEnums(Enums.MateriaElements, element),
 
             type: materiaData.type,
             equipEffect: materiaData.equipEffect
@@ -331,6 +329,10 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
         // }
     }
     return objects
+}
+
+const filterUnneededBoostedStats = (boostedStats) => {
+    return boostedStats.filter(s => s.stat !== 'None')
 }
 
 const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataDirectory) => {

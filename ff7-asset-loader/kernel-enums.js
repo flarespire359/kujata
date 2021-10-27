@@ -28,7 +28,7 @@ const Enums = {
         Punch: 0x1000,
         Shoot: 0x2000,
         Shout: 0x4000,
-        Hidden: 0x8000,
+        Hidden: 0x8000
     },
     MateriaElements: {
         Fire: 0x00,
@@ -260,7 +260,7 @@ const getMateriaType = (materiaTypeData) => {
     return baseType
 }
 const getMateriaEquipEffects = (equipEffectBytes) => {
-    console.log('getMateriaEquipEffects', equipEffectBytes)
+    // console.log('getMateriaEquipEffects', equipEffectBytes)
     switch (equipEffectBytes) {
         case 0x00:
             return []
@@ -313,12 +313,14 @@ const parseMateriaData = (materiaType, materiaAttribute, equipEffectBytes) => {
 const parseKernelEnums = (type, val) => {
 
     const singleResultTypes = [
-        Enums.GrowthRate, Enums.MateriaSlot, Enums.CharacterStat, Enums.ConditionSubMenu, Enums.Elements,
+        Enums.GrowthRate, Enums.MateriaSlot, Enums.CharacterStat, Enums.ConditionSubMenu,
         Enums.MateriaElements, Enums.DamageModifier, Enums.AccessoryEffect,
         Enums.Character.Flags, Enums.Character.Order, Enums.Character.PartyMember]
     const inverseBitTypes = [Enums.SpecialEffects, Enums.Restrictions]
 
-    if (type === Enums.MateriaType) {
+    if (type === Enums.Elements && val === 0xFFFF) {
+        return []
+    } else if (type === Enums.MateriaType) {
         return getMateriaType(val) // Specific behaviour required, but it is nice to abstract it behind parseKernelEnums
     } else if (singleResultTypes.includes(type)) { // Is this exhaustive? Restrictions, CharacterStat, MateriaType?
         let text = 'None'
