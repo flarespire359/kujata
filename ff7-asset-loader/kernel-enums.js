@@ -15,7 +15,7 @@ const Enums = {
     Elements: {
         Fire: 0x0001,
         Ice: 0x0002,
-        Bolt: 0x0004,
+        Lightning: 0x0004,
         Earth: 0x0008,
         Poison: 0x0010,
         Gravity: 0x0020,
@@ -33,7 +33,7 @@ const Enums = {
     MateriaElements: {
         Fire: 0x00,
         Ice: 0x01,
-        Bolt: 0x02,
+        Lightning: 0x02,
         Earth: 0x03,
         Poison: 0x04,
         Gravity: 0x05,
