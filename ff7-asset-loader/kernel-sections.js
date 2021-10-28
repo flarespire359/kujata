@@ -316,7 +316,7 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
             level4Ap: level4Ap * 100,
             level5Ap: level5Ap * 100,
             statusEffect: parseKernelEnums(Enums.Statuses, statusEffect), // Not sure this is really giving what we want, eg Fire === 0
-            elements: parseKernelEnums(Enums.MateriaElements, element),
+            element: parseKernelEnums(Enums.MateriaElements, element),
 
             type: materiaData.type,
             equipEffect: materiaData.equipEffect
