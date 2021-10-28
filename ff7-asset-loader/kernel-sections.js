@@ -282,7 +282,7 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
         // if (object.name.includes('Tetra') || object.name.includes('Safety')) {
         //     console.log(object.name,elementDamageModifier, elements, object.elements )
         // }
-        // console.log('acc',object.name, object.status, status )
+        // console.log('acc',object.name, object.status, status, dec2bin(status) )
         objects.push(object)
     }
     return objects
@@ -302,7 +302,7 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
         const level4Ap = r.readUShort()
         const level5Ap = r.readUShort()
         const equipEffectBytes = r.readUByte()
-        const statusEffect = r.readUInt() >>> 8 // Should only read first 24 bits
+        const statusEffect = r.readUInt() ^ 0b1111000000000000000000000000 // Should only read first 24 bits
         r.offset = r.offset - 1
         const element = r.readUByte()
         const materiaType = r.readUByte()
@@ -318,13 +318,16 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
             level3Ap: level3Ap * 100,
             level4Ap: level4Ap * 100,
             level5Ap: level5Ap * 100,
-            statusEffect: parseKernelEnums(Enums.Statuses, statusEffect), // Not sure this is really giving what we want, eg Fire === 0
+            status: parseKernelEnums(Enums.Statuses, statusEffect), // Not sure this is really giving what we want, eg Fire === 0
             element: parseKernelEnums(Enums.MateriaElements, element),
 
             type: materiaData.type,
             equipEffect: materiaData.equipEffect
             // TODO - Lots more materiaData based attributes, see `kernel-enums.parseMateriaData(...)`
         }
+        // if (object.name === 'Time') {
+        //     console.log('mat', object, object.name, object.status, statusEffect, dec2bin(statusEffect))
+        // }
         objects.push(object)
         // if (i < 2) {
         //     console.log('----')
