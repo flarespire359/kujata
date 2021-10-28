@@ -320,6 +320,8 @@ const parseKernelEnums = (type, val) => {
 
     if (type === Enums.Elements && val === 0xFFFF) {
         return []
+    } else if (type === Enums.Statuses && val === 0xFF || type === Enums.EquipmentStatus && val === 0xFF) {
+        return []
     } else if (type === Enums.MateriaType) {
         return getMateriaType(val) // Specific behaviour required, but it is nice to abstract it behind parseKernelEnums
     } else if (singleResultTypes.includes(type)) { // Is this exhaustive? Restrictions, CharacterStat, MateriaType?

@@ -175,6 +175,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
         // if (i < 2) {
         //     console.log('weapon', object)
         // }
+        // console.log('weap',object.name, object.status, status )
         objects.push(object)
     }
     return objects
@@ -223,7 +224,7 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
             magicDefense: magicDefense,
             evade: evade,
             magicEvade: magicEvade,
-            status: parseKernelEnums(Enums.Statuses, status),
+            status: parseKernelEnums(Enums.EquipmentStatus, status),
             materiaSlots: materiaSlots,
             growthRate: parseKernelEnums(Enums.GrowthRate, growthRate),
             equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
@@ -240,6 +241,7 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
             //     unknown1, unknown2, unknown3, unknown4
             // }
         }
+        // console.log('arm',object.name, object.status, status )
         objects.push(object)
     }
     return objects
@@ -280,6 +282,7 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
         // if (object.name.includes('Tetra') || object.name.includes('Safety')) {
         //     console.log(object.name,elementDamageModifier, elements, object.elements )
         // }
+        // console.log('acc',object.name, object.status, status )
         objects.push(object)
     }
     return objects
