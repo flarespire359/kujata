@@ -336,7 +336,30 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
     }
     return objects
 }
+const getCommandSectionData = (sectionData, names, descriptions) => {
+    let r = new FF7BinaryDataReader(sectionData.buffer)
+    const objectSize = 8
+    let objects = []
 
+    for (let i = 0; i < r.length / objectSize; i++) {
+        const initialCursorAction = r.readUByte()
+        const targetFlags = r.readUByte()
+        const unknown = r.readUShort()
+        const cameraMovementIdSingleTargets = r.readUShort()
+        const cameraMovementIdMultipleTargets = r.readUShort()
+        let object = {
+            index: i,
+            name: names[i],
+            description: descriptions[i],
+            initialCursorAction: parseKernelEnums(Enums.InitialCursorAction, initialCursorAction),
+            targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
+            cameraMovementIdSingleTargets: cameraMovementIdSingleTargets,
+            cameraMovementIdMultipleTargets: cameraMovementIdMultipleTargets
+        }
+        objects.push(object)
+    }
+    return objects
+}
 const filterUnneededBoostedStats = (boostedStats) => {
     return boostedStats.filter(s => s.stat !== 'None')
 }
@@ -447,6 +470,7 @@ module.exports = {
     getArmorSectionData,
     getAccessorySectionData,
     getMateriaSectionData,
+    getCommandSectionData,
     extractWindowBinElements,
     dec2bin,
     dec2hex

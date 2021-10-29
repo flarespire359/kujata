@@ -117,6 +117,20 @@ const Enums = {
         LuckyGirl: 0x1E,
         Imprisoned: 0x1F,
     },
+    InitialCursorAction: {
+        PerformCommandUsingTargetData: 0x00,
+        MagicMenu: 0x01,
+        SummonMenu: 0x02,
+        ItemMenu: 0x03,
+        ESkillMenu: 0x04,
+        ThrowMenu: 0x05,
+        LimitMenu: 0x06,
+        EnableTargetSelectionUsingCursor: 0x07,
+        WMagicMenu: 0x08,
+        WSummonMenu: 0x09,
+        WItemMenu: 0x0A,
+        CoinMenu: 0x0B
+    },
     TargetData: {
         EnableSelection: 0x01, // Cursor will move to the battle field and a target can be selected from valid targets as per additional constraints
         StartCursorOnEnemyRow: 0x02, // Cursor will start on the first enemy row.
@@ -315,7 +329,7 @@ const parseKernelEnums = (type, val) => {
     const singleResultTypes = [
         Enums.GrowthRate, Enums.MateriaSlot, Enums.CharacterStat, Enums.ConditionSubMenu,
         Enums.MateriaElements, Enums.DamageModifier, Enums.AccessoryEffect,
-        Enums.Character.Flags, Enums.Character.Order, Enums.Character.PartyMember]
+        Enums.Character.Flags, Enums.Character.Order, Enums.Character.PartyMember, Enums.InitialCursorAction]
     const inverseBitTypes = [Enums.SpecialEffects, Enums.Restrictions]
 
     if (type === Enums.Elements && val === 0xFFFF) {
