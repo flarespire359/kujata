@@ -287,7 +287,7 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
     }
     return objects
 }
-const getMateriaSectionData = (sectionData, names, descriptions) => {
+const getMateriaSectionData = (sectionData, names, descriptions, magicNames) => {
     let r = new FF7BinaryDataReader(sectionData.buffer)
     const objectSize = 20
     let objects = []
@@ -307,7 +307,7 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
         const element = r.readUByte()
         const materiaType = r.readUByte()
         const materiaAttributes = r.readUByteArray(6)
-        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes)
+        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes, magicNames)
 
         let object = {
             index: i,
@@ -326,9 +326,9 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
             attributes: materiaData.attributes
             // TODO - Lots more materiaData based attributes, see `kernel-enums.parseMateriaData(...)`
         }
-        // if (object.type.includes('Magic')) {
-        //     console.log('mat', object.name, dec2hex(materiaType), materiaAttributes.map(m => dec2hex(m)), materiaData.attributes)
-        // }
+        if (object.type.includes('Summon')) {
+            // console.log('mat', object)//.name, dec2hex(materiaType), materiaAttributes.map(m => dec2hex(m)), materiaData.attributes)
+        }
         // if (object.name === 'Time') {
         //     console.log('mat', object, object.name, object.status, statusEffect, dec2bin(statusEffect))
         // }
@@ -404,7 +404,10 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
             cameraMovementIdMultipleTargets,
             targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
             animationID,
-            damageCalculation, // TODO
+            damageCalculation: {
+                type: (damageCalculation & 0xF0) >> 4, // upper nybble
+                formula: damageCalculation & 0x0F // lower nybble
+            },
             attackPower,
             conditionSubMenu: parseKernelEnums(Enums.ConditionSubMenu, conditionSubMenu),
             statusEffectChance: statusEffectChance & 0x3F,
@@ -417,8 +420,8 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
             elements: parseKernelEnums(Enums.Elements, element),
             specialAttack: parseKernelEnums(Enums.SpecialEffects, specialAttack),
         }
-        if (object.name.includes('Mini')) {
-            // console.log('att', object)
+        if (object.name.includes('Beat')) {
+            console.log('att', object)
         }
         
         objects.push(object)

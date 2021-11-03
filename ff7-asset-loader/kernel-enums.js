@@ -317,7 +317,7 @@ const getMateriaEquipEffects = (equipEffectBytes) => {
     }
     return []
 }
-const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes) => {
+const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magicNames) => {
     const type = getMateriaType(materiaType)
     const equipEffect = getMateriaEquipEffects(equipEffectBytes)
     let attributes = {}
@@ -328,12 +328,27 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes) => {
             if (materiaAttribute < 255 || i === 0) {
                 attributes.magic[`level${i+1}`] = {
                     level:  i+1,
-                    index: materiaAttribute,
-                    name: ''
+                    attackId: materiaAttribute,
+                    name: magicNames[materiaAttribute]
                 }
             }
         }
         // console.log(' attacks', materiaAttributes)
+    }
+    if (type === Enums.MateriaType.Summon) {
+        attributes.summon = {
+            attackId: materiaAttributes[0],
+            name: magicNames[materiaAttributes[0]]
+        }
+        for (let i = 1; i < materiaAttributes.length; i++) {
+            const materiaAttribute = materiaAttributes[i]
+            attributes.summon[`level${i}`] = {
+                level:  i,
+                index: materiaAttribute,
+                useCount: materiaAttribute
+            }
+        }
+        console.log(' attacks', materiaAttributes)
     }
     // TODO - There are a lot more options that should also be included - http://wiki.ffrtt.ru/index.php?title=FF7/Materia_Types
 
