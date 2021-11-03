@@ -306,8 +306,8 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
         r.offset = r.offset - 1
         const element = r.readUByte()
         const materiaType = r.readUByte()
-        const materiaAttribute = r.readUByteArray(6)
-        const materiaData = parseMateriaData(materiaType, materiaAttribute, equipEffectBytes)
+        const materiaAttributes = r.readUByteArray(6)
+        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes)
 
         let object = {
             index: i,
@@ -322,9 +322,13 @@ const getMateriaSectionData = (sectionData, names, descriptions) => {
             element: parseKernelEnums(Enums.MateriaElements, element),
 
             type: materiaData.type,
-            equipEffect: materiaData.equipEffect
+            equipEffect: materiaData.equipEffect,
+            attributes: materiaData.attributes
             // TODO - Lots more materiaData based attributes, see `kernel-enums.parseMateriaData(...)`
         }
+        // if (object.type.includes('Magic')) {
+        //     console.log('mat', object.name, dec2hex(materiaType), materiaAttributes.map(m => dec2hex(m)), materiaData.attributes)
+        // }
         // if (object.name === 'Time') {
         //     console.log('mat', object, object.name, object.status, statusEffect, dec2bin(statusEffect))
         // }
@@ -356,6 +360,67 @@ const getCommandSectionData = (sectionData, names, descriptions) => {
             cameraMovementIdSingleTargets: cameraMovementIdSingleTargets,
             cameraMovementIdMultipleTargets: cameraMovementIdMultipleTargets
         }
+        objects.push(object)
+    }
+    return objects
+}
+const getAttackSectionData = (sectionData, names, descriptions) => {
+    let r = new FF7BinaryDataReader(sectionData.buffer)
+    const objectSize = 28
+    let objects = []
+
+    for (let i = 0; i < r.length / objectSize; i++) {
+        const attackPercent = r.readUByte()
+        const impactAnimation = r.readUByte()
+        const targetAnimation = r.readUByte()
+        const unknown = r.readUByte()
+        const mpCost = r.readUShort()
+        const impactSound = r.readUShort()
+        const cameraMovementIdSingleTargets = r.readUShort()
+        const cameraMovementIdMultipleTargets = r.readUShort()
+        const targetFlags = r.readUByte()
+        const animationID = r.readUByte()
+        const damageCalculation = r.readUByte()
+        const attackPower = r.readUByte()
+        const conditionSubMenu = r.readUByte()
+        const statusEffectChance = r.readUByte()
+        const additionalEffects = r.readUByte()
+        const additionalEffectsModifier = r.readUByte()
+        
+        const status = r.readUInt()
+        const element = r.readUShort()
+        const specialAttack = r.readUShort()
+
+        let object = {
+            index: i,
+            name: names[i],
+            description: descriptions[i],
+            attackPercent,
+            impactAnimation,
+            targetAnimation,
+            mp: mpCost,
+            impactSound,
+            cameraMovementIdSingleTargets,
+            cameraMovementIdMultipleTargets,
+            targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
+            animationID,
+            damageCalculation, // TODO
+            attackPower,
+            conditionSubMenu: parseKernelEnums(Enums.ConditionSubMenu, conditionSubMenu),
+            statusEffectChance: statusEffectChance & 0x3F,
+            statusEffect: parseKernelEnums(Enums.StatusEffect, statusEffectChance),
+            additionalEffects: {
+                type: additionalEffects, // TODO,
+                modifier: additionalEffectsModifier
+            },
+            status: parseKernelEnums(Enums.Statuses, status),
+            elements: parseKernelEnums(Enums.Elements, element),
+            specialAttack: parseKernelEnums(Enums.SpecialEffects, specialAttack),
+        }
+        if (object.name.includes('Mini')) {
+            // console.log('att', object)
+        }
+        
         objects.push(object)
     }
     return objects
@@ -471,6 +536,7 @@ module.exports = {
     getAccessorySectionData,
     getMateriaSectionData,
     getCommandSectionData,
+    getAttackSectionData,
     extractWindowBinElements,
     dec2bin,
     dec2hex

@@ -147,6 +147,10 @@ const Enums = {
         PartyStatus: 0x02,
         None: 0xFF
     },
+    StatusEffect: {
+        ToggleStatus: 0x40,
+        RemoveStatus: 0x80
+    },
     AccessoryEffect: {
         None: 0xFF,
         Haste: 0x0,
@@ -313,15 +317,63 @@ const getMateriaEquipEffects = (equipEffectBytes) => {
     }
     return []
 }
-const parseMateriaData = (materiaType, materiaAttribute, equipEffectBytes) => {
+const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes) => {
     const type = getMateriaType(materiaType)
     const equipEffect = getMateriaEquipEffects(equipEffectBytes)
-    
+    let attributes = {}
+    if (type === Enums.MateriaType.Magic) {
+        attributes.magic = {}
+        for (let i = 0; i < materiaAttributes.length; i++) {
+            const materiaAttribute = materiaAttributes[i]
+            if (materiaAttribute < 255 || i === 0) {
+                attributes.magic[`level${i+1}`] = {
+                    level:  i+1,
+                    index: materiaAttribute,
+                    name: ''
+                }
+            }
+        }
+        // console.log(' attacks', materiaAttributes)
+    }
     // TODO - There are a lot more options that should also be included - http://wiki.ffrtt.ru/index.php?title=FF7/Materia_Types
 
+    /*
+    Magic - attributes are refs to the spell IDs (exc master magic)
+    Summon - attributes are refs to summon how many times they can be used in battle (exc master summon)
+    Support - Flags to set types basically
+    Command - Flags to set menus available and replacements
+    Independent - A mixture:
+
+    mat Underwater 0x0 [ '0xc', '0xff', '0xff', '0xff', '0xff', '0xff' ]
+    mat HP<->MP 0x0 [ '0x62', '0xff', '0xff', '0xff', '0xff', '0xff' ]
+    
+    mat Counter Attack 0x20 [ '0x53', '0x1e', '0x28', '0x3c', '0x50', '0x64' ]
+    mat Cover 0x20 [ '0xb', '0x14', '0x28', '0x3c', '0x50', '0x64' ]
+
+    mat MP Plus 0x20 [ '0x9', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
+    mat HP Plus 0x20 [ '0x8', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
+    mat Speed Plus 0x20 [ '0x4', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
+    mat Magic Plus 0x20 [ '0x2', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
+    mat Luck Plus 0x20 [ '0x5', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
+
+    mat Pre-Emptive 0x21 [ '0x3', '0x10', '0x16', '0x1c', '0x22', '0x30' ]
+    
+    mat Long Range 0x30 [ '0x50', '0xff', '0xff', '0xff', '0xff', '0xff' ]
+
+    mat Mega All 0x34 [ '0x51', '0x1', '0x2', '0x3', '0x4', '0x5' ]
+
+    mat EXP Plus 0x40 [ '0xa', '0x18', '0x20', '0xff', '0xff', '0xff' ]
+
+    mat Gil Plus 0x41 [ '0x0', '0x18', '0x20', '0xff', '0xff', '0xff' ]
+    mat Enemy Away 0x41 [ '0x1', '0x7', '0xe', '0xff', '0xff', '0xff' ]
+    mat Enemy Lure 0x41 [ '0x1', '0x7', '0xe', '0xff', '0xff', '0xff' ]
+    mat Chocobo Lure 0x41 [ '0x2', '0x8', '0xc', '0x10', '0xff', '0xff' ]
+
+    */
     return {
         type,
-        equipEffect
+        equipEffect,
+        attributes
     }
 }
 const parseKernelEnums = (type, val) => {
@@ -330,7 +382,7 @@ const parseKernelEnums = (type, val) => {
         Enums.GrowthRate, Enums.MateriaSlot, Enums.CharacterStat, Enums.ConditionSubMenu,
         Enums.MateriaElements, Enums.DamageModifier, Enums.AccessoryEffect,
         Enums.Character.Flags, Enums.Character.Order, Enums.Character.PartyMember, Enums.InitialCursorAction]
-    const inverseBitTypes = [Enums.SpecialEffects, Enums.Restrictions]
+    const inverseBitTypes = [Enums.SpecialEffects, Enums.Restrictions, Enums.StatusEffect]
 
     if (type === Enums.Elements && val === 0xFFFF) {
         return []

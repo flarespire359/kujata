@@ -11,6 +11,7 @@ const { getTextSectionData,
     getAccessorySectionData,
     getMateriaSectionData,
     getCommandSectionData,
+    getAttackSectionData,
     extractWindowBinElements } = require('./kernel-sections.js')
 const { getInitSectionData } = require('./kernel-section-init-data')
 const { TimFile } = require('./tim-file.js')
@@ -19,7 +20,7 @@ const { TimFile } = require('./tim-file.js')
 
 All but 4 sections from kernel.bin and kernel2.bin complete
 - commandData - COMPLETE
-- attackData
+- attackData - COMPLETE
 - battleAndGrowthData
 - initData - COMPLETE
 
@@ -117,7 +118,7 @@ const extractKernelKernel2Bin = async (inputKernelDirectory, outputKernelDirecto
 
     // TODO - General game data
     data.commandData = getCommandSectionData(kernelData[0], data.commandNames, data.commandDescriptions)
-    // data.attackData = getTextSectionData(kernelData[1])
+    data.attackData = getAttackSectionData(kernelData[1], data.magicNames, data.magicDescriptions)
     // data.battleAndGrowthData = getTextSectionData(kernelData[2])
     data.initData = getInitSectionData(kernelData[3],
         data.itemNames, data.itemDescriptions,
