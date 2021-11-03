@@ -307,17 +307,18 @@ const getMateriaSectionData = (sectionData, names, descriptions, magicNames) => 
         const element = r.readUByte()
         const materiaType = r.readUByte()
         const materiaAttributes = r.readUByteArray(6)
-        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes, magicNames)
 
+        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes, magicNames, i)
+        const apLevels = [0]
+        if(level2Ap !== 0xFFFF) {apLevels.push(level2Ap * 100)}
+        if(level3Ap !== 0xFFFF) {apLevels.push(level3Ap * 100)}
+        if(level4Ap !== 0xFFFF) {apLevels.push(level4Ap * 100)}
+        if(level5Ap !== 0xFFFF) {apLevels.push(level5Ap * 100)}
         let object = {
             index: i,
             name: names[i],
             description: descriptions[i],
-
-            level2Ap: level2Ap * 100, // Some materia can't be levelled, master summon etc, think of a way to flag this, probably here
-            level3Ap: level3Ap * 100,
-            level4Ap: level4Ap * 100,
-            level5Ap: level5Ap * 100,
+            apLevels,
             status: parseKernelEnums(Enums.Statuses, statusEffect), // Not sure this is really giving what we want, eg Fire === 0
             element: parseKernelEnums(Enums.MateriaElements, element),
 
@@ -326,8 +327,8 @@ const getMateriaSectionData = (sectionData, names, descriptions, magicNames) => 
             attributes: materiaData.attributes
             // TODO - Lots more materiaData based attributes, see `kernel-enums.parseMateriaData(...)`
         }
-        if (object.type.includes('Summon')) {
-            // console.log('mat', object)//.name, dec2hex(materiaType), materiaAttributes.map(m => dec2hex(m)), materiaData.attributes)
+        if (object.type.includes('Indepen')) {
+            // console.log('mat', object.name, object.apLevels)//.name, dec2hex(materiaType), materiaAttributes.map(m => dec2hex(m)), materiaData.attributes)
         }
         // if (object.name === 'Time') {
         //     console.log('mat', object, object.name, object.status, statusEffect, dec2bin(statusEffect))
@@ -420,9 +421,9 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
             elements: parseKernelEnums(Enums.Elements, element),
             specialAttack: parseKernelEnums(Enums.SpecialEffects, specialAttack),
         }
-        if (object.name.includes('Beat')) {
-            console.log('att', object)
-        }
+        // if (object.name.includes('Beat')) {
+        //     console.log('att', object)
+        // }
         
         objects.push(object)
     }

@@ -1,3 +1,9 @@
+// const { dec2hex } = require("./kernel-sections")
+
+const dec2hex = (dec) => { // For debug only
+    return `0x${parseInt(dec).toString(16)}`
+}
+
 const Enums = {
     SpecialEffects: {
         DamageMP: 0x1, // Damage is dealt to targets MP instead of HP.
@@ -168,7 +174,9 @@ const Enums = {
         Magic: 2,
         Spirit: 3,
         Dexterity: 4,
-        Luck: 5
+        Luck: 5,
+        HP: 8,
+        MP: 9
     },
     DamageModifier: {
         Absorb: 0x0,
@@ -217,6 +225,32 @@ const Enums = {
         Magic: 'Magic',
         Summon: 'Summon',
         Command: 'Command'
+    },
+    CommandType: {
+        Steal: 0x5,
+        Sense: 0x6,
+        Coin: 0x7,
+        Throw: 0x8,
+        Morph: 0x9,
+        'D.Blow': 0xA,
+        'Manip.': 0xB,
+        Mime: 0xC,
+        'E.Skill': 0xD
+    },
+    SupportType: {
+        Counter: 0x54, //25
+        MagicCounter: 0x55,
+        SneakAttack: 0x56,
+        MPTurbo: 0x58,
+        MPAbsorb: 0x59,
+        HPAbsorb: 0x5A,
+        AddedCut: 0x5C,
+        StealAsWell: 0x5D,
+        Elemental: 0x5E,
+        AddedEffect: 0x5F,
+        All: 0x51, //35
+        FinalAttack: 0x57,
+        QuadraMagic: 0x63
     },
     Character: {
         Flags: {
@@ -317,16 +351,17 @@ const getMateriaEquipEffects = (equipEffectBytes) => {
     }
     return []
 }
-const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magicNames) => {
+const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magicNames, index) => {
     const type = getMateriaType(materiaType)
     const equipEffect = getMateriaEquipEffects(equipEffectBytes)
     let attributes = {}
     if (type === Enums.MateriaType.Magic) {
-        attributes.magic = {}
+        // TODO - Master Magic
+        attributes = {}
         for (let i = 0; i < materiaAttributes.length; i++) {
             const materiaAttribute = materiaAttributes[i]
             if (materiaAttribute < 255 || i === 0) {
-                attributes.magic[`level${i+1}`] = {
+                attributes[`level${i+1}`] = {
                     level:  i+1,
                     attackId: materiaAttribute,
                     name: magicNames[materiaAttribute]
@@ -336,21 +371,77 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
         // console.log(' attacks', materiaAttributes)
     }
     if (type === Enums.MateriaType.Summon) {
-        attributes.summon = {
+        // TODO - Master Summon
+        attributes = {
             attackId: materiaAttributes[0],
             name: magicNames[materiaAttributes[0]]
         }
-        for (let i = 1; i < materiaAttributes.length; i++) {
-            const materiaAttribute = materiaAttributes[i]
-            attributes.summon[`level${i}`] = {
-                level:  i,
-                index: materiaAttribute,
-                useCount: materiaAttribute
-            }
-        }
-        console.log(' attacks', materiaAttributes)
     }
-    // TODO - There are a lot more options that should also be included - http://wiki.ffrtt.ru/index.php?title=FF7/Materia_Types
+    if (type === Enums.MateriaType.Command) {
+        const attr1 = materiaAttributes[0]
+        const materiaTypeLowerNybble = materiaType & 0x0F
+        if (materiaType === 0x12) {
+            attributes = { type: 'Replace', menu: 'Attack', with: 'Ability' }
+        } else if (materiaTypeLowerNybble === 0x3) {
+            if (attr1 === 0x15) {
+                attributes = { type: 'Replace', menu: 'Magic', with: 'WMagic' }
+            } else if (attr1 === 0x16) {
+                attributes = { type: 'Replace', menu: 'Summon', with: 'WSummon' }
+            } else if (attr1 === 0x17) {
+                attributes = { type: 'Replace', menu: 'Item', with: 'WItem' }
+            }
+        } else if (materiaTypeLowerNybble === 0x6) {
+            attributes = { type: 'Add', menu: [parseKernelEnums(Enums.CommandType, attr1)] }
+        } else if (materiaTypeLowerNybble === 0x7) {
+            attributes = { type: 'Add', menu: [parseKernelEnums(Enums.CommandType, 0xD)] }
+        } else if (materiaTypeLowerNybble === 0x8) {
+            attributes = { type: 'Add', menu: [0x5,0x6,0x7,0x9,0xA,0xB,0xC].map(a => parseKernelEnums(Enums.CommandType, a)) }
+        }
+        // console.log('  cmd', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1))
+    }
+
+    if (type === Enums.MateriaType.Support) {
+        const attr1 = materiaAttributes[0]
+        const supportType = parseKernelEnums(Enums.SupportType, attr1)
+        // console.log('  sup', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), materiaAttributes, supportType)
+        materiaAttributes.shift()
+        attributes = { type: supportType, attributes: materiaAttributes }
+    }
+    if (type === Enums.MateriaType.Independent) {
+        const attr1 = materiaAttributes[0]
+        materiaAttributes.shift()
+        if (materiaType === 0x00) {
+            if (attr1 === 0x0C) {
+                attributes = { type: 'Underwater'}    
+            } else if (attr1 === 0x62) {
+                attributes = { type: 'HP<->MP'}    
+            }
+        } else if ((materiaType === 0x20 || materiaType === 0x40) && attr1 < 0xa) {
+            attributes = { type: 'StatBoost', stat: parseKernelEnums(Enums.CharacterStat, attr1), attributes: materiaAttributes}
+        } else if (materiaType === 0x20 && attr1 === 0x53) {
+            attributes = { type: 'CounterAttack', attributes: materiaAttributes}
+        } else if (materiaType === 0x20 && attr1 === 0xb) {
+            attributes = { type: 'Cover', attributes: materiaAttributes}
+        } else if (materiaType === 0x21) {
+            attributes = { type: 'PreEmptive', attributes: materiaAttributes}
+        } else if (materiaType === 0x30) {
+            attributes = { type: 'LongRange'}
+        } else if (materiaType === 0x34) {
+            attributes = { type: 'MegaAll', attributes: materiaAttributes}
+        } else if (materiaType === 0x40) {
+            attributes = { type: 'StatBoost', stat: 'EXP', attributes: materiaAttributes.filter(a => a !== 255)}
+        } else if (materiaType === 0x41 && attr1 === 0x0) {
+            attributes = { type: 'StatBoost', stat: 'Gil', attributes: materiaAttributes.filter(a => a !== 255)}
+        } else if (materiaType === 0x41 && attr1 === 0x1 && index === 7) {
+            attributes = { type: 'StatBoost', stat: 'EncounterDown', attributes: materiaAttributes.filter(a => a !== 255)}
+        } else if (materiaType === 0x41 && attr1 === 0x1 && index === 8) {
+            attributes = { type: 'StatBoost', stat: 'EncounterUp', attributes: materiaAttributes.filter(a => a !== 255)}
+        } else if (materiaType === 0x41 && attr1 === 0x2) {
+            attributes = { type: 'StatBoost', stat: 'ChocoboUp', attributes: materiaAttributes.filter(a => a !== 255)}
+        }
+        // console.log('  ind', index, materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), materiaAttributes)
+    }
+    // http://wiki.ffrtt.ru/index.php?title=FF7/Materia_Types
 
     /*
     Magic - attributes are refs to the spell IDs (exc master magic)
@@ -362,14 +453,15 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     mat Underwater 0x0 [ '0xc', '0xff', '0xff', '0xff', '0xff', '0xff' ]
     mat HP<->MP 0x0 [ '0x62', '0xff', '0xff', '0xff', '0xff', '0xff' ]
     
-    mat Counter Attack 0x20 [ '0x53', '0x1e', '0x28', '0x3c', '0x50', '0x64' ]
-    mat Cover 0x20 [ '0xb', '0x14', '0x28', '0x3c', '0x50', '0x64' ]
 
     mat MP Plus 0x20 [ '0x9', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
     mat HP Plus 0x20 [ '0x8', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
     mat Speed Plus 0x20 [ '0x4', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
     mat Magic Plus 0x20 [ '0x2', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
     mat Luck Plus 0x20 [ '0x5', '0xa', '0x14', '0x1e', '0x28', '0x32' ]
+    
+    mat Counter Attack 0x20 [ '0x53', '0x1e', '0x28', '0x3c', '0x50', '0x64' ]
+    mat Cover 0x20 [ '0xb', '0x14', '0x28', '0x3c', '0x50', '0x64' ]
 
     mat Pre-Emptive 0x21 [ '0x3', '0x10', '0x16', '0x1c', '0x22', '0x30' ]
     
@@ -395,7 +487,7 @@ const parseKernelEnums = (type, val) => {
 
     const singleResultTypes = [
         Enums.GrowthRate, Enums.MateriaSlot, Enums.CharacterStat, Enums.ConditionSubMenu,
-        Enums.MateriaElements, Enums.DamageModifier, Enums.AccessoryEffect,
+        Enums.MateriaElements, Enums.DamageModifier, Enums.AccessoryEffect, Enums.CommandType, Enums.SupportType,
         Enums.Character.Flags, Enums.Character.Order, Enums.Character.PartyMember, Enums.InitialCursorAction]
     const inverseBitTypes = [Enums.SpecialEffects, Enums.Restrictions, Enums.StatusEffect]
 
