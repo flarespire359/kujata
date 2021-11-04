@@ -110,14 +110,13 @@ const extractKernelKernel2Bin = async (inputKernelDirectory, outputKernelDirecto
 
 
     // Combine descriptions and names with kernel data
+    data.commandData = getCommandSectionData(kernelData[0], data.commandNames, data.commandDescriptions)
     data.itemData = getItemSectionData(kernelData[4], data.itemNames, data.itemDescriptions)
     data.weaponData = getWeaponSectionData(kernelData[5], data.weaponNames, data.weaponDescriptions)
     data.armorData = getArmorSectionData(kernelData[6], data.armorNames, data.armorDescriptions)
     data.accessoryData = getAccessorySectionData(kernelData[7], data.accessoryNames, data.accessoryDescriptions)
-    data.materiaData = getMateriaSectionData(kernelData[8], data.materiaNames, data.materiaDescriptions, data.magicNames)
+    data.materiaData = getMateriaSectionData(kernelData[8], data.materiaNames, data.materiaDescriptions, data.magicNames, data.commandData)
 
-    // TODO - General game data
-    data.commandData = getCommandSectionData(kernelData[0], data.commandNames, data.commandDescriptions)
     data.attackData = getAttackSectionData(kernelData[1], data.magicNames, data.magicDescriptions)
     // data.battleAndGrowthData = getTextSectionData(kernelData[2])
     data.initData = getInitSectionData(kernelData[3],

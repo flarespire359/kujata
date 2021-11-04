@@ -351,7 +351,7 @@ const getMateriaEquipEffects = (equipEffectBytes) => {
     }
     return []
 }
-const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magicNames, index) => {
+const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magicNames, index, commandData) => {
     const type = getMateriaType(materiaType)
     const equipEffect = getMateriaEquipEffects(equipEffectBytes)
     let attributes = {}
@@ -379,25 +379,25 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     }
     if (type === Enums.MateriaType.Command) {
         const attr1 = materiaAttributes[0]
+        const filteredAttrs = materiaAttributes.filter(a => a !== 255)
         const materiaTypeLowerNybble = materiaType & 0x0F
         if (materiaType === 0x12) {
-            attributes = { type: 'Replace', menu: 'Attack', with: 'Ability' }
+            attributes = { type: 'Replace', menu:  { id: 1, name: commandData[1].name}, with: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
         } else if (materiaTypeLowerNybble === 0x3) {
             if (attr1 === 0x15) {
-                attributes = { type: 'Replace', menu: 'Magic', with: 'WMagic' }
+                attributes = { type: 'Replace', menu:  { id: 2, name: commandData[2].name}, with: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
+                // attributes = { type: 'Replace', menu: 'Magic', with: 'WMagic' }
             } else if (attr1 === 0x16) {
-                attributes = { type: 'Replace', menu: 'Summon', with: 'WSummon' }
+                attributes = { type: 'Replace', menu:  { id: 3, name: commandData[3].name}, with: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
             } else if (attr1 === 0x17) {
-                attributes = { type: 'Replace', menu: 'Item', with: 'WItem' }
+                attributes = { type: 'Replace', menu:  { id: 4, name: commandData[4].name}, with: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
             }
-        } else if (materiaTypeLowerNybble === 0x6) {
-            attributes = { type: 'Add', menu: [parseKernelEnums(Enums.CommandType, attr1)] }
-        } else if (materiaTypeLowerNybble === 0x7) {
-            attributes = { type: 'Add', menu: [parseKernelEnums(Enums.CommandType, 0xD)] }
+        } else if (materiaTypeLowerNybble === 0x6 || materiaTypeLowerNybble === 0x7) {
+            attributes = { type: 'Add', menu: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
         } else if (materiaTypeLowerNybble === 0x8) {
-            attributes = { type: 'Add', menu: [0x5,0x6,0x7,0x9,0xA,0xB,0xC].map(a => parseKernelEnums(Enums.CommandType, a)) }
+            attributes = { type: 'AddAll', menu: [0x5,0x6,0x7,0x9,0xA,0xB,0xC].map( id => {return { id: id, name: commandData[id].name}} ) }
         }
-        // console.log('  cmd', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1))
+        // console.log('  cmd', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), attributes, filteredAttrs)
     }
 
     if (type === Enums.MateriaType.Support) {

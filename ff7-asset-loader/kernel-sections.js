@@ -287,7 +287,7 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
     }
     return objects
 }
-const getMateriaSectionData = (sectionData, names, descriptions, magicNames) => {
+const getMateriaSectionData = (sectionData, names, descriptions, magicNames, commandData) => {
     let r = new FF7BinaryDataReader(sectionData.buffer)
     const objectSize = 20
     let objects = []
@@ -308,7 +308,7 @@ const getMateriaSectionData = (sectionData, names, descriptions, magicNames) => 
         const materiaType = r.readUByte()
         const materiaAttributes = r.readUByteArray(6)
 
-        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes, magicNames, i)
+        const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes, magicNames, i, commandData)
         const apLevels = [0]
         if(level2Ap !== 0xFFFF) {apLevels.push(level2Ap * 100)}
         if(level3Ap !== 0xFFFF) {apLevels.push(level3Ap * 100)}
