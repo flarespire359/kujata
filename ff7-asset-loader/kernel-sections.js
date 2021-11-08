@@ -140,6 +140,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
 
 
         let object = {
+            index: i,
             itemId: i + 128,
             name: names[i],
             description: descriptions[i],
@@ -216,6 +217,7 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
         const unknown4 = r.readUShort()
 
         let object = {
+            index: 1,
             itemId: i + 256,
             name: names[i],
             description: descriptions[i],
@@ -264,6 +266,7 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
         const restrictions = r.readUShort()
 
         let object = {
+            index: i,
             itemId: i + 288,
             name: names[i],
             description: descriptions[i],
