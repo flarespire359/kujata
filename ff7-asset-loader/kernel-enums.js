@@ -368,7 +368,7 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
             }
         }
         if (materiaType === 0xA) { // Master Magic
-            for (let i = 0; i <= 37; i++) {
+            for (let i = 0; i <= 53; i++) {
                 attributes.magic.push({
                     level:  1,
                     attackId: i,
