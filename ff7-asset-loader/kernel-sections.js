@@ -5,7 +5,7 @@ const fs = require('fs-extra')
 const sharp = require("sharp")
 
 const dec2bin = (dec) => { // For debug only
-    return (dec >>> 0).toString(2)
+    return (dec >>> 0).toString(2).padStart(8,'0')
 }
 const dec2hex = (dec) => { // For debug only
     return `0x${parseInt(dec).toString(16)}`
@@ -372,6 +372,7 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
     let r = new FF7BinaryDataReader(sectionData.buffer)
     const objectSize = 28
     let objects = []
+    console.log('names', names, descriptions)
 
     for (let i = 0; i < r.length / objectSize; i++) {
         const attackPercent = r.readUByte()
@@ -431,6 +432,162 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
         objects.push(object)
     }
     return objects
+}
+const getCharacterDataRecord = (r) => {
+    const strengthLevelCurve = r.readUByte()
+    const vitalityLevelCurve = r.readUByte()
+    const magicLevelCurve = r.readUByte()
+    const spiritLevelCurve = r.readUByte()
+    const dexterityLevelCurve = r.readUByte()
+    const luckLevelCurve = r.readUByte()
+    const hpLevelCurve = r.readUByte()
+    const mpLevelCurve = r.readUByte()
+    const expLevelCurve = r.readUByte()
+    const ffPadding1 = r.readUByte()
+    const startingLevel = r.readUByte()
+    const ffPadding2 = r.readUByte()
+    const limitCommand11 = r.readUByte()
+    const limitCommand12 = r.readUByte()
+    const limitCommand13 = r.readUByte()
+    const limitCommand21 = r.readUByte()
+    const limitCommand22 = r.readUByte()
+    const limitCommand23 = r.readUByte()
+    const limitCommand31 = r.readUByte()
+    const limitCommand32 = r.readUByte()
+    const limitCommand33 = r.readUByte()
+    const limitCommand41 = r.readUByte()
+    const limitCommand42 = r.readUByte()
+    const limitCommand43 = r.readUByte()
+
+    const killsForLimit2 = r.readUShort()
+    const killsForLimit3 = r.readUShort()
+    const usesForLimit12 = r.readUShort()
+    const usesForLimit13 = r.readUShort()
+    const usesForLimit22 = r.readUShort()
+    const usesForLimit23 = r.readUShort()
+    const usesForLimit32 = r.readUShort()
+    const usesForLimit33 = r.readUShort()
+
+    const hpDivisorForLimit1 = r.readUInt()
+    const hpDivisorForLimit2 = r.readUInt()
+    const hpDivisorForLimit3 = r.readUInt()
+    const hpDivisorForLimit4 = r.readUInt()
+
+    let object = {
+        strengthLevelCurve,
+        vitalityLevelCurve,
+        magicLevelCurve,
+        spiritLevelCurve,
+        dexterityLevelCurve,
+        luckLevelCurve,
+        hpLevelCurve,
+        mpLevelCurve,
+        expLevelCurve,
+        startingLevel,
+        limitCommand11,
+        limitCommand12,
+        limitCommand13,
+        limitCommand21,
+        limitCommand22,
+        limitCommand23,
+        limitCommand31,
+        limitCommand32,
+        limitCommand33,
+        limitCommand41,
+        limitCommand42,
+        limitCommand43,
+
+        killsForLimit2,
+        killsForLimit3,
+        usesForLimit12,
+        usesForLimit13,
+        usesForLimit22,
+        usesForLimit23,
+        usesForLimit32,
+        usesForLimit33,
+
+        hpDivisorForLimit1,
+        hpDivisorForLimit2,
+        hpDivisorForLimit3,
+        hpDivisorForLimit4
+    }
+    // if (object.name.includes('Beat')) {
+    //     console.log('att', object)
+    // }
+    
+    return object
+}
+const getBattleAndGrowthSectionData = (sectionData, attackData) => {
+    let r = new FF7BinaryDataReader(sectionData.buffer)
+    let characterDataRecords = {
+        Cloud: getCharacterDataRecord(r),
+        Barret: getCharacterDataRecord(r),
+        Tifa: getCharacterDataRecord(r),
+        Aeris: getCharacterDataRecord(r),
+        RedXIII: getCharacterDataRecord(r),
+        Yuffie: getCharacterDataRecord(r),
+        CaitSith: getCharacterDataRecord(r),
+        Vincent: getCharacterDataRecord(r),
+        Cid: getCharacterDataRecord(r)
+    }
+    const randomBonusToPrimaryStats = r.readUByteArray(12)
+    const randomBonusToHP = r.readUByteArray(12)
+    const randomBonusToMP = r.readUByteArray(12)
+    const primaryStatCurve = r.readUByteArray(37*16)
+    const hpStatCurve = r.readUByteArray(9*16)
+    const mpStatCurve = r.readUByteArray(9*16)
+    const expStatCurve = r.readUByteArray(9*16)
+    const characterAI = r.readUByteArray(1508)
+    const ffPadding = r.readUByteArray(540)
+    const randomNumbers = r.readUByteArray(256)
+    const sceneBinLookupTable = r.readUByteArray(64)
+    const spellOrder = calculateSpellOrder(r.readUByteArray(56), attackData)
+
+    // console.log('randomBonusToPrimaryStats', randomBonusToPrimaryStats)
+    // console.log('randomBonusToHP', randomBonusToHP)
+    // console.log('randomBonusToMP', randomBonusToMP)
+    // console.log('primaryStatCurve', primaryStatCurve)
+    // console.log('hpStatCurve', hpStatCurve)
+    // console.log('mpStatCurve', mpStatCurve)
+    // console.log('expStatCurve', expStatCurve)
+    // console.log('characterAI',characterAI)
+    // console.log('ffPadding', ffPadding, ffPadding[ffPadding.length-1])
+    // console.log('randomNumbers', randomNumbers)
+    // console.log('sceneBinLookupTable', sceneBinLookupTable)
+    console.log('spellOrder', spellOrder)
+    return {
+        characterDataRecords,
+        randomBonusToPrimaryStats,
+        randomBonusToHP,
+        randomBonusToMP,
+        primaryStatCurve,
+        hpStatCurve,
+        mpStatCurve,
+        expStatCurve,
+        characterAI,
+        randomNumbers,
+        sceneBinLookupTable,
+        spellOrder
+    }
+}
+const calculateSpellOrder = (spellOrderBytes, attackData) => {
+    const spells = []
+    for (let i = 0; i < spellOrderBytes.length; i++) {
+        const spellOrderByte = spellOrderBytes[i];
+        if(spellOrderByte !== 0xFF) {
+            const bin = dec2bin(spellOrderByte)
+            const section = parseInt(bin.substr(0,3), 2)
+            const position = parseInt(bin.substr(3,8), 2)
+            console.log('spell', attackData[i].name, section, position)
+            spells.push({
+                name: attackData[i].name,
+                index: i,
+                section,
+                position
+            })
+        }
+    }
+    return spells
 }
 const filterUnneededBoostedStats = (boostedStats) => {
     return boostedStats.filter(s => s.stat !== 'None')
@@ -544,6 +701,7 @@ module.exports = {
     getMateriaSectionData,
     getCommandSectionData,
     getAttackSectionData,
+    getBattleAndGrowthSectionData,
     extractWindowBinElements,
     dec2bin,
     dec2hex
