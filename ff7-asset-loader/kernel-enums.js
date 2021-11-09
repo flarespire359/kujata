@@ -356,19 +356,26 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     const equipEffect = getMateriaEquipEffects(equipEffectBytes)
     let attributes = {}
     if (type === Enums.MateriaType.Magic) {
-        // TODO - Master Magic
-        attributes = {}
+        attributes.magic = []
         for (let i = 0; i < materiaAttributes.length; i++) {
             const materiaAttribute = materiaAttributes[i]
-            if (materiaAttribute < 255 || i === 0) {
-                attributes[`level${i+1}`] = {
+            if (materiaAttribute < 255) {
+                attributes.magic.push({
                     level:  i+1,
                     attackId: materiaAttribute,
                     name: magicNames[materiaAttribute]
-                }
+                })
             }
         }
-        // console.log(' attacks', materiaAttributes)
+        if (materiaType === 0xA) { // Master Magic
+            for (let i = 0; i <= 37; i++) {
+                attributes.magic.push({
+                    level:  1,
+                    attackId: i,
+                    name: magicNames[i]
+                })
+            }
+        }
     }
     if (type === Enums.MateriaType.Summon) {
         // TODO - Master Summon

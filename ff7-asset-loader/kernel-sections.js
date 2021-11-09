@@ -553,7 +553,7 @@ const getBattleAndGrowthSectionData = (sectionData, attackData) => {
     // console.log('ffPadding', ffPadding, ffPadding[ffPadding.length-1])
     // console.log('randomNumbers', randomNumbers)
     // console.log('sceneBinLookupTable', sceneBinLookupTable)
-    console.log('spellOrder', spellOrder)
+    // console.log('spellOrder', spellOrder)
     return {
         characterDataRecords,
         randomBonusToPrimaryStats,
