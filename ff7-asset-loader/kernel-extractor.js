@@ -100,7 +100,6 @@ const extractKernelKernel2Bin = async (inputKernelDirectory, outputKernelDirecto
     data.keyitemDescriptions = getTextSectionData(kernel2Data[16])
     data.commandNames = getTextSectionData(kernel2Data[17])
     data.magicNames = getTextSectionData(kernel2Data[18])
-    console.log('magicNames', data.magicNames, kernel2Data[18])
     data.itemNames = getTextSectionData(kernel2Data[19])
     data.weaponNames = getTextSectionData(kernel2Data[20])
     data.armorNames = getTextSectionData(kernel2Data[21])

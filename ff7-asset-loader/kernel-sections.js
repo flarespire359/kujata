@@ -372,7 +372,6 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
     let r = new FF7BinaryDataReader(sectionData.buffer)
     const objectSize = 28
     let objects = []
-    console.log('names', names, descriptions)
 
     for (let i = 0; i < r.length / objectSize; i++) {
         const attackPercent = r.readUByte()
@@ -578,7 +577,7 @@ const calculateSpellOrder = (spellOrderBytes, attackData) => {
             const bin = dec2bin(spellOrderByte)
             const section = parseInt(bin.substr(0,3), 2)
             const position = parseInt(bin.substr(3,8), 2)
-            console.log('spell', attackData[i].name, section, position)
+            // console.log('spell', attackData[i].name, section, position)
             spells.push({
                 name: attackData[i].name,
                 index: i,
@@ -587,6 +586,9 @@ const calculateSpellOrder = (spellOrderBytes, attackData) => {
             })
         }
     }
+    spells.sort(function (a,b) {
+        return a.section - b.section || a.position - b.position
+    })
     return spells
 }
 const filterUnneededBoostedStats = (boostedStats) => {
