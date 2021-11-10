@@ -12,6 +12,7 @@
         {"id":1, "description":"slot-link", "x":227,"y":96,"w":14,"h":24, "palette": 2}
     ],
     "labels": [
-        {"id":1, "description":"mp-needed", "x":0,"y":40,"w":80,"h":24, "palette": 2}
+        {"id":1, "description":"mp-needed", "x":0,"y":40,"w":80,"h":24, "palette": 2},
+        {"id":1, "description":"times", "x":240,"y":16,"w":16,"h":16, "palette": 8}
     ]
 }
