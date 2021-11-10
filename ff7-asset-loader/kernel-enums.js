@@ -368,7 +368,7 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
             }
         }
         if (materiaType === 0xA) { // Master Magic
-            for (let i = 0; i <= 53; i++) {
+            for (let i = 0; i <= 0x35; i++) { // Ignore last two empty magics, probably not a great idea, but I'll do it anyway, 0x37
                 attributes.magic.push({
                     level:  1,
                     attackId: i,
@@ -378,10 +378,19 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
         }
     }
     if (type === Enums.MateriaType.Summon) {
-        // TODO - Master Summon
-        attributes = {
-            attackId: materiaAttributes[0],
-            name: magicNames[materiaAttributes[0]]
+        attributes.summon = []
+        if(materiaType === 0xC) { // Master Summon
+            for (let i = 0x38; i <= 0x47; i++) {
+                attributes.summon.push({
+                    attackId: i,
+                    name: magicNames[i]
+                })
+            }
+        } else {
+            attributes.summon.push({
+                attackId: materiaAttributes[0],
+                name: magicNames[materiaAttributes[0]]
+            })
         }
     }
     if (type === Enums.MateriaType.Command) {
