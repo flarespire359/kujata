@@ -408,8 +408,10 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
             } else if (attr1 === 0x17) {
                 attributes = { type: 'Replace', menu:  { id: 4, name: commandData[4].name}, with: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
             }
-        } else if (materiaTypeLowerNybble === 0x6 || materiaTypeLowerNybble === 0x7) {
+        } else if (materiaTypeLowerNybble === 0x6) {
             attributes = { type: 'Add', menu: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
+        } else if (materiaTypeLowerNybble === 0x7) {
+            attributes = { type: 'Add', menu: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}}), skill: 'EnemySkill'}
         } else if (materiaTypeLowerNybble === 0x8) {
             attributes = { type: 'AddAll', menu: [0x5,0x6,0x7,0x9,0xA,0xB,0xC].map( id => {return { id: id, name: commandData[id].name}} ) }
         }
