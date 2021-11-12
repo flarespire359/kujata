@@ -368,6 +368,7 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
             }
         }
         if (materiaType === 0xA) { // Master Magic
+            attributes.master = 'Magic'
             for (let i = 0; i <= 0x35; i++) { // Ignore last two empty magics, probably not a great idea, but I'll do it anyway, 0x37
                 attributes.magic.push({
                     level:  1,
@@ -380,6 +381,7 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     if (type === Enums.MateriaType.Summon) {
         attributes.summon = []
         if(materiaType === 0xC) { // Master Summon
+            attributes.master = 'Summon'
             for (let i = 0x38; i <= 0x47; i++) {
                 attributes.summon.push({
                     attackId: i,
@@ -412,8 +414,9 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
             attributes = { type: 'Add', menu: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}} ) }
         } else if (materiaTypeLowerNybble === 0x7) {
             attributes = { type: 'Add', menu: filteredAttrs.map( id => {return { id: id, name: commandData[id].name}}), skill: 'EnemySkill'}
-        } else if (materiaTypeLowerNybble === 0x8) {
+        } else if (materiaTypeLowerNybble === 0x8) {// Master Command
             attributes = { type: 'AddAll', menu: [0x5,0x6,0x7,0x9,0xA,0xB,0xC].map( id => {return { id: id, name: commandData[id].name}} ) }
+            attributes.master = 'Command'
         }
         // console.log('  cmd', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), attributes, filteredAttrs)
     }
