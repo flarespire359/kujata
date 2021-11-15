@@ -31,8 +31,8 @@
     "materia": [
         {"id":1, "description":"Magic-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 5},
         {"id":1, "description":"Magic-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 5},
-        {"id":1, "description":"Support-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 2},
-        {"id":1, "description":"Support-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 2},
+        {"id":1, "description":"Support-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 6},
+        {"id":1, "description":"Support-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 6},
         {"id":1, "description":"Command-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 9},
         {"id":1, "description":"Command-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 9},
         {"id":1, "description":"Independent-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 10},
