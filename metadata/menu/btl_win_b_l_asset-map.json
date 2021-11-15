@@ -27,5 +27,17 @@
     "labels": [
         {"id":0,"description":"points-big", "x":242,"y":18,"w":14,"h":14, "palette": 8},
         {"id":1,"description":"gil-big", "x":240,"y":34,"w":16,"h":14, "palette": 8}
+    ],
+    "materia": [
+        {"id":1, "description":"Magic-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 5},
+        {"id":1, "description":"Magic-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 5},
+        {"id":1, "description":"Support-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 2},
+        {"id":1, "description":"Support-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 2},
+        {"id":1, "description":"Command-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 9},
+        {"id":1, "description":"Command-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 9},
+        {"id":1, "description":"Independent-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 10},
+        {"id":1, "description":"Independent-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 10},
+        {"id":1, "description":"Summon-star-active-big", "x":32,"y":64,"w":28,"h":26, "palette": 11},
+        {"id":1, "description":"Summon-star-inactive-big", "x":32,"y":96,"w":28,"h":26, "palette": 11}
     ]
 }

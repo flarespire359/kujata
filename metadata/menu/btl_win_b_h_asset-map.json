@@ -27,6 +27,16 @@
         {"id":1, "description":"Support", "x":0,"y":64,"w":24,"h":24, "palette": 6},
         {"id":1, "description":"Command", "x":0,"y":64,"w":24,"h":24, "palette": 9},
         {"id":1, "description":"Independent", "x":0,"y":64,"w":24,"h":24, "palette": 10},
-        {"id":1, "description":"Summon", "x":0,"y":64,"w":24,"h":24, "palette": 11}
+        {"id":1, "description":"Summon", "x":0,"y":64,"w":24,"h":24, "palette": 11},
+        {"id":1, "description":"Magic-star-active-small", "x":32,"y":64,"w":23,"h":26, "palette": 5},
+        {"id":1, "description":"Magic-star-inactive-small", "x":32,"y":96,"w":23,"h":26, "palette": 5},
+        {"id":1, "description":"Support-star-active-small", "x":32,"y":64,"w":23,"h":26, "palette": 2},
+        {"id":1, "description":"Support-star-inactive-small", "x":32,"y":96,"w":23,"h":26, "palette": 2},
+        {"id":1, "description":"Command-star-active-small", "x":32,"y":64,"w":23,"h":26, "palette": 9},
+        {"id":1, "description":"Command-star-inactive-small", "x":32,"y":96,"w":23,"h":26, "palette": 9},
+        {"id":1, "description":"Independent-star-active-small", "x":32,"y":64,"w":23,"h":26, "palette": 10},
+        {"id":1, "description":"Independent-star-inactive-small", "x":32,"y":96,"w":23,"h":26, "palette": 10},
+        {"id":1, "description":"Summon-star-active-small", "x":32,"y":64,"w":23,"h":26, "palette": 11},
+        {"id":1, "description":"Summon-star-inactive-small", "x":32,"y":96,"w":23,"h":26, "palette": 11}
     ]
 }
