@@ -17,7 +17,7 @@
         {"id":1,"description":"barrier", "x":64,"y":32,"w":76,"h":24, "palette": 2}
     ],
     "pointers": [
-        {"id":0,"description":"arrow-right", "x":4,"y":16,"w":10,"h":16, "palette": 8},
+        {"id":0,"description":"arrow-right", "x":4,"y":16,"w":10,"h":16, "palette": 3},
         {"id":0,"description":"arrow-up", "x":198,"y":0,"w":22,"h":16, "palette": 2},
         {"id":0,"description":"arrow-down", "x":230,"y":0,"w":22,"h":16, "palette": 2},
         {"id":1,"description":"hand-right-big-no-shadow", "x":192,"y":16,"w":48,"h":32, "palette": 2},
