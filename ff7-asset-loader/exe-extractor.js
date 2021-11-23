@@ -53,7 +53,28 @@ const extractShopText = (r) => {
   }
   r.offset = sectionOffset + (totalText * textBytes)
   //   console.log('text', text)
-  return text
+  return {
+    normal: {
+      hi: text[0],
+      whatBuy: text[1],
+      whatSell: text[2],
+      amountBuy: text[3],
+      amountSell: text[4],
+      leave1: text[5],
+      leave2: text[6],
+      unsufficientFunds: text[7]
+    },
+    slang: {
+      hi: text[10],
+      whatBuy: text[11],
+      whatSell: text[12],
+      amountBuy: text[13],
+      amountSell: text[14],
+      leave1: text[15],
+      leave2: text[16],
+      unsufficientFunds: text[17]
+    }
+  }
 }
 const extractShopList = (r) => {
   const shops = []
