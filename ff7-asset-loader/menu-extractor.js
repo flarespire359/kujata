@@ -17,7 +17,7 @@ const extractAllAssetsAndPalettes = async (
     const tex = new TexFile().loadTexFileFromPath(
       path.join(inputMenuDirectory, texFileName)
     )
-    tex.saveAllPalettesAsPngs(
+    await tex.saveAllPalettesAsPngs(
       path.join(outputMenuDirectory, texFileName.replace('.tex', '.png').replace('.TEX', '.png'))
     )
   }
@@ -25,7 +25,8 @@ const extractAllAssetsAndPalettes = async (
 const extractFontElement = async (
   fontMetaDataFile,
   outputMenuDirectory,
-  metadataDirectory
+  metadataDirectory,
+  type
 ) => {
   const baseFile = path.join(outputMenuDirectory, `${fontMetaDataFile}_1.png`)
   const metadata = await sharp(baseFile).metadata()
@@ -40,7 +41,7 @@ const extractFontElement = async (
 
   let overviewCompositionActions = []
   const assetMap = await fs.readJson(
-    `../metadata/menu/${fontMetaDataFile}_asset-map.json`
+    `../metadata/${type}/${fontMetaDataFile}_asset-map.json`
   )
 
   for (const assetType in assetMap) {
@@ -65,7 +66,6 @@ const extractFontElement = async (
     }
     assetMap[assetType] = colorElements
     // console.log('assetMap', assetMap[assetType].length)
-
     for (let i = 0; i < assetMap[assetType].length; i++) {
       const element = assetMap[assetType][i]
       // console.log('element', element)
@@ -86,8 +86,7 @@ const extractFontElement = async (
         left: element.x,
         top: element.y
       })
-
-      const assetFolder = path.join(metadataDirectory, 'menu-assets', assetType)
+      const assetFolder = path.join(metadataDirectory, `${type}-assets`, assetType)
       if (!fs.existsSync(assetFolder)) {
         fs.ensureDirSync(assetFolder)
       }
@@ -99,7 +98,6 @@ const extractFontElement = async (
       await elementFileExtract.toFile(
         path.join(assetFolder, `${element.description}.png`)
       )
-
       if (overviewCompositionActions.length === 100) {
         // For some reason 150+ layers is causing issues <- nope, just nodemon
         img.composite(overviewCompositionActions)
@@ -110,11 +108,10 @@ const extractFontElement = async (
     }
   }
   img.composite(overviewCompositionActions)
-
   await img.toFile(
     path.join(
       metadataDirectory,
-      'menu-assets',
+      `${type}-assets`,
       `${fontMetaDataFile}_overview.png`
     )
   )
@@ -194,7 +191,8 @@ const extractMetadataAssets = async (
     const fontMenuMetaData = await extractFontElement(
       fontMetaDataFile,
       outputMenuDirectory,
-      metadataDirectory
+      metadataDirectory,
+      'menu'
     )
     joinMetaData(menuMetaData, fontMenuMetaData)
   }
@@ -239,4 +237,4 @@ const extractMenuAssets = async (
 
   console.log('extractMenuAssets: END')
 }
-module.exports = { extractMenuAssets }
+module.exports = { extractMenuAssets, extractAllAssetsAndPalettes, extractFontElement, joinMetaData }

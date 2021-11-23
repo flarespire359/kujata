@@ -11,7 +11,7 @@
         {"id":8,"description":"menu base font 008","x":192,"y":0,"w":8,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"("},
         {"id":9,"description":"menu base font 009","x":216,"y":0,"w":8,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":")"},
         {"id":10,"description":"menu base font 010","x":240,"y":0,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"*"},
-            
+
         {"id":21,"description":"menu base font 021","x":0,"y":24,"w":13,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"5"},
         {"id":22,"description":"menu base font 022","x":24,"y":24,"w":13,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"6"},
         {"id":23,"description":"menu base font 023","x":48,"y":24,"w":13,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"7"},
@@ -35,7 +35,7 @@
         {"id":50,"description":"menu base font 050","x":192,"y":48,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"R"},
         {"id":51,"description":"menu base font 051","x":216,"y":48,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"S"},
         {"id":52,"description":"menu base font 052","x":240,"y":48,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"T"},
-            
+
         {"id":63,"description":"menu base font 063","x":0,"y":72,"w":13,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"_"},
         {"id":64,"description":"menu base font 064","x":24,"y":72,"w":6,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"`"},
         {"id":65,"description":"menu base font 065","x":48,"y":72,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"a"},
@@ -59,7 +59,7 @@
         {"id":92,"description":"menu base font 092","x":192,"y":96,"w":5,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"|"},
         {"id":93,"description":"menu base font 093","x":216,"y":96,"w":8,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"}"},
         {"id":94,"description":"menu base font 094","x":240,"y":96,"w":13,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"~"},
-            
+
         {"id":105,"description":"menu base font 105","x":0,"y":120,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"â"},
         {"id":106,"description":"menu base font 106","x":24,"y":120,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"ä"},
         {"id":107,"description":"menu base font 107","x":48,"y":120,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"ã"},
@@ -85,7 +85,7 @@
         {"id":136,"description":"menu base font 136","x":240,"y":144,"w":14,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char": "®"},
 
         {"id":147,"description":"menu base font 147","x":0,"y":168,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"≥"},
-        {"id":148,"description":"menu base font 148","x":24,"y":168,"w":15,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"¥"},        
+        {"id":148,"description":"menu base font 148","x":24,"y":168,"w":15,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"¥"},
         {"id":149,"description":"menu base font 149","x":48,"y":168,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"µ"},
         {"id":150,"description":"menu base font 150","x":72,"y":168,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"∂"},
         {"id":151,"description":"menu base font 151","x":96,"y":168,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"Σ"},
@@ -104,10 +104,10 @@
         {"id":173,"description":"menu base font 173","x":120,"y":192,"w":14,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]]},
         {"id":174,"description":"menu base font 174","x":144,"y":192,"w":19,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"Œ"},
         {"id":175,"description":"menu base font 175","x":168,"y":192,"w":17,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"œ"},
-        {"id":176,"description":"menu base font 176","x":192,"y":192,"w":12,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"–"},
-        {"id":177,"description":"menu base font 177","x":216,"y":192,"w":19,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"—"},
+        {"id":176,"description":"menu base font 176","x":192,"y":192,"w":12,"h":23,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"–"},
+        {"id":177,"description":"menu base font 177","x":216,"y":192,"w":19,"h":23,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"—"},
         {"id":178,"description":"menu base font 178","x":240,"y":192,"w":9,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"“"},
-            
+
         {"id":189,"description":"menu base font 189","x":0,"y":216,"w":8,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"›"},
         {"id":190,"description":"menu base font 190","x":24,"y":216,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"ﬁ"},
         {"id":191,"description":"menu base font 191","x":48,"y":216,"w":11,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"ﬂ"},
