@@ -121,6 +121,18 @@ class TexFile {
       const paletteOutputPath = outputPath.replace('.png', `_${i + 1}.png`)
       await this.saveAsPngWithPaletteOffset(paletteOutputPath, i)
     }
+    // Helper for palettes
+    // const paletteData = new Uint8Array(this.tex.paletteData)
+    // for (let i = 0; i < this.tex.paletteData.length; i++) {
+    //   paletteData[i] = this.tex.paletteData[i]
+    // }
+    // await sharp(Buffer.from(paletteData.buffer), {
+    //   raw: {
+    //     width: 16,
+    //     height: 4,
+    //     channels: 4
+    //   }
+    // }).toFile(outputPath.replace('.png', '-palette.png'))
   }
 
   async saveAsPngWithPaletteOffset (outputPath, paletteOffset) {
@@ -130,15 +142,29 @@ class TexFile {
       data[i] = 0xff // Fill with transparent
     }
     if (this.tex.header.noOfPalettes > 1) {
+      // console.log('tex multi palette', outputPath, paletteOffset, this.tex.header.colorKeyFlag)
+      // console.log('tex palette data', this.tex.paletteData)
+
       for (let i = 0; i < this.tex.header.height * this.tex.header.width; i++) {
-        const pixelId =
-          paletteOffset * this.tex.header.noOfPalettes + this.tex.pixelData[i]
+        // console.log('i', i)
+        const paletteStart = this.tex.header.noColorsPerPalettes * paletteOffset
+        // const pixelId = 1 * (this.tex.header.noOfPalettes + this.tex.pixelData[i])
+        const pixelId = this.tex.pixelData[i]
+
         const color = {
-          r: this.tex.paletteData[pixelId * 4 + 2],
-          g: this.tex.paletteData[pixelId * 4 + 1],
-          b: this.tex.paletteData[pixelId * 4 + 0],
-          a: this.tex.paletteData[pixelId * 4 + 3]
+          r: this.tex.paletteData[((paletteStart + pixelId) * 4) + 2],
+          g: this.tex.paletteData[((paletteStart + pixelId) * 4) + 1],
+          b: this.tex.paletteData[((paletteStart + pixelId) * 4) + 0],
+          a: this.tex.paletteData[((paletteStart + pixelId) * 4) + 3]
         }
+        if (color.a === 0xFE) {
+          // console.log('alpha ref', color.a)
+          color.a = this.tex.misc.referenceAlpha
+        }
+        // if (i === 0 || i === (11 * 256) + 11 || i === (16 * 256) + 16) {
+        // if (i > (16 * 256) + 0 && (16 * 256) + 23 > i) {
+        //   console.log('pixel', i, '->', pixelId, paletteStart, paletteStart + pixelId, (paletteStart + pixelId) * 4, color)
+        // }
         data[i * 4 + 0] = color.r
         data[i * 4 + 1] = color.g
         data[i * 4 + 2] = color.b
@@ -146,6 +172,7 @@ class TexFile {
           color.r === 0 && color.g === 0 && color.b === 0 ? 0x00 : color.a
       }
     } else {
+      // console.log('tex single palette')
       for (let i = 0; i < this.tex.header.height * this.tex.header.width; i++) {
         const pixelId = paletteOffset + this.tex.pixelData[i]
         const color = {
