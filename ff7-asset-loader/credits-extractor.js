@@ -26,6 +26,7 @@ const extractPeople = (peopleBinPath) => {
   // }
   letters[0x2f] = ' '
   letters[0x7f] = '~'
+  letters[0x30] = '*'
   let buffer = fs.readFileSync(peopleBinPath)
   //   console.log('buffer', buffer, exePath)
   let r = new FF7BinaryDataReader(buffer)
@@ -52,8 +53,12 @@ const extractPeople = (peopleBinPath) => {
     let nameByteArray = r.readUByteArray(48)
     nameByteArray = nameByteArray.splice(0, nameByteArray.indexOf(127))
     const name = nameByteArray.map(b => letters[b] === undefined ? ' ' : letters[b]).join('')
+    let names = [name]
+    if (name.includes('*')) {
+      names = name.split('*')
+    }
     // const name2 = r.readUByteArray(5).map(b => letters[b] === undefined ? ' ' : letters[b]).join('')
-    const layoutMaybe = r.readByte() // hex of 50 24 3c 12 28
+    const linePadding = r.readByte() // hex of 50 24 3c 12 28
     const unknown3 = toHex2(r.readByte())
     const unknown4 = toHex2(r.readByte())
     const unknown5 = toHex2(r.readByte())
@@ -74,10 +79,10 @@ const extractPeople = (peopleBinPath) => {
       spaces++
     }
     // console.log('val', r.offset, i, ''.padStart(spaces), bin, mappedLetters, font, color, layoutMaybe, name)
-    // if (font > 4) {
-    //   console.log('val', r.offset, i, ''.padStart(spaces), bin, mappedLetters, font, color, name, something, '-', unknown, unknown3, unknown4, unknown5)
+    // if (name.includes('MASATERU')) {
+    //   console.log('val', r.offset, i, ''.padStart(spaces), bin, mappedLetters, font, color, names, linePadding, '-', unknown, unknown3, unknown4, unknown5)
     // }
-    lines.push({type: font, color: color, name: name, layout: layoutMaybe})
+    lines.push({type: font, color: color, names: names, linePadding: linePadding})
     r.offset = sectionOffset + (i * textBytes)
     // prices.push(price)
   }
@@ -139,7 +144,7 @@ const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, meta
   const lines = extractPeople(path.join(inputCreditsDirectory, 'people.bin'))
   await extractCreditFonts(inputCreditsDirectory, outputCreditsDirectory, metadataDirectory)
   const data = {
-    // images,
+    images,
     lines
   }
   await saveData(data, path.join(outputCreditsDirectory, 'credits.json'))
