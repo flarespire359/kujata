@@ -1,6 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 
+const sharp = require('sharp')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const { TexFile } = require('./tex-file')
 const { toHex2 } = require('./string-util')
@@ -119,15 +120,78 @@ const extractCreditFonts = async (inputCreditsDirectory, outputCDDirectory, meta
     )
     joinMetaData(creditsMetaData, fontMenuMetaData)
   }
-
+  return creditsMetaData
+}
+const saveData = async (data, outputFile) => {
+  await fs.outputFile(outputFile, JSON.stringify(data))
+}
+const saveMetaData = async (metadataDirectory, creditsMetaData) => {
   await fs.writeJson(
     path.join(metadataDirectory, 'credits-assets', 'credits-font.metadata.json'),
     creditsMetaData
   )
   console.log('metadataDirectory', metadataDirectory)
 }
-const saveData = async (data, outputFile) => {
-  await fs.outputFile(outputFile, JSON.stringify(data))
+const compositeImages = async (metadataDirectory, type, outputCreditsDirectory) => {
+  const assetMap = await fs.readJson(
+    `../metadata/${type}/composite-images_asset-map.json`
+  )
+  // console.log('assetMap', assetMap)
+  const assetMapKeys = Object.keys(assetMap)
+  for (let i = 0; i < assetMapKeys.length; i++) {
+    const assetMapKey = assetMapKeys[i]
+    const assets = assetMap[assetMapKey]
+    // console.log('assets', assetMapKey, assets)
+    for (let j = 0; j < assets.length; j++) {
+      const asset = assets[j]
+      // console.log('asset', asset)
+
+      let img = sharp({
+        create: {
+          width: asset.w,
+          height: asset.h,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0 }
+        }
+      }).png()
+      const overviewCompositionActions = []
+      for (let k = 0; k < asset.files.length; k++) {
+        const assetFile = asset.files[k]
+        const elementFile = path.join(
+          outputCreditsDirectory,
+          `${assetFile.source.file}.png`
+        )
+        const elementFileExtract = sharp(elementFile).extract({
+          left: assetFile.source.x,
+          top: assetFile.source.y,
+          width: assetFile.source.w,
+          height: assetFile.source.h
+        })
+        const elementFileBuffer = await elementFileExtract.toBuffer()
+        overviewCompositionActions.push({
+          input: elementFileBuffer,
+          left: assetFile.target.x,
+          top: assetFile.target.y
+        })
+      }
+      img.composite(overviewCompositionActions)
+
+      const parentDir = path.join(metadataDirectory, `${type}-assets`, assetMapKey)
+      if (!fs.existsSync(parentDir)) {
+        fs.ensureDirSync(parentDir)
+      }
+      await img.toFile(path.join(parentDir, `${asset.description}.png`))
+    }
+  //   console.log(`Extracting font ${i + 1} of ${fontMetaDataFiles.length} - ${fontMetaDataFile} - ${metadataDirectory}`)
+  //   const fontMenuMetaData = await extractFontElement(
+  //     fontMetaDataFile,
+  //     outputCDDirectory,
+  //     metadataDirectory,
+  //     'credits'
+  //   )
+  //   joinMetaData(creditsMetaData, fontMenuMetaData)
+  }
+  return assetMap
 }
 const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, metadataDirectory) => {
   console.log('Extract Credits Data: START')
@@ -141,13 +205,16 @@ const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, meta
   }
 
   const images = await convertImages(inputCreditsDirectory, outputCreditsDirectory)
+  const creditsMetaData = await extractCreditFonts(inputCreditsDirectory, outputCreditsDirectory, metadataDirectory)
+  const imagesFromComposite = await compositeImages(metadataDirectory, 'credits', outputCreditsDirectory)
+  joinMetaData(creditsMetaData, imagesFromComposite)
+
   const lines = extractPeople(path.join(inputCreditsDirectory, 'people.bin'))
-  await extractCreditFonts(inputCreditsDirectory, outputCreditsDirectory, metadataDirectory)
   const data = {
-    images,
     lines
   }
   await saveData(data, path.join(outputCreditsDirectory, 'credits.json'))
+  await saveMetaData(metadataDirectory, creditsMetaData)
 
   console.log('Extract Credits Data: END')
 }

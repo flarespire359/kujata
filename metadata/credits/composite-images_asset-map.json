@@ -1,0 +1,37 @@
+{
+    "end-credits": [{
+        "id": 0,
+        "description": "credits-500-years-later",
+        "file": "credits-500-years-later",
+        "x": 0,
+        "y": 0,
+        "w": 386,
+        "h": 32,
+        "files": [{
+            "source": {
+                "file": "after_1_1",
+                "x": 0,
+                "y": 0,
+                "w": 193,
+                "h": 32
+            },
+            "target": {
+                "x": 0,
+                "y": 0
+            }
+        }, {
+            "source": {
+                "file": "after_1_1",
+                "x": 0,
+                "y": 32,
+                "w": 193,
+                "h": 32
+            },
+            "target": {
+                "x": 193,
+                "y": 0
+            }
+
+        }]
+    }]
+}
