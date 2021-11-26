@@ -95,12 +95,7 @@ const extractCreditFonts = async (inputCreditsDirectory, outputCDDirectory, meta
   await extractAllAssetsAndPalettes(inputCreditsDirectory, outputCDDirectory) // TODO - This doesn't seem to give the expected colors
 
   const outputDirMetaDataCredits = path.join(metadataDirectory, 'credits-assets')
-
-  if (!fs.existsSync(outputDirMetaDataCredits)) {
-    fs.ensureDirSync(outputDirMetaDataCredits)
-  } else {
-    fs.emptyDirSync(outputDirMetaDataCredits)
-  }
+  cleanDir(outputDirMetaDataCredits)
 
   const creditsMetaData = {}
 
@@ -126,12 +121,50 @@ const extractCreditFonts = async (inputCreditsDirectory, outputCDDirectory, meta
 const saveData = async (data, outputFile) => {
   await fs.outputFile(outputFile, JSON.stringify(data))
 }
-const saveMetaData = async (metadataDirectory, creditsMetaData) => {
+const saveMetaData = async (metadataDirectory, type, name, creditsMetaData) => {
   await fs.writeJson(
-    path.join(metadataDirectory, 'credits-assets', 'credits-font.metadata.json'),
+    path.join(metadataDirectory, `${type}-assets`, name),
     creditsMetaData
   )
   // console.log('metadataDirectory', metadataDirectory)
+}
+const compositeImageOne = async (asset, sourceImageDirectory, metadataDirectory, type, subType) => {
+  let img = sharp({
+    create: {
+      width: asset.w,
+      height: asset.h,
+      channels: 4,
+      background: { r: 0, g: 0, b: 0, alpha: 0 }
+    }
+  }).png()
+  const overviewCompositionActions = []
+  for (let k = 0; k < asset.files.length; k++) {
+    const assetFile = asset.files[k]
+    const elementFile = path.join(
+      sourceImageDirectory,
+      `${assetFile.source.file}.png`
+    )
+    // console.log('elementFile', elementFile)
+    const elementFileExtract = sharp(elementFile).extract({
+      left: assetFile.source.x,
+      top: assetFile.source.y,
+      width: assetFile.source.w,
+      height: assetFile.source.h
+    })
+    const elementFileBuffer = await elementFileExtract.toBuffer()
+    overviewCompositionActions.push({
+      input: elementFileBuffer,
+      left: assetFile.target.x,
+      top: assetFile.target.y
+    })
+  }
+  img.composite(overviewCompositionActions)
+
+  const parentDir = path.join(metadataDirectory, `${type}-assets`, subType)
+  if (!fs.existsSync(parentDir)) {
+    fs.ensureDirSync(parentDir)
+  }
+  await img.toFile(path.join(parentDir, `${asset.description}.png`))
 }
 const compositeImages = async (metadataDirectory, type, outputCreditsDirectory) => {
   const assetMap = await fs.readJson(
@@ -146,55 +179,14 @@ const compositeImages = async (metadataDirectory, type, outputCreditsDirectory) 
     for (let j = 0; j < assets.length; j++) {
       const asset = assets[j]
       // console.log('asset', asset)
-
-      let img = sharp({
-        create: {
-          width: asset.w,
-          height: asset.h,
-          channels: 4,
-          background: { r: 0, g: 0, b: 0, alpha: 0 }
-        }
-      }).png()
-      const overviewCompositionActions = []
-      for (let k = 0; k < asset.files.length; k++) {
-        const assetFile = asset.files[k]
-        const elementFile = path.join(
-          outputCreditsDirectory,
-          `${assetFile.source.file}.png`
-        )
-        const elementFileExtract = sharp(elementFile).extract({
-          left: assetFile.source.x,
-          top: assetFile.source.y,
-          width: assetFile.source.w,
-          height: assetFile.source.h
-        })
-        const elementFileBuffer = await elementFileExtract.toBuffer()
-        overviewCompositionActions.push({
-          input: elementFileBuffer,
-          left: assetFile.target.x,
-          top: assetFile.target.y
-        })
-      }
-      img.composite(overviewCompositionActions)
-
-      const parentDir = path.join(metadataDirectory, `${type}-assets`, assetMapKey)
-      if (!fs.existsSync(parentDir)) {
-        fs.ensureDirSync(parentDir)
-      }
-      await img.toFile(path.join(parentDir, `${asset.description}.png`))
+      await compositeImageOne(asset, outputCreditsDirectory, metadataDirectory, type, assetMapKey)
     }
   }
   return assetMap
 }
 const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, metadataDirectory) => {
-  // Credits
   const outputCreditsDirectory = path.join(outputCDDirectory, 'credits')
-
-  if (!fs.existsSync(outputCreditsDirectory)) {
-    fs.ensureDirSync(outputCreditsDirectory)
-  } else {
-    fs.emptyDirSync(outputCreditsDirectory)
-  }
+  cleanDir(outputCreditsDirectory)
 
   await convertImages(inputCreditsDirectory, outputCreditsDirectory)
   const creditsMetaData = await extractCreditFonts(inputCreditsDirectory, outputCreditsDirectory, metadataDirectory)
@@ -204,12 +196,117 @@ const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, meta
   const lines = extractPeople(path.join(inputCreditsDirectory, 'people.bin'))
   await saveData(lines, path.join(metadataDirectory, 'credits-assets', 'credits.json'))
 
-  await saveMetaData(metadataDirectory, creditsMetaData)
+  await saveMetaData(metadataDirectory, 'credits', 'credits-font.metadata.json', creditsMetaData)
+}
+
+const extractDiscData = async (inputDiscDirectory, outputCDDirectory, metadataDirectory) => {
+  const outputDiscDirectory = path.join(outputCDDirectory, 'disc')
+  cleanDir(outputDiscDirectory)
+  const outputDiscMetaDirectory = path.join(metadataDirectory, 'disc-assets')
+  cleanDir(outputDiscMetaDirectory)
+
+  await convertImages(inputDiscDirectory, outputDiscDirectory)
+  const discMetaData = await extractCharacterImages(path.join(outputCDDirectory, 'disc'), metadataDirectory)
+  const insertDiscMetaData = await extractDiscImages(path.join(outputCDDirectory, 'disc'), metadataDirectory)
+  joinMetaData(discMetaData, insertDiscMetaData)
+  const gameOverMetaData = await extractGameOverImage(path.join(outputCDDirectory, 'disc'), metadataDirectory)
+  joinMetaData(discMetaData, gameOverMetaData)
+
+  await saveMetaData(metadataDirectory, 'disc', 'disc.metadata.json', discMetaData)
+}
+const extractDiscImages = async (sourceImageDirectory, metadataDirectory) => {
+  const discImageNames = ['disk1', 'disk2', 'disk3']
+  const discMetaData = {disc: []}
+  for (let i = 0; i < discImageNames.length; i++) {
+    const discImageName = discImageNames[i]
+    const asset = {
+      id: i,
+      description: discImageName,
+      file: discImageName,
+      x: 0,
+      y: 0,
+      w: 400,
+      h: 111,
+      files: [
+        {source: {file: `${discImageName}_a`, x: 0, y: 0, w: 256, h: 111}, target: {x: 0, y: 0}},
+        {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 144, h: 111}, target: {x: 256, y: 0}}
+      ]
+    }
+    discMetaData.disc.push(asset)
+    // console.log('discImageName', discImageName, asset)
+    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', 'insert-disc')
+  }
+  return discMetaData
+}
+const extractGameOverImage = async (sourceImageDirectory, metadataDirectory) => {
+  const discImageNames = ['e_over']
+  const endFileNames = ['game-over']
+  const discMetaData = {disc: []}
+  for (let i = 0; i < discImageNames.length; i++) {
+    const discImageName = discImageNames[i]
+    const endFileName = endFileNames[i]
+    const asset = {
+      id: i,
+      description: endFileName,
+      file: endFileName,
+      x: 0,
+      y: 0,
+      w: 576,
+      h: 512,
+      files: [
+        {source: {file: `${discImageName}_a`, x: 0, y: 0, w: 256, h: 256}, target: {x: 0, y: 0}},
+        {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 256, h: 256}, target: {x: 256, y: 0}},
+        {source: {file: `${discImageName}_c`, x: 0, y: 0, w: 64, h: 256}, target: {x: 512, y: 0}},
+        {source: {file: `${discImageName}_d`, x: 0, y: 0, w: 256, h: 256}, target: {x: 0, y: 256}},
+        {source: {file: `${discImageName}_e`, x: 0, y: 0, w: 256, h: 256}, target: {x: 256, y: 256}},
+        {source: {file: `${discImageName}_f`, x: 0, y: 0, w: 64, h: 256}, target: {x: 512, y: 256}}
+      ]
+    }
+    discMetaData.disc.push(asset)
+    // console.log('discImageName', discImageName, asset)
+    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', 'game-over')
+  }
+  return discMetaData
+}
+const extractCharacterImages = async (sourceImageDirectory, metadataDirectory) => {
+  const discImageNames = ['aeris', 'barr', 'Cid', 'cloud', 'Kets', 'Red', 'tifa', 'vinc', 'yuff']
+  const endFileNames = ['Aeris', 'Barret', 'Cid', 'Cloud', 'CaitSith', 'RedXIII', 'Tifa', 'Vincent', 'Yuffie']
+  const discMetaData = {disc: []}
+  for (let i = 0; i < discImageNames.length; i++) {
+    const discImageName = discImageNames[i]
+    const endFileName = endFileNames[i]
+    const asset = {
+      id: i,
+      description: endFileName,
+      file: endFileName,
+      x: 0,
+      y: 0,
+      w: 400,
+      h: 300,
+      files: [
+        {source: {file: `${discImageName}_a`, x: 0, y: 0, w: 256, h: 256}, target: {x: 0, y: 0}},
+        {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 144, h: 256}, target: {x: 256, y: 0}},
+        {source: {file: `${discImageName}_c`, x: 0, y: 0, w: 256, h: 44}, target: {x: 0, y: 256}},
+        {source: {file: `${discImageName}_d`, x: 0, y: 0, w: 144, h: 44}, target: {x: 256, y: 256}}
+      ]
+    }
+    discMetaData.disc.push(asset)
+    // console.log('discImageName', discImageName, asset)
+    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', 'char-bg')
+  }
+  return discMetaData
+}
+const cleanDir = (dir) => {
+  if (!fs.existsSync(dir)) {
+    fs.ensureDirSync(dir)
+  } else {
+    fs.emptyDirSync(dir)
+  }
 }
 const extractCDData = async (inputCreditsDirectory, inputDiscDirectory, outputCDDirectory, metadataDirectory) => {
   console.log('Extract CD Data: START')
   await extractCreditsData(inputCreditsDirectory, outputCDDirectory, metadataDirectory)
-
+  await extractDiscData(inputDiscDirectory, outputCDDirectory, metadataDirectory)
   console.log('Extract CD Data: END')
 }
 module.exports = {
