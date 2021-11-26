@@ -216,7 +216,9 @@ const extractDiscData = async (inputDiscDirectory, outputCDDirectory, metadataDi
 }
 const extractDiscImages = async (sourceImageDirectory, metadataDirectory) => {
   const discImageNames = ['disk1', 'disk2', 'disk3']
-  const discMetaData = {disc: []}
+  const subType = 'insert-disc'
+  const discMetaData = {}
+  discMetaData[subType] = []
   for (let i = 0; i < discImageNames.length; i++) {
     const discImageName = discImageNames[i]
     const asset = {
@@ -232,16 +234,18 @@ const extractDiscImages = async (sourceImageDirectory, metadataDirectory) => {
         {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 144, h: 111}, target: {x: 256, y: 0}}
       ]
     }
-    discMetaData.disc.push(asset)
+    discMetaData[subType].push(asset)
     // console.log('discImageName', discImageName, asset)
-    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', 'insert-disc')
+    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', subType)
   }
   return discMetaData
 }
 const extractGameOverImage = async (sourceImageDirectory, metadataDirectory) => {
   const discImageNames = ['e_over']
   const endFileNames = ['game-over']
-  const discMetaData = {disc: []}
+  const subType = 'game-over'
+  const discMetaData = {}
+  discMetaData[subType] = []
   for (let i = 0; i < discImageNames.length; i++) {
     const discImageName = discImageNames[i]
     const endFileName = endFileNames[i]
@@ -262,16 +266,18 @@ const extractGameOverImage = async (sourceImageDirectory, metadataDirectory) => 
         {source: {file: `${discImageName}_f`, x: 0, y: 0, w: 64, h: 256}, target: {x: 512, y: 256}}
       ]
     }
-    discMetaData.disc.push(asset)
+    discMetaData[subType].push(asset)
     // console.log('discImageName', discImageName, asset)
-    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', 'game-over')
+    await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', subType)
   }
   return discMetaData
 }
 const extractCharacterImages = async (sourceImageDirectory, metadataDirectory) => {
   const discImageNames = ['aeris', 'barr', 'Cid', 'cloud', 'Kets', 'Red', 'tifa', 'vinc', 'yuff']
   const endFileNames = ['Aeris', 'Barret', 'Cid', 'Cloud', 'CaitSith', 'RedXIII', 'Tifa', 'Vincent', 'Yuffie']
-  const discMetaData = {disc: []}
+  const subType = 'char-bg'
+  const discMetaData = {}
+  discMetaData[subType] = []
   for (let i = 0; i < discImageNames.length; i++) {
     const discImageName = discImageNames[i]
     const endFileName = endFileNames[i]
@@ -290,7 +296,7 @@ const extractCharacterImages = async (sourceImageDirectory, metadataDirectory) =
         {source: {file: `${discImageName}_d`, x: 0, y: 0, w: 144, h: 44}, target: {x: 256, y: 256}}
       ]
     }
-    discMetaData.disc.push(asset)
+    discMetaData[subType].push(asset)
     // console.log('discImageName', discImageName, asset)
     await compositeImageOne(asset, sourceImageDirectory, metadataDirectory, 'disc', 'char-bg')
   }
