@@ -50,7 +50,9 @@
     "outputExeDirectory": "/Users/DanGarfield/code/kujata-data/data/exe",
     "outputExeDirectoryDescription": "Location of exe directory containing text strings, shop listings and other hardcoded data",
     "inputCreditsDirectory": "/Users/DanGarfield/code/ff7-fenrir/workings-out/unlgp/unlgp-cr_us.lgp",
-    "inputCreditsDescription": "Location of exe for extracting strings, shop listings and other hardcoded data",
+    "inputCreditsDescription": "Location of extracted assets from cr_us.lgp",
+    "inputDiscDirectory": "/Users/DanGarfield/code/ff7-fenrir/workings-out/unlgp/unlgp-disc_us.lgp",
+    "inputDiscDescription": "Location of extracted assets from disc_us.lgp",
     "outputCDDirectory": "/Users/DanGarfield/code/kujata-data/data/cd",
     "outputCDDirectoryDescription": "Location of exe directory containing text strings, shop listings and other hardcoded data",
     "renderBackgroundLayers": true

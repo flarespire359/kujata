@@ -13,7 +13,8 @@ const convertImages = async (inputDir, outputDir) => {
   for (let i = 0; i < images.length; i++) {
     const image = images[i]
     const imagePngName = image.replace('.tex', '.png')
-    new TexFile().loadTexFileFromPath(path.join(inputDir, image)).saveAsPng(path.join(outputDir, imagePngName))
+    const tex = new TexFile().loadTexFileFromPath(path.join(inputDir, image))
+    await tex.saveAsPng(path.join(outputDir, imagePngName))
   }
   return []
 }
@@ -88,7 +89,7 @@ const extractPeople = (peopleBinPath) => {
     // prices.push(price)
   }
   // console.log('lines', lines)
-  return lines
+  return {lines}
 }
 const extractCreditFonts = async (inputCreditsDirectory, outputCDDirectory, metadataDirectory) => {
   await extractAllAssetsAndPalettes(inputCreditsDirectory, outputCDDirectory) // TODO - This doesn't seem to give the expected colors
@@ -130,7 +131,7 @@ const saveMetaData = async (metadataDirectory, creditsMetaData) => {
     path.join(metadataDirectory, 'credits-assets', 'credits-font.metadata.json'),
     creditsMetaData
   )
-  console.log('metadataDirectory', metadataDirectory)
+  // console.log('metadataDirectory', metadataDirectory)
 }
 const compositeImages = async (metadataDirectory, type, outputCreditsDirectory) => {
   const assetMap = await fs.readJson(
@@ -182,20 +183,11 @@ const compositeImages = async (metadataDirectory, type, outputCreditsDirectory) 
       }
       await img.toFile(path.join(parentDir, `${asset.description}.png`))
     }
-  //   console.log(`Extracting font ${i + 1} of ${fontMetaDataFiles.length} - ${fontMetaDataFile} - ${metadataDirectory}`)
-  //   const fontMenuMetaData = await extractFontElement(
-  //     fontMetaDataFile,
-  //     outputCDDirectory,
-  //     metadataDirectory,
-  //     'credits'
-  //   )
-  //   joinMetaData(creditsMetaData, fontMenuMetaData)
   }
   return assetMap
 }
 const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, metadataDirectory) => {
-  console.log('Extract Credits Data: START')
-  //   extractAllStrings(path.join(inputExeDirectory, 'ff7_en.exe'))
+  // Credits
   const outputCreditsDirectory = path.join(outputCDDirectory, 'credits')
 
   if (!fs.existsSync(outputCreditsDirectory)) {
@@ -204,20 +196,22 @@ const extractCreditsData = async (inputCreditsDirectory, outputCDDirectory, meta
     fs.emptyDirSync(outputCreditsDirectory)
   }
 
-  const images = await convertImages(inputCreditsDirectory, outputCreditsDirectory)
+  await convertImages(inputCreditsDirectory, outputCreditsDirectory)
   const creditsMetaData = await extractCreditFonts(inputCreditsDirectory, outputCreditsDirectory, metadataDirectory)
   const imagesFromComposite = await compositeImages(metadataDirectory, 'credits', outputCreditsDirectory)
   joinMetaData(creditsMetaData, imagesFromComposite)
 
   const lines = extractPeople(path.join(inputCreditsDirectory, 'people.bin'))
-  const data = {
-    lines
-  }
-  await saveData(data, path.join(outputCreditsDirectory, 'credits.json'))
-  await saveMetaData(metadataDirectory, creditsMetaData)
+  await saveData(lines, path.join(metadataDirectory, 'credits-assets', 'credits.json'))
 
-  console.log('Extract Credits Data: END')
+  await saveMetaData(metadataDirectory, creditsMetaData)
+}
+const extractCDData = async (inputCreditsDirectory, inputDiscDirectory, outputCDDirectory, metadataDirectory) => {
+  console.log('Extract CD Data: START')
+  await extractCreditsData(inputCreditsDirectory, outputCDDirectory, metadataDirectory)
+
+  console.log('Extract CD Data: END')
 }
 module.exports = {
-  extractCreditsData
+  extractCDData
 }
