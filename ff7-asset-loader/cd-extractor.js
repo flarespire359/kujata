@@ -228,10 +228,10 @@ const extractDiscImages = async (sourceImageDirectory, metadataDirectory) => {
       x: 0,
       y: 0,
       w: 400,
-      h: 111,
+      h: 126,
       files: [
-        {source: {file: `${discImageName}_a`, x: 0, y: 0, w: 256, h: 111}, target: {x: 0, y: 0}},
-        {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 144, h: 111}, target: {x: 256, y: 0}}
+        {source: {file: `${discImageName}_a`, x: 0, y: 0, w: 256, h: 126}, target: {x: 0, y: 0}},
+        {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 144, h: 126}, target: {x: 256, y: 0}}
       ]
     }
     discMetaData[subType].push(asset)
@@ -256,14 +256,14 @@ const extractGameOverImage = async (sourceImageDirectory, metadataDirectory) => 
       x: 0,
       y: 0,
       w: 576,
-      h: 512,
+      h: 432,
       files: [
         {source: {file: `${discImageName}_a`, x: 0, y: 0, w: 256, h: 256}, target: {x: 0, y: 0}},
         {source: {file: `${discImageName}_b`, x: 0, y: 0, w: 256, h: 256}, target: {x: 256, y: 0}},
         {source: {file: `${discImageName}_c`, x: 0, y: 0, w: 64, h: 256}, target: {x: 512, y: 0}},
-        {source: {file: `${discImageName}_d`, x: 0, y: 0, w: 256, h: 256}, target: {x: 0, y: 256}},
-        {source: {file: `${discImageName}_e`, x: 0, y: 0, w: 256, h: 256}, target: {x: 256, y: 256}},
-        {source: {file: `${discImageName}_f`, x: 0, y: 0, w: 64, h: 256}, target: {x: 512, y: 256}}
+        {source: {file: `${discImageName}_d`, x: 0, y: 0, w: 256, h: 176}, target: {x: 0, y: 256}},
+        {source: {file: `${discImageName}_e`, x: 0, y: 0, w: 256, h: 176}, target: {x: 256, y: 256}},
+        {source: {file: `${discImageName}_f`, x: 0, y: 0, w: 64, h: 176}, target: {x: 512, y: 256}}
       ]
     }
     discMetaData[subType].push(asset)
