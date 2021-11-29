@@ -25,7 +25,7 @@ const extractShopInfo = (exePath) => {
   }
   //   console.log('shops', shops[2])
   return {
-    shops, text
+    shops, text, shopItemPrices, shopMateriaPrices
   }
 }
 const extractShopNames = (r) => {
