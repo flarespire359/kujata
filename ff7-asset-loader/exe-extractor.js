@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
+const { toHex2 } = require('./string-util.js')
 
 const extractShopInfo = (exePath) => {
   let buffer = fs.readFileSync(exePath)
@@ -13,6 +14,8 @@ const extractShopInfo = (exePath) => {
   const shops = extractShopList(r)
   const shopItemPrices = extractShopItemPrices(r)
   const shopMateriaPrices = extractShopMateriaPrices(r)
+  // console.log('last r.offset', r.offset)
+  const sellPriceMateriaMasterMultiplier = extractShopMateriaSellMultipler(r)
 
   for (let i = 0; i < shops.length; i++) {
     const shop = shops[i]
@@ -25,7 +28,7 @@ const extractShopInfo = (exePath) => {
   }
   //   console.log('shops', shops[2])
   return {
-    shops, text, shopItemPrices, shopMateriaPrices
+    shops, text, shopItemPrices, shopMateriaPrices, sellPriceMateriaMasterMultiplier
   }
 }
 const extractShopNames = (r) => {
@@ -171,6 +174,12 @@ const extractShopMateriaPrices = (r) => {
   }
   //   console.log('extractShopMateriaPrices', prices)
   return prices
+}
+const extractShopMateriaSellMultipler = (r) => {
+  r.offset = 0x0031F14F
+  const multiplier = r.readUByte()
+  console.log('multiplier', multiplier)
+  return multiplier
 }
 const saveData = async (data, outputFile) => {
 //   console.log('saveData', data, outputFile)
