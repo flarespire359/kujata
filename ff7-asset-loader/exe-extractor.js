@@ -4,10 +4,7 @@ const path = require('path')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const { toHex2 } = require('./string-util.js')
 
-const extractShopInfo = (exePath) => {
-  let buffer = fs.readFileSync(exePath)
-  //   console.log('buffer', buffer, exePath)
-  let r = new FF7BinaryDataReader(buffer)
+const extractShopInfo = (r) => {
   r.offset = 0x005219C8
   const shopNames = extractShopNames(r)
   const text = extractShopText(r)
@@ -26,7 +23,7 @@ const extractShopInfo = (exePath) => {
       item.price = item.type === 'item' ? shopItemPrices[item.id] : shopMateriaPrices[item.id]
     }
   }
-  console.log('text', text.normal, text.slang)
+  // console.log('text', text.normal, text.slang)
   return {
     shops, text, shopItemPrices, shopMateriaPrices, sellPriceMateriaMasterMultiplier
   }
@@ -178,8 +175,28 @@ const extractShopMateriaPrices = (r) => {
 const extractShopMateriaSellMultipler = (r) => {
   r.offset = 0x0031F14F
   const multiplier = r.readUByte()
-  console.log('multiplier', multiplier)
+  // console.log('multiplier', multiplier)
   return multiplier
+}
+const extractDefaultNames = (r) => {
+  const names = []
+
+  const totalSections = 9
+  const textBytes = 12
+  const sectionOffset = 0x005206B8
+  //   console.log('section total', 0x00523858 - sectionOffset)
+  for (let i = 0; i < totalSections; i++) {
+    r.offset = sectionOffset + (i * textBytes)
+    const name = r.readKernelString(textBytes)
+    r.offset = sectionOffset + (i * textBytes)
+    const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
+    console.log('val', r.offset, i, bin, name)
+
+    r.offset = sectionOffset + (i * textBytes)
+    names.push(name)
+  }
+
+  return names
 }
 const saveData = async (data, outputFile) => {
 //   console.log('saveData', data, outputFile)
@@ -188,11 +205,13 @@ const saveData = async (data, outputFile) => {
 }
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   console.log('Extract Exe Data: START')
-  //   extractAllStrings(path.join(inputExeDirectory, 'ff7_en.exe'))
-  const shopData = extractShopInfo(path.join(inputExeDirectory, 'ff7_en.exe'))
-
+  let buffer = fs.readFileSync(path.join(inputExeDirectory, 'ff7_en.exe'))
+  let r = new FF7BinaryDataReader(buffer)
+  const shopData = extractShopInfo(r)
+  const defaultNames = extractDefaultNames(r)
   const data = {
-    shopData
+    shopData,
+    defaultNames
   }
   await saveData(data, path.join(outputExeDirectory, 'ff7.exe.json'))
 
@@ -201,23 +220,3 @@ const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
 module.exports = {
   extractExeData
 }
-
-/*
-Headband, silver Glasses, star pendant, talisman, white cape, fury ring
- 12, 11, 10,  3, 15, 24
-300,299,298,291,303,312
-
- 0C 0B 0A 03 0F 18
-
- 012C 012B 012A 0123 012F 0138
-
- 50 300 80
- 0032, 012C, 0050
- 051E08
-
- 0 7 8 49 50 52 53
-00 07 08 31 32 34 35
-
- 600 600 600 750
-0258 0258 0258 02EE
-*/

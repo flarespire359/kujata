@@ -105,7 +105,7 @@
         {"id":174,"description":"menu base font 174","x":144,"y":192,"w":19,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"Œ"},
         {"id":175,"description":"menu base font 175","x":168,"y":192,"w":17,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"œ"},
         {"id":176,"description":"menu base font 176","x":192,"y":192,"w":12,"h":23,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"–"},
-        {"id":177,"description":"menu base font 177","x":216,"y":192,"w":19,"h":23,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"—"},
+        {"id":177,"description":"menu base font 177","x":216,"y":192,"w":22,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"—"},
         {"id":178,"description":"menu base font 178","x":240,"y":192,"w":9,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"“"},
 
         {"id":189,"description":"menu base font 189","x":0,"y":216,"w":8,"h":24,"colors":[["gray",1],["blue",3],["red",5],["purple",7],["green",9],["cyan",11],["yellow",13],["white",15]],"char":"›"},
