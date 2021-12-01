@@ -181,7 +181,7 @@ const extractShopMateriaSellMultipler = (r) => {
 const extractDefaultNames = (r) => {
   const names = []
 
-  const totalSections = 9
+  const totalSections = 10
   const textBytes = 12
   const sectionOffset = 0x005206B8
   //   console.log('section total', 0x00523858 - sectionOffset)
