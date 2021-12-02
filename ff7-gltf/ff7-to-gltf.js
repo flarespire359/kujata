@@ -279,7 +279,7 @@ module.exports = class FF7GltfTranslator {
           }
           boneMetadatas.push(boneMetadata)
         } else {
-          // TODO: support HRC files that have multiple meshes (rare, but bzhf.hrc is an example)
+          // Support added HRC files that have multiple meshes
           // For now, we just use the first mesh only.
           // let rsdFileId = bone.rsdBaseFilenames[0] // aaaf.rsd = cloud's head, aaha.rsd = tifa's head
           for (let rsdi = 0; rsdi < bone.rsdBaseFilenames.length; rsdi++) {
@@ -288,16 +288,23 @@ module.exports = class FF7GltfTranslator {
             // let rsdId = rsdFileId.toLowerCase()
             // console.log('rsd', bone.rsdBaseFilenames, rsdId)
             const boneMetadata = RsdLoader.loadRsd(config, rsdFileId)
-            if (rsdi === 0) {
-              boneMetadatas.push(boneMetadata)
-            }
+            boneMetadatas.push(boneMetadata)
           }
         }
+
+        let mesh = {
+          'primitives': [], // will add 1 primitive per polygonGroup
+          'name': boneMetadatas.map(b => b.polygonFilename.toLowerCase()).join('') + 'Mesh'
+        }
+        gltf.meshes.push(mesh)
+        numMeshesCreated++
+        meshIndex = numMeshesCreated - 1
+
         for (let bmi = 0; bmi < boneMetadatas.length; bmi++) {
           const boneMetadata = boneMetadatas[bmi]
           // console.log('boneMetadata', boneMetadata, gltf.materials.length)
           let pFileId = boneMetadata.polygonFilename // aaba.p = cloud's head model
-          let pId = pFileId.toLowerCase()
+          // let pId = pFileId.toLowerCase()
           // let model = require(config.inputJsonDirectory + "models/" + pId + ".p.json");
           let model = PLoader.loadP(config, pFileId, isBattleModel)
 
@@ -305,14 +312,6 @@ module.exports = class FF7GltfTranslator {
         {
           let model = skeleton.weaponModels[0];
         } */
-
-          let mesh = {
-            'primitives': [], // will add 1 primitive per polygonGroup
-            'name': pId + 'Mesh'
-          }
-          gltf.meshes.push(mesh)
-          numMeshesCreated++
-          meshIndex = numMeshesCreated - 1
 
           if (includeTextures) {
             let textureIds = boneMetadata.textureBaseFilenames
