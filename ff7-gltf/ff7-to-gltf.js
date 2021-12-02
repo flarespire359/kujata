@@ -1,21 +1,24 @@
 // usage: require("./ff7-to-gltf.js")();
 
-require('./gltf-2.0-util.js')()
-require('./ff7-gltf-common.js')()
-var HrcLoader = require('../ff7-asset-loader/hrc-loader.js')
-var RsdLoader = require('../ff7-asset-loader/rsd-loader.js')
-var PLoader = require('../ff7-asset-loader/p-loader.js')
-var ALoader = require('../ff7-asset-loader/a-loader.js')
+const {
+  COMPONENT_TYPE,
+  ARRAY_BUFFER,
+  ELEMENT_ARRAY_BUFFER,
+  FILTER,
+  WRAPPING_MODE } = require('./gltf-2.0-util.js')
+const { toRadians, rotationToQuaternion } = require('./ff7-gltf-common.js')
+let HrcLoader = require('../ff7-asset-loader/hrc-loader.js')
+let RsdLoader = require('../ff7-asset-loader/rsd-loader.js')
+let PLoader = require('../ff7-asset-loader/p-loader.js')
+let ALoader = require('../ff7-asset-loader/a-loader.js')
 const BattleModelLoader = require('../ff7-asset-loader/battle-model-loader.js')
 const BattleAnimationLoader = require('../ff7-asset-loader/battle-animation-loader.js')
-var ifalnaDatabase = require('../ifalna-db/ifalna.json')
+let ifalnaDatabase = require('../ifalna-db/ifalna.json')
 
 const fs = require('fs')
 const mkdirp = require('mkdirp')
 
 module.exports = class FF7GltfTranslator {
-  constructor () {}
-
   // Translate a FF7 FIELD.LGP's *.HRC file to glTF 2.0 format
   // config = configuration object, see config.json for example
   // hrcFileId = which skeleton to translate, e.g. "AAAA" for AAAA.HRC (Cloud)
@@ -28,16 +31,16 @@ module.exports = class FF7GltfTranslator {
   // includeTextures = whether to include textures in the translation (set to false to disable)
 
   translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
-    var standingAnimations = JSON.parse(fs.readFileSync(config.metadataDirectory + '/field-model-standing-animations.json', 'utf-8'))
-    var outputDirectory = isBattleModel ? config.outputBattleBattleDirectory : config.outputFieldCharDirectory
+    let standingAnimations = JSON.parse(fs.readFileSync(config.metadataDirectory + '/field-model-standing-animations.json', 'utf-8'))
+    let outputDirectory = isBattleModel ? config.outputBattleBattleDirectory : config.outputFieldCharDirectory
 
     if (!fs.existsSync(outputDirectory)) {
       console.log('Creating output directory: ' + outputDirectory)
       mkdirp.sync(outputDirectory)
     }
 
-    var ROOT_X_ROTATION_DEGREES = 180.0
-    var FRAMES_PER_SECOND = null
+    let ROOT_X_ROTATION_DEGREES = 180.0
+    let FRAMES_PER_SECOND = null
     if (isBattleModel) {
       FRAMES_PER_SECOND = 15.0
     } else {
@@ -77,9 +80,10 @@ module.exports = class FF7GltfTranslator {
       }
     }
 
-    var animationDataList = []
-    var weaponAnimationDataList = []
-    var battleAnimationPack = null
+    let animationDataList = []
+    let weaponAnimationDataList = []
+    let battleAnimationPack = null
+    let baseAnimationData = null
     if (isBattleModel) {
       let battleAnimationFilename = hrcId.substring(0, 2) + 'da'
       console.log('Will translate and include animations from pack: ' + battleAnimationFilename)
@@ -98,10 +102,9 @@ module.exports = class FF7GltfTranslator {
       }
     }
 
-    var baseAnimationData = null
-    var baseWeaponAnimationData = null
+    let baseWeaponAnimationData = null
     // NEW
-    var battleAnimationCombo = []
+    // let battleAnimationCombo = []
     if (isBattleModel) {
       /* for (let ai = 0; ai < battleAnimationPack.numBodyAnimations; ai++)
       {
@@ -114,8 +117,8 @@ module.exports = class FF7GltfTranslator {
       baseWeaponAnimationData = battleAnimationPack.weaponAnimations[0]
 
       // ENDNEW
-      var animIndex = 0
-      var weaponIndex = 0
+      // let animIndex = 0
+      // let weaponIndex = 0
     } else {
       if (baseAnimFileId) {
         baseAnimationData = ALoader.loadA(config, baseAnimFileId)
@@ -145,7 +148,7 @@ module.exports = class FF7GltfTranslator {
       }
     }
 
-    var rotationOrder = null // TODO: use animation data rotationOrder instead
+    let rotationOrder = null // TODO: use animation data rotationOrder instead
     if (isBattleModel) {
       // TODO: determine if original data specifies rotation order
       // if so, determine whether the ff7 game actually uses the rotation order specified in the battle model/anim file
@@ -159,7 +162,7 @@ module.exports = class FF7GltfTranslator {
 
     if (baseAnimFileId) {
       if (baseAnimationData.numBones !== skeleton.bones.length) {
-        throw new Error('number of bones do not match between hrcId=' + hrcId + ' and baseAnimId=' + baseAnimId)
+        throw new Error('number of bones do not match between hrcId=' + hrcId + ' and baseAnimId=')// + baseAnimId)
       }
     }
     // for (let animationData of animationDataList) {
@@ -178,8 +181,7 @@ module.exports = class FF7GltfTranslator {
 
     let firstFrame = baseAnimationData.animationFrames[0]
     let firstWeaponFrame = null
-    if (skeleton.hasWeapon) // later for not char battle model
-    {
+    if (skeleton.hasWeapon) { // later for not char battle model
       firstWeaponFrame = baseWeaponAnimationData.animationFrames[0]
     }
 
@@ -253,11 +255,11 @@ module.exports = class FF7GltfTranslator {
       boneMap[bone.name] = bone
     }
 
-    var allBuffers = [] // array of all individual Buffers, which will be combined at the end
-    var numBuffersCreated = 0
+    let allBuffers = [] // array of all individual Buffers, which will be combined at the end
+    let numBuffersCreated = 0
 
-    var numMeshesCreated = 0
-    var gltfTextureIndexOffset = 0 // starting point for textures within a bone
+    let numMeshesCreated = 0
+    let gltfTextureIndexOffset = 0 // starting point for textures within a bone
 
     // for (let bone of skeleton.bones) {
     for (let skbi = 0; skbi < skeleton.bones.length; skbi++) {
@@ -283,7 +285,7 @@ module.exports = class FF7GltfTranslator {
           for (let rsdi = 0; rsdi < bone.rsdBaseFilenames.length; rsdi++) {
             const rsdFileId = bone.rsdBaseFilenames[rsdi]
 
-            let rsdId = rsdFileId.toLowerCase()
+            // let rsdId = rsdFileId.toLowerCase()
             // console.log('rsd', bone.rsdBaseFilenames, rsdId)
             const boneMetadata = RsdLoader.loadRsd(config, rsdFileId)
             if (rsdi === 0) {
@@ -432,7 +434,7 @@ module.exports = class FF7GltfTranslator {
               })
 
             // 3. create "normal" js Buffer + gltf bufferView + gltf accessor
-            var normalAccessorIndex = -1
+            let normalAccessorIndex = -1
             if (model.numNormals > 0) {
               let numNormals = flattenedNormals.length
               let normalBuffer = Buffer.alloc(numNormals * 3 * 4) // 3 floats per normal, 4 bytes per float
@@ -491,8 +493,8 @@ module.exports = class FF7GltfTranslator {
             })
 
             // 5. create "texture coord" js Buffer + gltf bufferView + gltf accessor
-            var materialIndex = 0 // will change to texture-based material index below if needed
-            var textureCoordAccessorIndex = 0 // will be populated in the loop below
+            let materialIndex = 0 // will change to texture-based material index below if needed
+            let textureCoordAccessorIndex = 0 // will be populated in the loop below
             if (includeTextures) {
               if (polygonGroup.isTextureUsed) {
                 let numTextureCoords = numVerticesInGroup
@@ -656,7 +658,7 @@ module.exports = class FF7GltfTranslator {
       let numFrames = animationData.numFrames
 
       // create buffer to store start-time/end-time pair(s)
-      let numTimeMarkers = 2 * numFrames // start time and end time per frame
+      // let numTimeMarkers = 2 * numFrames // start time and end time per frame
       let startAndEndTimeBuffer = Buffer.alloc(numFrames * 2 * 4) // 2 time markers per frame, 4 bytes per float time
       for (let f = 0; f < numFrames; f++) {
         let startTime = f / FRAMES_PER_SECOND
@@ -700,8 +702,7 @@ module.exports = class FF7GltfTranslator {
             boneRotation = frameData.boneRotations[boneIndex]
             boneIsWeapon = false
             // boneTranslation = {x: frameData.rootTranslation.x , y: frameData.rootTranslation.y, z: frameData.rootTranslation.z };
-          } else if (skeleton.hasWeapon) // it's a weapon
-          {
+          } else if (skeleton.hasWeapon) { // it's a weapon
             let weaponFrameData = weaponAnimationData.animationFrames[f]
             let rootFrameData = animationData.animationFrames[f]
             boneRotation = weaponFrameData.boneRotations[0]
@@ -771,8 +772,7 @@ module.exports = class FF7GltfTranslator {
               'path': 'rotation'
             }
           })
-        } else // we also need to add rotation and translation animation of weapon
-        {
+        } else { // we also need to add rotation and translation animation of weapon
           gltf.animations[animationIndex].channels.push({
             'sampler': samplerIndex,
             'target': {

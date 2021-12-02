@@ -2,77 +2,75 @@
 
 // usage: require('common.js')();
 
-module.exports = function() {
+// translate degrees to radians
+const toRadians = function (degrees) {
+  return degrees * Math.PI / 180.0
+}
 
-  // translate degrees to radians
-  this.toRadians = function(degrees) {
-    return degrees * Math.PI / 180.0;
-  };
+// calculate a quaternion from 3 individual axis rotations and an order like "YXZ"
+// note: x, y, z are expected to be in radians
+const rotationToQuaternion = function (x, y, z, order) {
+  order = order || 'XYZ'
+  const c1 = Math.cos(x / 2)
+  const c2 = Math.cos(y / 2)
+  const c3 = Math.cos(z / 2)
+  const s1 = Math.sin(x / 2)
+  const s2 = Math.sin(y / 2)
+  const s3 = Math.sin(z / 2)
+  let w
+  if (order === 'XYZ') {
+    x = s1 * c2 * c3 + c1 * s2 * s3
+    y = c1 * s2 * c3 - s1 * c2 * s3
+    z = c1 * c2 * s3 + s1 * s2 * c3
+    w = c1 * c2 * c3 - s1 * s2 * s3
+  } else if (order === 'YXZ') {
+    x = s1 * c2 * c3 + c1 * s2 * s3
+    y = c1 * s2 * c3 - s1 * c2 * s3
+    z = c1 * c2 * s3 - s1 * s2 * c3
+    w = c1 * c2 * c3 + s1 * s2 * s3
+  } else if (order === 'ZXY') {
+    x = s1 * c2 * c3 - c1 * s2 * s3
+    y = c1 * s2 * c3 + s1 * c2 * s3
+    z = c1 * c2 * s3 + s1 * s2 * c3
+    w = c1 * c2 * c3 - s1 * s2 * s3
+  } else if (order === 'ZYX') {
+    x = s1 * c2 * c3 - c1 * s2 * s3
+    y = c1 * s2 * c3 + s1 * c2 * s3
+    z = c1 * c2 * s3 - s1 * s2 * c3
+    w = c1 * c2 * c3 + s1 * s2 * s3
+  } else if (order === 'YZX') {
+    x = s1 * c2 * c3 + c1 * s2 * s3
+    y = c1 * s2 * c3 + s1 * c2 * s3
+    z = c1 * c2 * s3 - s1 * s2 * c3
+    w = c1 * c2 * c3 - s1 * s2 * s3
+  } else if (order === 'XZY') {
+    x = s1 * c2 * c3 - c1 * s2 * s3
+    y = c1 * s2 * c3 - s1 * c2 * s3
+    z = c1 * c2 * s3 + s1 * s2 * c3
+    w = c1 * c2 * c3 + s1 * s2 * s3
+  }
+  return { w: w, x: x, y: y, z: z }
+}
 
-  // calculate a quaternion from 3 individual axis rotations and an order like "YXZ"
-  // note: x, y, z are expected to be in radians
-  this.rotationToQuaternion = function(x, y, z, order) {
-    order = order || "XYZ";
-    var c1 = Math.cos(x / 2);
-    var c2 = Math.cos(y / 2);
-    var c3 = Math.cos(z / 2);
-    var s1 = Math.sin(x / 2);
-    var s2 = Math.sin(y / 2);
-    var s3 = Math.sin(z / 2);
-    var x, y, z, w;
-    if ( order === 'XYZ' ) {
-        x = s1 * c2 * c3 + c1 * s2 * s3;
-        y = c1 * s2 * c3 - s1 * c2 * s3;
-        z = c1 * c2 * s3 + s1 * s2 * c3;
-        w = c1 * c2 * c3 - s1 * s2 * s3;
-    } else if ( order === 'YXZ' ) {
-        x = s1 * c2 * c3 + c1 * s2 * s3;
-        y = c1 * s2 * c3 - s1 * c2 * s3;
-        z = c1 * c2 * s3 - s1 * s2 * c3;
-        w = c1 * c2 * c3 + s1 * s2 * s3;
-    } else if ( order === 'ZXY' ) {
-        x = s1 * c2 * c3 - c1 * s2 * s3;
-        y = c1 * s2 * c3 + s1 * c2 * s3;
-        z = c1 * c2 * s3 + s1 * s2 * c3;
-        w = c1 * c2 * c3 - s1 * s2 * s3;
-    } else if ( order === 'ZYX' ) {
-        x = s1 * c2 * c3 - c1 * s2 * s3;
-        y = c1 * s2 * c3 + s1 * c2 * s3;
-        z = c1 * c2 * s3 - s1 * s2 * c3;
-        w = c1 * c2 * c3 + s1 * s2 * s3;
-    } else if ( order === 'YZX' ) {
-        x = s1 * c2 * c3 + c1 * s2 * s3;
-        y = c1 * s2 * c3 + s1 * c2 * s3;
-        z = c1 * c2 * s3 - s1 * s2 * c3;
-        w = c1 * c2 * c3 - s1 * s2 * s3;
-    } else if ( order === 'XZY' ) {
-        x = s1 * c2 * c3 - c1 * s2 * s3;
-        y = c1 * s2 * c3 - s1 * c2 * s3;
-        z = c1 * c2 * s3 + s1 * s2 * c3;
-        w = c1 * c2 * c3 + s1 * s2 * s3;
-    }
-    return { w: w, x: x, y: y, z: z };
-  };
+// input  = {r:r,g:r,b:b,a:a} where each value is between -128 and 127
+// output = {r:r,g:r,b:b,a:a} where each value is between 0.0 and 1.0
+const translateUnsignedByteColor = function (color) {
+  let r = color.r
+  let g = color.g
+  let b = color.b
+  let a = color.a
+  if (r < 0) { r = r + 256 };
+  if (g < 0) { g = g + 256 };
+  if (b < 0) { b = b + 256 };
+  if (a < 0) { a = a + 256 };
+  return { r: r / 255.0, g: g / 255.0, b: b / 255.0, a: 1.0 - a / 255.0 }
+}
 
-  // input  = {r:r,g:r,b:b,a:a} where each value is between -128 and 127
-  // output = {r:r,g:r,b:b,a:a} where each value is between 0.0 and 1.0
-  this.translateUnsignedByteColor = function(color) {
-    let r = color.r;
-    let g = color.g;
-    let b = color.b;
-    let a = color.a;
-    if (r < 0) { r = r + 256 };
-    if (g < 0) { g = g + 256 };
-    if (b < 0) { b = b + 256 };
-    if (a < 0) { a = a + 256 };
-    return { r: r/255.0, g: g/255.0, b: b/255.0, a: 1.0-a/255.0 };
-  };
-
-  // The methods below are an alternate way to build a rotation matrix, based on Kimera code.
-  // However, the existing methods above seem to produce the same results (for YXZ rotation).
-  // So, these are not used any more, but we'll keep the code here for reference.
-  /*
-  this.buildRotationMatrixWithQuaternions = function(alpha, beta, gamma, isRadians, returnQuaternionInsteadOfMatrix) {
+// The methods below are an alternate way to build a rotation matrix, based on Kimera code.
+// However, the existing methods above seem to produce the same results (for YXZ rotation).
+// So, these are not used any more, but we'll keep the code here for reference.
+/*
+  const buildRotationMatrixWithQuaternions = function(alpha, beta, gamma, isRadians, returnQuaternionInsteadOfMatrix) {
     let px = {x:1, y:0, z:0};
     let py = {x:0, y:1, z:0};
     let pz = {x:0, y:0, z:1};
@@ -89,7 +87,7 @@ module.exports = function() {
     }
   }
 
-  this.buildQuaternionFromAxis = function(vec, angle, isRadians) {
+  const buildQuaternionFromAxis = function(vec, angle, isRadians) {
     let angleRadians = isRadians ? angle : this.toRadians(angle);
     let halfAngle = angleRadians / 2.0;
     let sinAngle = Math.sin(halfAngle);
@@ -103,7 +101,7 @@ module.exports = function() {
     return res_quat;
   }
 
-  this.multiplyQuaternions = function(quat_a, quat_b) {
+  const multiplyQuaternions = function(quat_a, quat_b) {
     let quat_res = {
       x: quat_a.w * quat_b.x + quat_a.x * quat_b.w + quat_a.y * quat_b.z - quat_a.z * quat_b.y,
       y: quat_a.w * quat_b.y + quat_a.y * quat_b.w + quat_a.z * quat_b.x - quat_a.x * quat_b.z,
@@ -113,7 +111,7 @@ module.exports = function() {
     return quat_res;
   }
 
-  this.buildMatrixFromQuaternion = function(quat) {
+  const buildMatrixFromQuaternion = function(quat) {
 
     let x2 = quat.x * quat.x;
     let y2 = quat.y * quat.y;
@@ -149,5 +147,8 @@ module.exports = function() {
     return mat_res;
   }
   */
-
-};
+module.exports = {
+  toRadians,
+  rotationToQuaternion,
+  translateUnsignedByteColor
+}

@@ -1,22 +1,21 @@
-const fs = require("fs");
+const fs = require('fs')
 
 module.exports = {
 
   loadP: function (config, pBaseFilename, isBattleModel) {
-
-    var buffer = {};
+    let buffer = {}
     if (isBattleModel) {
-      buffer = fs.readFileSync(config.inputBattleBattleDirectory + '/' + pBaseFilename); // e.g. "rtam"
+      buffer = fs.readFileSync(config.inputBattleBattleDirectory + '/' + pBaseFilename) // e.g. "rtam"
     } else {
-      buffer = fs.readFileSync(config.inputFieldCharDirectory + '/' + pBaseFilename + ".P");
+      buffer = fs.readFileSync(config.inputFieldCharDirectory + '/' + pBaseFilename + '.P')
     }
-    var offset = 0;
+    let offset = 0
 
-    var readInt = function () { let i = buffer.readInt32LE(offset); offset += 4; return i; }
-    var readFloat = function () { let f = buffer.readFloatLE(offset); offset += 4; return f; }
-    var readByte = function () { let b = buffer.readUInt8(offset); offset += 1; return b; }
-    var readShort = function () { let s = buffer.readInt16LE(offset); offset += 2; return s; }
-    let fileSizeBytes = buffer.length;
+    let readInt = function () { let i = buffer.readInt32LE(offset); offset += 4; return i }
+    let readFloat = function () { let f = buffer.readFloatLE(offset); offset += 4; return f }
+    let readByte = function () { let b = buffer.readUInt8(offset); offset += 1; return b }
+    let readShort = function () { let s = buffer.readInt16LE(offset); offset += 2; return s }
+    let fileSizeBytes = buffer.length
 
     let model = {
       off00: readInt(),
@@ -45,37 +44,43 @@ module.exports = {
       polygons: [],
       hundrets: [],
       polygonGroups: []
-    };
+    }
 
     for (let i = 0; i < 16; i++) {
-      model.unknown[i] = readInt();
+      model.unknown[i] = readInt()
     }
     for (let i = 0; i < model.numVertices; i++) {
-      model.vertices.push({ x: readFloat(), y: readFloat(), z: readFloat() });
+      model.vertices.push({ x: readFloat(), y: readFloat(), z: readFloat() })
     }
     for (let i = 0; i < model.numNormals; i++) {
-      model.normals.push({ x: readFloat(), y: readFloat(), z: readFloat() });
+      model.normals.push({ x: readFloat(), y: readFloat(), z: readFloat() })
     }
     for (let i = 0; i < model.numTextureCoords; i++) {
-      model.textureCoordinates.push({ x: readFloat(), y: readFloat() });
+      model.textureCoordinates.push({ x: readFloat(), y: readFloat() })
     }
     for (let i = 0; i < model.numVertices; i++) {
-      model.vertexColors.push({ b: readByte(), g: readByte(), r: readByte(), a: readByte() });
+      model.vertexColors.push({ b: readByte(), g: readByte(), r: readByte(), a: readByte() })
     }
     for (let i = 0; i < model.numPolygons; i++) {
-      model.polygonColors.push({ b: readByte(), g: readByte(), r: readByte(), a: readByte() });
+      model.polygonColors.push({ b: readByte(), g: readByte(), r: readByte(), a: readByte() })
     }
     for (let i = 0; i < model.numEdges; i++) {
-      model.edges.push({ vertexIndex1: readShort(), vertexIndex2: readShort() });
+      model.edges.push({ vertexIndex1: readShort(), vertexIndex2: readShort() })
     }
     for (let i = 0; i < model.numPolygons; i++) {
-      readShort(); // unknown
+      readShort() // unknown
       model.polygons.push({
-        vertexIndex1: readShort(), vertexIndex2: readShort(), vertexIndex3: readShort(),
-        normalIndex1: readShort(), normalIndex2: readShort(), normalIndex3: readShort(),
-        edgeIndex1: readShort(), edgeIndex2: readShort(), edgeIndex3: readShort()
-      });
-      readInt(); // unknown
+        vertexIndex1: readShort(),
+        vertexIndex2: readShort(),
+        vertexIndex3: readShort(),
+        normalIndex1: readShort(),
+        normalIndex2: readShort(),
+        normalIndex3: readShort(),
+        edgeIndex1: readShort(),
+        edgeIndex2: readShort(),
+        edgeIndex3: readShort()
+      })
+      readInt() // unknown
     }
     for (let i = 0; i < model.numHundrets; i++) {
       model.hundrets.push({
@@ -96,15 +101,15 @@ module.exports = {
         dstBlend: readInt(),
         off3c: readInt(),
         alphaRef: readInt(),
-        blendMode: readInt(),	// (0=avg, 1=additive, 4=none? other modes are broken and unused)
-        zsort: readInt(),	// filled in real-time
+        blendMode: readInt(), // (0=avg, 1=additive, 4=none? other modes are broken and unused)
+        zsort: readInt(), // filled in real-time
         off4c: readInt(),
         off50: readInt(),
         off54: readInt(),
         off58: readInt(),
         vertexAlpha: readInt(),
         off60: readInt()
-      });
+      })
     }
     for (let i = 0; i < model.numGroups; i++) {
       model.polygonGroups.push({
@@ -118,9 +123,9 @@ module.exports = {
         offsetTextureCoordinateIndex: readInt(),
         isTextureUsed: readInt(),
         textureIndex: readInt()
-      });
+      })
     }
-    readInt(); // unknown
+    readInt() // unknown
     model.boundingBox = {
       max: { x: readFloat(), y: readFloat(), z: readFloat() },
       min: { x: readFloat(), y: readFloat(), z: readFloat() }
@@ -129,14 +134,13 @@ module.exports = {
     for (let i = 0; i < model.numNormalIndices; i++) {
       // console.log('model.numNormalIndices', model.numNormalIndices, i, offset)
       if (offset + 4 <= buffer.length) { // Issue with cvba, runs out of buffer
-        let ithNormalIndex = readInt(); // vertex v uses normal n
+        readInt() // vertex v uses normal n
       }
-
     }
-    if (offset != fileSizeBytes) {
-      console.log("WARNING: Did not reach end of file data!");
+    if (offset !== fileSizeBytes) {
+      console.log('WARNING: Did not reach end of file data!')
     }
-    return model;
+    return model
   }
 
-};
+}
