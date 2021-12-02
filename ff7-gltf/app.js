@@ -8,7 +8,7 @@ let baseAnimFileId = null;
 let animFileIds = [];
 let includeTextures = true;
 
-translate_ff7_field_hrc_to_gltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures);
+translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures);
 
 /*
 // translate every *.hrc.json file in the skeletons directory
@@ -18,7 +18,7 @@ for (let i=0; i<filenames.length; i++) {
   if (filename.toLowerCase().endsWith(".hrc")) {
     let hrcFileId = filename.slice(0, 4);
     try {
-      translate_ff7_field_hrc_to_gltf(config, hrcFileId, null, null, includeTextures);
+      translateFF7FieldHrcToGltf(config, hrcFileId, null, null, includeTextures);
     } catch (err) {
       console.log('Error while trying to translate: ' + filename + ':', err);
       //break; // uncomment this line to stop on failure
