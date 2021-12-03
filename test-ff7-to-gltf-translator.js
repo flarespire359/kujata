@@ -22,12 +22,14 @@ for (let prefix of ['rt', 'ru', 'rv', 'rw', 'rx', 'ry', 'rz']) {
 // translate every *.hrc.json file in the skeletons directory
 
 let filenames = fs.readdirSync(config.inputFieldCharDirectory)
-// filenames = [
-//   'bgjc.hrc',
-//   'aaaa.hrc',
-//   // 'avfe.hrc',
-//   'bydd.hrc'
-// ]
+filenames = [
+// //   'bgjc.hrc',
+// //   'aaaa.hrc',
+// //   'avfe.hrc',
+// //   'bydd.hrc',
+//   'fiba.hrc'
+  'hagb.hrc'
+]
 for (let i = 0; i < filenames.length; i++) {
   let filename = filenames[i]
   if (filename.toLowerCase().endsWith('.hrc')) {
@@ -40,3 +42,25 @@ for (let i = 0; i < filenames.length; i++) {
     }
   }
 }
+/*
+Translating: anbd (sd_hojyo_sk)
+Blend - 0 - ?
+
+Translating: fiba (maru_st)
+Blend - 0 - ?
+Blend - 0 - ?
+Blend - 0 - ?
+Blend - 0 - ?
+Blend - 0 - ?
+Blend - 0 - ?
+Blend - 0 - ?
+Blend - 0 - ?
+
+Translating: ggid (clossl2_sk)
+Blend - 1 - ?
+Translating: ggjc (clossl4_sk)
+Blend - 1 - ?
+
+Translating: hagb (hmtra2_sk)
+Blend - 0 - ?
+*/

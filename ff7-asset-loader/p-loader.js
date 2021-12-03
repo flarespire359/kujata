@@ -30,7 +30,7 @@ module.exports = {
       numPolygons: readInt(),
       off28: readInt(),
       off2c: readInt(),
-      numHundrets: readInt(),
+      numHundreds: readInt(),
       numGroups: readInt(),
       mirex_g: readInt(),
       off3c: readInt(),
@@ -42,7 +42,7 @@ module.exports = {
       polygonColors: [],
       edges: [],
       polygons: [],
-      hundrets: [],
+      hundreds: [],
       polygonGroups: []
     }
 
@@ -82,8 +82,8 @@ module.exports = {
       })
       readInt() // unknown
     }
-    for (let i = 0; i < model.numHundrets; i++) {
-      model.hundrets.push({
+    for (let i = 0; i < model.numHundreds; i++) {
+      model.hundreds.push({
         off00: readInt(),
         off04: readInt(),
         renderFlags1: readInt(),

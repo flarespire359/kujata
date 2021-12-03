@@ -466,7 +466,10 @@ module.exports = class FF7GltfTranslator {
             let vertexColorBuffer = Buffer.alloc(numVertexColors * 4 * 4) // 4 floats per vertex, 4 bytes per float
             for (let i = 0; i < numVertexColors; i++) {
               let vertexColor = model.vertexColors[i]
-              // vertexColor.a = 128
+              // vertexColor.r = 0
+              // vertexColor.g = 0
+              // vertexColor.b = 0
+              // vertexColor.a = 255
               vertexColorBuffer.writeFloatLE(vertexColor.r / 255.0, i * 16)
               vertexColorBuffer.writeFloatLE(vertexColor.g / 255.0, i * 16 + 4)
               vertexColorBuffer.writeFloatLE(vertexColor.b / 255.0, i * 16 + 8)
@@ -562,13 +565,32 @@ module.exports = class FF7GltfTranslator {
             mesh.primitives.push(primitive)
           } // end looping through polygonGroups for this bone
 
-          // console.log('counts',
-          //   gltf.meshes.length,
-          //   gltf.images.length,
-          //   gltf.textures.length,
-          //   gltf.materials.length,
-          //   gltf.accessors.length,
-          //   gltf.bufferViews.length)
+          // model.hundreds.length <= mesh.primitives.length IS ALWAYS TRUE
+          // TODO: Assumption that hundreds[i] correlates to mesh.primitives[i].material
+          // Still a lot to do here, look at fiba -> https://youtu.be/1U39x6jNKoI?t=66
+          // It might not be additive etc, it might just be an opacity level, also, the meshes don't match perfectly
+          // Will look at another day
+          for (let hi = 0; hi < model.hundreds.length; hi++) {
+            const hundred = model.hundreds[hi]
+            const mat = gltf.materials[mesh.primitives[hi].material]
+            if (hundred.blendMode === 0) {
+              if (!mat.extras) { mat.extras = {} }
+              mat.extras.BlendType = 'MultiplyBlending'
+              // console.log(hrcId, 'Blend - 0 - MultiplyBlending ?', hundred.srcBlend, hundred.dstBlend)
+            } else if (hundred.blendMode === 1) {
+              if (!mat.extras) { mat.extras = {} }
+              mat.extras.BlendType = 'MultiplyBlending'
+              // console.log(hrcId, 'Blend - 1 - MultiplyBlending ?', hundred.srcBlend, hundred.dstBlend)
+            } else if (hundred.blendMode === 3) {
+              if (!mat.extras) { mat.extras = {} }
+              mat.extras.BlendType = 'AdditiveBlending'
+              // console.log(hrcId, 'Blend - 3 - AdditiveBlending ✓', hundred.srcBlend, hundred.dstBlend)
+            } else if (hundred.blendMode === 4) {
+            // console.log('Blend - 4 - NormalBlending')
+            } else {
+              // console.log(hrcId, `Blend - ${hundred.blendMode} - ????`)
+            }
+          }
 
           gltfTextureIndexOffset = gltf.textures.length
         }
