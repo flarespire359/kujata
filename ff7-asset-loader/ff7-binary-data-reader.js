@@ -709,12 +709,26 @@ class FF7BinaryDataReader {
       for (let i = 0; i < l - 3; i++) {
         vars.push($r.readUByte())
       }
+      let subOpName = {
+        0x00: 'EYETX',
+        0x01: 'TRNSP',
+        0x02: 'AMBNT',
+        0x04: '04',
+        0x06: 'LIGHT',
+        0x07: '07',
+        0x08: '08',
+        0x09: '09',
+        0x0A: 'SBOBJ',
+        0x0B: '11',
+        0x0C: '12',
+        0x0D: 'SHINE',
+        0xFF: 'RESET' }[s]
+
       return {
         op: 'KAWAI',
-        l: l,
         s: s,
         vars: vars,
-        js: 'doCharacterGraphicsOp({length:' + l + ', kawaiOp:' + s + ', vars:' + vars + '});'
+        js: `doCharacterGraphicsOp({subOpCode:${s}, subOpName:'${subOpName}', vars:${vars}});`
       }
     }
 

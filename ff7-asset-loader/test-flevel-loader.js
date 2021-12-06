@@ -72,7 +72,7 @@ const problemMaps = ['blin67_4',
 
 console.log('Decode all Maps -> All', decodeAllMaps(mapList))
 // console.log('Decode all Maps -> Errors All', decodeAllMaps(problemMaps))
-// console.log('Decode one', decodeOneMap('nivinn_3'))
+// console.log('Decode one', decodeOneMap('nmkin_1'))
 // console.log('Decode one', decodeOneMap('frcyo'))
 // console.log('Decode one', decodeOneMap('ancnt1'))
 // console.log('Decode one', decodeOneMap('yougan2'))
