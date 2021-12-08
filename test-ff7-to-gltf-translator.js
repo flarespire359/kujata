@@ -22,14 +22,14 @@ for (let prefix of ['rt', 'ru', 'rv', 'rw', 'rx', 'ry', 'rz']) {
 // translate every *.hrc.json file in the skeletons directory
 
 let filenames = fs.readdirSync(config.inputFieldCharDirectory)
-filenames = [
+// filenames = [
 // //   'bgjc.hrc',
-// //   'aaaa.hrc',
+// 'aaaa.hrc'
 // //   'avfe.hrc',
 // //   'bydd.hrc',
 //   'fiba.hrc'
-  'hagb.hrc'
-]
+// 'hagb.hrc'
+// ]
 for (let i = 0; i < filenames.length; i++) {
   let filename = filenames[i]
   if (filename.toLowerCase().endsWith('.hrc')) {

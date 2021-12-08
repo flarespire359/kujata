@@ -15,6 +15,7 @@ const BattleModelLoader = require('../ff7-asset-loader/battle-model-loader.js')
 const BattleAnimationLoader = require('../ff7-asset-loader/battle-animation-loader.js')
 let ifalnaDatabase = require('../ifalna-db/ifalna.json')
 
+const { TexFile } = require('../ff7-asset-loader/tex-file.js')
 const fs = require('fs')
 const mkdirp = require('mkdirp')
 
@@ -30,7 +31,7 @@ module.exports = class FF7GltfTranslator {
   //   ["AAFE, "AAGA"] = include only specific animations
   // includeTextures = whether to include textures in the translation (set to false to disable)
 
-  translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
+  async translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
     let standingAnimations = JSON.parse(fs.readFileSync(config.metadataDirectory + '/field-model-standing-animations.json', 'utf-8'))
     let outputDirectory = isBattleModel ? config.outputBattleBattleDirectory : config.outputFieldCharDirectory
 
@@ -38,7 +39,11 @@ module.exports = class FF7GltfTranslator {
       console.log('Creating output directory: ' + outputDirectory)
       mkdirp.sync(outputDirectory)
     }
-
+    const texturesDirectory = `${outputDirectory}/${config.texturesDirectory}`
+    if (!fs.existsSync(texturesDirectory)) {
+      console.log('Creating texturesDirectory directory: ' + texturesDirectory)
+      mkdirp.sync(texturesDirectory)
+    }
     let ROOT_X_ROTATION_DEGREES = 180.0
     let FRAMES_PER_SECOND = null
     if (isBattleModel) {
@@ -318,8 +323,12 @@ module.exports = class FF7GltfTranslator {
             if (textureIds && textureIds.length > 0) {
               for (let i = 0; i < textureIds.length; i++) {
                 let textureId = textureIds[i].toLowerCase()
-                // console.log('texture - ', `${config.texturesDirectory}/${textureId}.tex.png`)
-                gltf.images.push({ 'uri': config.texturesDirectory + '/' + textureId + '.tex.png' })
+
+                const texturePath = `${config.texturesDirectory}/${textureId}.tex.png`
+
+                await this.ensureTextureExists(outputDirectory, config.inputFieldCharDirectory, textureIds[i], texturePath)
+                // console.log(pFileId, 'texture - ', texturePath)
+                gltf.images.push({ 'uri': texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
 
                 const textureIndex = gltf.textures.length
@@ -868,4 +877,13 @@ module.exports = class FF7GltfTranslator {
     fs.writeFileSync(gltfFilenameFull, JSON.stringify(gltf, null, 2))
     // console.log('Wrote: ' + gltfFilenameFull)
   }; // end function translateFF7FieldHrcToGltf
+
+  async ensureTextureExists (outputDirectory, texDirectory, textureId, texturePath) {
+    const texPath = `${texDirectory}/${textureId}.tex` // Can be .TEX of .tex, fs sorts this out anyway
+    const pngPath = `${outputDirectory}/${texturePath}`
+
+    if (!fs.existsSync(pngPath)) {
+      await (new TexFile().loadTexFileFromPath(texPath)).saveAsPng(pngPath)
+    }
+  }
 }
