@@ -5,6 +5,8 @@ const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const backgroundLayerRenderer = require('./background-layer-renderer.js')
 const musicList = JSON.parse(fs.readFileSync('../metadata/music-list/music-list-combined.json', 'utf-8'))
 const { toHex2 } = require('./string-util.js')
+const { TexFile } = require('../ff7-asset-loader/tex-file.js')
+
 module.exports = class FLevelLoader {
   constructor (lzsDecompressor, mapList) {
     this.lzsDecompressor = lzsDecompressor
@@ -698,7 +700,8 @@ module.exports = class FLevelLoader {
       const thisBgFolder = `${bgFolder}/${baseFilename}`
       if (!fs.existsSync(bgFolder)) {
         fs.mkdirSync(bgFolder)
-      } if (!fs.existsSync(thisBgFolder)) {
+      }
+      if (!fs.existsSync(thisBgFolder)) {
         fs.mkdirSync(thisBgFolder)
       }
       backgroundLayerRenderer.renderBackgroundLayers(flevel, thisBgFolder, baseFilename)
@@ -719,4 +722,23 @@ module.exports = class FLevelLoader {
 
     return flevel
   }; // end loadFLevel() function
+
+  async ensureTexturesExist (config) {
+    const texFiles = fs.readdirSync(config.inputFieldFLevelDirectory).filter(f => f.toLowerCase().endsWith('.tex'))
+    const outputDir = `${config.outputFieldFLevelDirectory}/textures`
+    if (!fs.existsSync(outputDir)) {
+      fs.mkdirSync(outputDir)
+    }
+    console.log('ensureTexturesExist', config.inputFieldFLevelDirectory, config.outputFieldFLevelDirectory, texFiles, outputDir)
+    for (let i = 0; i < texFiles.length; i++) {
+      const texFile = texFiles[i]
+      const texPath = `${config.inputFieldFLevelDirectory}/${texFile}`
+      const pngPath = `${outputDir}/${texFile}.png`
+      console.log('texPath', texPath, pngPath)
+
+      if (!fs.existsSync(pngPath)) {
+        await (new TexFile().loadTexFileFromPath(texPath)).saveAsPng(pngPath)
+      }
+    }
+  }
 } // end module.exports = class FLevelLoader {

@@ -28,7 +28,8 @@ const decodeOneMap = (fieldName) => {
   // console.log('Wrote: ' + outputFilename)
 }
 
-const decodeAllMaps = (maps) => {
+const decodeAllMaps = async (maps) => {
+  await flevelLoader.ensureTexturesExist(config)
   let errors = []
   for (let i = 0; i < maps.length; i++) {
     const fieldName = maps[i]
