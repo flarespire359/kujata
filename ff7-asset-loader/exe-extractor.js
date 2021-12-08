@@ -190,13 +190,59 @@ const extractDefaultNames = (r) => {
     const name = r.readKernelString(textBytes)
     r.offset = sectionOffset + (i * textBytes)
     const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
-    console.log('val', r.offset, i, bin, name)
+    // console.log('val', r.offset, i, bin, name)
 
     r.offset = sectionOffset + (i * textBytes)
     names.push(name)
   }
 
   return names
+}
+const extractBlinkData = (r) => {
+  const timFilesString = []
+
+  let totalSections = 220 - 12
+  let textBytes = 1
+  let sectionOffset = 0x0050636C + 12
+  //   console.log('section total', 0x00523858 - sectionOffset)
+  for (let i = 0; i < totalSections; i++) {
+    // r.offset = sectionOffset + (i * textBytes)
+    // const name = r.readKernelString(textBytes)
+    r.offset = sectionOffset + (i * textBytes)
+    const tileFileLetter = r.readString(textBytes)
+    // r.offset = sectionOffset + (i * textBytes)
+    // const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
+    // console.log('val', r.offset, i, bin, name, tileFileLetter)
+
+    r.offset = sectionOffset + (i * textBytes)
+    timFilesString.push(tileFileLetter === '' ? ' ' : tileFileLetter)
+  }
+  const timFiles = timFilesString.join('').split(' ').filter(f => f !== '')
+  // console.log('timFiles', timFiles)
+
+  const blinkData = {}
+
+  totalSections = 8
+  textBytes = 8
+  sectionOffset = 0x00506534
+  // console.log('section total', 0x00523858 - sectionOffset)
+  for (let i = 0; i < totalSections; i++) {
+    // r.offset = sectionOffset + (i * textBytes)
+    // const name = r.readKernelString(textBytes)
+    r.offset = sectionOffset + (i * textBytes)
+    const hrc = r.readString(textBytes)
+    // r.offset = sectionOffset + (i * textBytes)
+    // const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
+    // console.log('val', r.offset, i, bin, name, '-' + hrc + '-')
+
+    blinkData[hrc] = {leftEye: timFiles[i * 2], rightEye: timFiles[i * 2 + 1]}
+    // r.offset = sectionOffset + (i * textBytes)
+    // timFilesString.push(name2 === '' ? ' ' : name2)
+  }
+  // const timFiles = timFilesString.join('').split(' ').filter(f => f !== '')
+  console.log('blinkData', blinkData)
+
+  return blinkData
 }
 const saveData = async (data, outputFile) => {
 //   console.log('saveData', data, outputFile)
@@ -209,9 +255,11 @@ const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   let r = new FF7BinaryDataReader(buffer)
   const shopData = extractShopInfo(r)
   const defaultNames = extractDefaultNames(r)
+  const blinkData = extractBlinkData(r)
   const data = {
     shopData,
-    defaultNames
+    defaultNames,
+    blinkData
   }
   await saveData(data, path.join(outputExeDirectory, 'ff7.exe.json'))
 

@@ -340,7 +340,8 @@ module.exports = class FF7GltfTranslator {
                 // TODO: Figure out why materials look reddish
                 // let roughnessFactor = isBattleModel ? 1.0 : 0.5;
                 // let alphaMode = isBattleModel ? "OPAQUE" : "BLEND";
-                gltf.materials.push({
+
+                const mat = {
                   'pbrMetallicRoughness': {
                     'baseColorFactor': [1, 1, 1, 1],
                     'baseColorTexture': {
@@ -354,7 +355,9 @@ module.exports = class FF7GltfTranslator {
                 // "extensions": { // Uncomment to ensure gltf model does not respond to lights
                 //   "KHR_materials_unlit": {}
                 // }
-                })
+                }
+
+                gltf.materials.push(mat)
                 // gltf.extensionsUsed = [ // Uncomment to ensure gltf model does not respond to lights
                 //   "KHR_materials_unlit"
                 // ]
