@@ -23,9 +23,16 @@ for (let prefix of ['rt', 'ru', 'rv', 'rw', 'rx', 'ry', 'rz']) {
 
 let filenames = fs.readdirSync(config.inputFieldCharDirectory)
 filenames = [
-// //   'bgjc.hrc',
-  'aaaa.hrc'
-// //   'avfe.hrc',
+  'aaaa.hrc',
+  'acgd.hrc',
+  'aagb.hrc',
+  'adda.hrc',
+  'abda.hrc',
+  'abjb.hrc',
+  'aebc.hrc',
+  'aehd.hrc',
+  'auff.hrc',
+  'cahc.hrc'
 // //   'bydd.hrc',
 //   'fiba.hrc'
 // 'hagb.hrc'

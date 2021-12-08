@@ -31,7 +31,7 @@ module.exports = class FF7GltfTranslator {
   //   ["AAFE, "AAGA"] = include only specific animations
   // includeTextures = whether to include textures in the translation (set to false to disable)
 
-  async translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
+  translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
     let standingAnimations = JSON.parse(fs.readFileSync(config.metadataDirectory + '/field-model-standing-animations.json', 'utf-8'))
     let outputDirectory = isBattleModel ? config.outputBattleBattleDirectory : config.outputFieldCharDirectory
 
@@ -326,8 +326,8 @@ module.exports = class FF7GltfTranslator {
 
                 const texturePath = `${config.texturesDirectory}/${textureId}.tex.png`
 
-                await this.ensureTextureExists(outputDirectory, config.inputFieldCharDirectory, textureIds[i], texturePath)
-                // console.log(pFileId, 'texture - ', texturePath)
+                this.ensureTextureExists(outputDirectory, config.inputFieldCharDirectory, textureIds[i], texturePath)
+                console.log(pFileId, 'texture - ', texturePath)
                 gltf.images.push({ 'uri': texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
 
@@ -881,12 +881,12 @@ module.exports = class FF7GltfTranslator {
     // console.log('Wrote: ' + gltfFilenameFull)
   }; // end function translateFF7FieldHrcToGltf
 
-  async ensureTextureExists (outputDirectory, texDirectory, textureId, texturePath) {
+  ensureTextureExists (outputDirectory, texDirectory, textureId, texturePath) {
     const texPath = `${texDirectory}/${textureId}.tex` // Can be .TEX of .tex, fs sorts this out anyway
     const pngPath = `${outputDirectory}/${texturePath}`
 
     if (!fs.existsSync(pngPath)) {
-      await (new TexFile().loadTexFileFromPath(texPath)).saveAsPng(pngPath)
+      new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath)
     }
   }
 }

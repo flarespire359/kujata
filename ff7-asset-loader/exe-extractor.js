@@ -218,28 +218,60 @@ const extractBlinkData = (r) => {
     timFilesString.push(tileFileLetter === '' ? ' ' : tileFileLetter)
   }
   const timFiles = timFilesString.join('').split(' ').filter(f => f !== '')
-  // console.log('timFiles', timFiles)
+  console.log('timFiles', timFiles)
 
-  const blinkData = {}
-
-  totalSections = 8
-  textBytes = 8
+  totalSections = 152
+  textBytes = 1
   sectionOffset = 0x00506534
-  // console.log('section total', 0x00523858 - sectionOffset)
-  for (let i = 0; i < totalSections; i++) {
-    // r.offset = sectionOffset + (i * textBytes)
-    // const name = r.readKernelString(textBytes)
-    r.offset = sectionOffset + (i * textBytes)
-    const hrc = r.readString(textBytes)
-    // r.offset = sectionOffset + (i * textBytes)
-    // const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
-    // console.log('val', r.offset, i, bin, name, '-' + hrc + '-')
 
-    blinkData[hrc] = {leftEye: timFiles[i * 2], rightEye: timFiles[i * 2 + 1]}
+  const modelsString = []
+  for (let i = 0; i < totalSections; i++) {
+    r.offset = sectionOffset + (i * textBytes)
+    const modelsLetter = r.readString(textBytes)
+    modelsString.push(modelsLetter === '' ? ' ' : modelsLetter)
+
+    // blinkData[hrc] = {leftEye: timFiles[i * 2], rightEye: timFiles[i * 2 + 1]}
     // r.offset = sectionOffset + (i * textBytes)
     // timFilesString.push(name2 === '' ? ' ' : name2)
   }
-  // const timFiles = timFilesString.join('').split(' ').filter(f => f !== '')
+  const models = modelsString.join('').split(' ').filter(f => f !== '')
+  console.log('models', models)
+
+  const blinkData = {}
+  for (let i = 0; i < models.length / 2; i++) {
+    const name = models[i + models.length / 2]
+
+    // Note: I haven't found the values the exe uses to map the hrc/model names to the eye texture .tims yet
+    let prefix
+    if (name.includes('cloud')) {
+      prefix = 'c_'
+    } else if (name.includes('ballet')) {
+      prefix = 'b_'
+    } else if (name.includes('tifa')) {
+      prefix = 't_'
+    } else if (name.includes('red')) {
+      prefix = 'chi_red5' // RedXIII only has one eye texture, not entirely sure what to do with this second texture here (chi_red2)
+    } else if (name.includes('cid')) {
+      prefix = 'ci_'
+    } else if (name.includes('yufi')) {
+      prefix = 'y_'
+    } else if (name.includes('ketcy')) {
+      prefix = 'none_' // I don't think he blinks, the image is his whole face
+    } else if (name.includes('vincent')) {
+      prefix = 'v_'
+    } else if (name.includes('rith')) {
+      prefix = 'ea_'
+    }
+    const files = timFiles.filter(f => f.startsWith(prefix))
+    if (files.length > 0) {
+      const obj = {name, leftEye: files[0].replace('.tim', '')}
+      if (files.length > 1) {
+        obj.rightEye = files[1].replace('.tim', '')
+      }
+      blinkData[models[i]] = obj
+    }
+  }
+
   console.log('blinkData', blinkData)
 
   return blinkData
