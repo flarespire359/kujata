@@ -729,16 +729,34 @@ module.exports = class FLevelLoader {
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir)
     }
-    console.log('ensureTexturesExist', config.inputFieldFLevelDirectory, config.outputFieldFLevelDirectory, texFiles, outputDir)
+    const outputDirMetaData = `${config.metadataDirectory}/field-assets`
+    if (!fs.existsSync(outputDirMetaData)) {
+      fs.mkdirSync(outputDirMetaData)
+    }
+    const fieldTextureMetadata = {field: []}
+    // console.log('ensureTexturesExist', config.inputFieldFLevelDirectory, config.outputFieldFLevelDirectory, texFiles, outputDir)
     for (let i = 0; i < texFiles.length; i++) {
       const texFile = texFiles[i]
       const texPath = `${config.inputFieldFLevelDirectory}/${texFile}`
       const pngPath = `${outputDir}/${texFile}.png`
-      console.log('texPath', texPath, pngPath)
-
+      const pngPathMetadataParent = `${outputDirMetaData}/field`
+      const pngPathMetadata = `${outputDirMetaData}/field/${texFile.replace('.tex', '')}.png`
+      const metadataFile = `${outputDirMetaData}/flevel.metadata.json`
+      const tex = new TexFile().loadTexFileFromPath(texPath)
+      const w = tex.tex.header.width
+      const h = tex.tex.header.height
       if (!fs.existsSync(pngPath)) {
-        await (new TexFile().loadTexFileFromPath(texPath)).saveAsPng(pngPath)
+        await tex.saveAsPng(pngPath)
       }
+      if (!fs.existsSync(pngPathMetadataParent)) {
+        fs.mkdirSync(pngPathMetadataParent)
+      }
+      if (!fs.existsSync(pngPathMetadata)) {
+        await tex.saveAsPng(pngPathMetadata)
+      }
+      fieldTextureMetadata.field.push({id: i, description: texFile.replace('.tex', ''), x: 0, y: 0, w: w, h: h, palette: 0})
+      fs.writeFileSync(metadataFile, JSON.stringify(fieldTextureMetadata))
     }
+    // console.log('fieldTextureMetadata', fieldTextureMetadata)
   }
 } // end module.exports = class FLevelLoader {
