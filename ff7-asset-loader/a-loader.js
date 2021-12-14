@@ -36,6 +36,7 @@ module.exports = {
 
     animation.unused = undefined // remove unwanted data
 
+    // console.log('a model', animation)
     return animation
   }
 

@@ -266,11 +266,14 @@ module.exports = class FF7GltfTranslator {
     let numMeshesCreated = 0
     let gltfTextureIndexOffset = 0 // starting point for textures within a bone
 
+    let pFileCount = 0
     // for (let bone of skeleton.bones) {
     for (let skbi = 0; skbi < skeleton.bones.length; skbi++) {
       let bone = skeleton.bones[skbi]
       let parentBone = boneMap[bone.parent]
       let meshIndex // do not populate node.mesh if this bone does not have one
+
+      const currentPFileCount = []
 
       if (bone.rsdBaseFilenames.length > 0 || (isBattleModel && bone.hasModel !== 0)) {
         // this bone has a mesh
@@ -312,7 +315,9 @@ module.exports = class FF7GltfTranslator {
           // let pId = pFileId.toLowerCase()
           // let model = require(config.inputJsonDirectory + "models/" + pId + ".p.json");
           let model = PLoader.loadP(config, pFileId, isBattleModel)
-
+          // console.log('p model', pFileId, skbi, bmi, pFileCount)
+          currentPFileCount.push(pFileCount)
+          pFileCount++ // Bone(?) count is used for KAWAI SBOBJ
           /* else
         {
           let model = skeleton.weaponModels[0];
@@ -327,7 +332,7 @@ module.exports = class FF7GltfTranslator {
                 const texturePath = `${config.texturesDirectory}/${textureId}.tex.png`
 
                 this.ensureTextureExists(outputDirectory, config.inputFieldCharDirectory, textureIds[i], texturePath)
-                console.log(pFileId, 'texture - ', texturePath)
+                // console.log(pFileId, 'texture - ', texturePath)
                 gltf.images.push({ 'uri': texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
 
@@ -563,6 +568,7 @@ module.exports = class FF7GltfTranslator {
               'indices': polygonVertexIndexAccessorIndex,
               'mode': 4, // triangles
               'material': materialIndex
+              // 'extras': {pFileCount} // Unfortunately, the current GLTF loader doesn't add extras -> userData in primitives, add in parent instead
             }
             if (model.numNormals > 0) {
               primitive.attributes['NORMAL'] = model.numNormals > 0 ? normalAccessorIndex : undefined
@@ -639,14 +645,19 @@ module.exports = class FF7GltfTranslator {
         rotationOrder
       )
       // 1 node per bone
-      gltf.nodes.push({
+      const node = {
         'name': hrcId + 'Bone' + bone.boneIndex + '_' + bone.name,
         'children': [], // populate later, after all nodes have been created
         'translation': boneTranslation,
         'rotation': [quat.x, quat.y, quat.z, quat.w],
         'scale': [1, 1, 1],
         'mesh': meshIndex
-      })
+      }
+      if (currentPFileCount.length > 0) {
+        // For KAWAI SBOBJ - Unfortunately, the current GLTF loader doesn't add extras -> userData in primitives, add in parent instead
+        node.extras = { childBoneRefs: currentPFileCount }
+      }
+      gltf.nodes.push(node)
     } // end looping through skeleton.bones
 
     // build the "skeleton tree" by setting each node's children array, as required by glTF spec

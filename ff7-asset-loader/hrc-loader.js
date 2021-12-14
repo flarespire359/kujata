@@ -51,6 +51,7 @@ module.exports = {
       }
       skeleton.bones.push(bone)
     }
+    // console.log('hrc', JSON.stringify(skeleton, null, 2))
     return skeleton
   }
 

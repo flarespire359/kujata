@@ -38,6 +38,7 @@ module.exports = {
       let nthTextureFilename = this.removeFilenameExtension(line.substring(expectedPrefix.length))
       resource.textureBaseFilenames.push(nthTextureFilename)
     }
+    // console.log('rsd', resource)
     return resource
   }
 
