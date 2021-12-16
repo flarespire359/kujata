@@ -71,12 +71,14 @@ const problemMaps = ['blin67_4',
   'rckt32',
   'jtemplc']
 
+// flevelLoader.ensureTexturesExist(config)
+
 // console.log('Decode all Maps -> All', decodeAllMaps(mapList))
 // console.log('Decode all Maps -> Errors All', decodeAllMaps(problemMaps))
 // console.log('Decode one', decodeOneMap('nmkin_1'))
 // console.log('Decode one', decodeOneMap('md1stin'))
-flevelLoader.ensureTexturesExist(config)
-console.log('Decode one', decodeOneMap('fship_5'))
+
+console.log('Decode one', decodeOneMap('md1_2'))
 // console.log('Decode one', decodeOneMap('yougan2'))
 // console.log('Decode one', decodeOneMap('rckt3'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
