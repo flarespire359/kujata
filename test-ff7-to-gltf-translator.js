@@ -14,9 +14,24 @@ let gltfTranslator = new FF7GltfTranslator()
 // gltfTranslator.translateFF7FieldHrcToGltf(config, 'aaaa', baseAnimFileId, animFileIds, includeTextures);
 // gltfTranslator.translateFF7FieldHrcToGltf(config, 'cvba', baseAnimFileId, animFileIds, includeTextures);
 
-for (let prefix of ['rt', 'ru', 'rv', 'rw', 'rx', 'ry', 'rz']) {
-  hrcFileId = prefix + 'aa'
-  // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
+// for (let prefix of ['rt', 'ru', 'rv', 'rw', 'rx', 'ry', 'rz']) {
+//   hrcFileId = prefix + 'aa'
+//   // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
+// }
+
+let filenamesB = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith(('aaaa')))
+
+for (const hrcFileId of filenamesB) {
+  // hrcFileId = prefix + 'aa'
+
+  console.log('battle file', hrcFileId)
+  let gltfTranslator = new FF7GltfTranslator()
+  try {
+    gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, false, true)
+  } catch (err) {
+    console.log('Error while trying to translate: ' + hrcFileId + ':', err)
+    // break; // uncomment this line to stop on failure
+  }
 }
 
 // translate every *.hrc.json file in the skeletons directory
@@ -40,18 +55,18 @@ let filenames = fs.readdirSync(config.inputFieldCharDirectory)
 // 'dhid.hrc',
 // 'hagb.hrc'
 // ]
-for (let i = 0; i < filenames.length; i++) {
-  let filename = filenames[i]
-  if (filename.toLowerCase().endsWith('.hrc')) {
-    let hrcFileId = filename.slice(0, 4)
-    try {
-      gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true)
-    } catch (err) {
-      console.log('Error while trying to translate: ' + filename + ':', err)
-      // break; // uncomment this line to stop on failure
-    }
-  }
-}
+// for (let i = 0; i < filenames.length; i++) {
+//   let filename = filenames[i]
+//   if (filename.toLowerCase().endsWith('.hrc')) {
+//     let hrcFileId = filename.slice(0, 4)
+//     try {
+//       gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true)
+//     } catch (err) {
+//       console.log('Error while trying to translate: ' + filename + ':', err)
+//       // break; // uncomment this line to stop on failure
+//     }
+//   }
+// }
 /*
 Translating: anbd (sd_hojyo_sk)
 Blend - 0 - ?
