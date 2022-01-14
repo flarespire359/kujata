@@ -718,7 +718,7 @@ module.exports = class FLevelLoader {
       const layerID = layerIDs[i]
       flevel.background.tiles[layerID].tiles = 'Omitted to reduce size'
     }
-    flevel.palette.pages = 'Omitted to reduce size'
+    // flevel.palette.pages = 'Omitted to reduce size'
 
     return flevel
   }; // end loadFLevel() function
