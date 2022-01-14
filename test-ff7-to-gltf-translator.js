@@ -19,7 +19,7 @@ let gltfTranslator = new FF7GltfTranslator()
 //   // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
 // }
 
-let filenamesB = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith(('aaaa')))
+let filenamesB = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith(('aa')))
 
 for (const hrcFileId of filenamesB) {
   // hrcFileId = prefix + 'aa'

@@ -275,10 +275,11 @@ module.exports = class FF7GltfTranslator {
 
       const currentPFileCount = []
 
-      if (bone.rsdBaseFilenames.length > 0 || (isBattleModel && bone.hasModel !== 0)) {
+      // console.log('bone.polygonFilename INITIAL', bone.polygonFilename, bone.rsdBaseFilenames.length, bone.hasModel)
+      if (bone.rsdBaseFilenames.length > 0 || (isBattleModel && bone.hasModel)) {
         // this bone has a mesh
         let boneMetadatas = []
-
+        // console.log('bone.polygonFilename', bone.polygonFilename)
         if (isBattleModel) {
           const boneMetadata = {
             polygonFilename: bone.polygonFilename,
@@ -294,7 +295,7 @@ module.exports = class FF7GltfTranslator {
             const rsdFileId = bone.rsdBaseFilenames[rsdi]
 
             // let rsdId = rsdFileId.toLowerCase()
-            // console.log('rsd', bone.rsdBaseFilenames, rsdId)
+            // console.log('rsd', bone.rsdBaseFilenames, rsdFileId)
             const boneMetadata = RsdLoader.loadRsd(config, rsdFileId)
             boneMetadatas.push(boneMetadata)
           }
