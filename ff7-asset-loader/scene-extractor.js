@@ -72,7 +72,7 @@ const getBattleFormations = (r) => {
         initialConditionFlags: parseKernelEnums(Enums.Battle.InitialConditionFlags, r.readUInt() & 0b11111) // ??
 
       }
-      enemies.push(JSON.stringify(data))
+      enemies.push(data)
     }
 
     datas.push(enemies)
