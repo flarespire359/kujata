@@ -281,6 +281,29 @@ const saveData = async (data, outputFile) => {
 
   await fs.outputFile(outputFile, JSON.stringify(data))
 }
+const extractBattleCharacterModels = (r) => {
+  let totalSections = 196
+  let sectionOffset = 0x004FE310
+  r.offset = sectionOffset
+  let s = ''
+  for (let i = 0; i < totalSections; i++) {
+    let c = r.readUByte()
+    if (c > 0) {
+      s = s + String.fromCharCode(c)
+    } else {
+      s = s + ' '
+    }
+  }
+  const data = s.replace(/ +(?= )/g, '').split(' ').filter(m => m !== '').map((name, i) => {
+    const id = i + 460
+    const id2 = Math.floor(id / 26)
+    const id3 = id - (id2 * 26)
+    return {name, enemyId: id, hrc: String.fromCharCode(id2 + 97) + String.fromCharCode(id3 + 97) + 'aa'}
+  }
+  )
+  console.log('extractBattleCharacterModels', data)
+  return data
+}
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   console.log('Extract Exe Data: START')
   let buffer = fs.readFileSync(path.join(inputExeDirectory, 'ff7_en.exe'))
@@ -288,10 +311,12 @@ const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   const shopData = extractShopInfo(r)
   const defaultNames = extractDefaultNames(r)
   const blinkData = extractBlinkData(r)
+  const battleCharacterModels = extractBattleCharacterModels(r)
   const data = {
     shopData,
     defaultNames,
-    blinkData
+    blinkData,
+    battleCharacterModels
   }
   await saveData(data, path.join(outputExeDirectory, 'ff7.exe.json'))
 
