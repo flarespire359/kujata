@@ -19,7 +19,7 @@ let gltfTranslator = new FF7GltfTranslator()
 //   // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
 // }
 
-let filenamesB = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith(('aa')))
+let filenamesB = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith(('opaa')))
 
 for (const hrcFileId of filenamesB) {
   // hrcFileId = prefix + 'aa'
@@ -36,7 +36,7 @@ for (const hrcFileId of filenamesB) {
 
 // translate every *.hrc.json file in the skeletons directory
 
-let filenames = fs.readdirSync(config.inputFieldCharDirectory)
+// let filenames = fs.readdirSync(config.inputFieldCharDirectory)
 // filenames = [
 // 'aaaa.hrc',
 // 'acgd.hrc',

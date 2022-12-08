@@ -184,7 +184,15 @@ module.exports = class FF7GltfTranslator {
       }
     }
 
-    let firstFrame = baseAnimationData.animationFrames[0]
+    let firstFrame = null
+    if (baseAnimationData && baseAnimationData.animationFrames && baseAnimationData.animationFrames.length > 0) {
+      firstFrame = baseAnimationData.animationFrames[0]
+    } else {
+      firstFrame = {
+        rootRotation: {x: 0, y: 0, z: 0},
+        rootTranslation: {x: 0, y: 0, z: 0}
+      }
+    }
     let firstWeaponFrame = null
     if (skeleton.hasWeapon) { // later for not char battle model
       firstWeaponFrame = baseWeaponAnimationData.animationFrames[0]
@@ -274,7 +282,7 @@ module.exports = class FF7GltfTranslator {
       let meshIndex // do not populate node.mesh if this bone does not have one
 
       const currentPFileCount = []
-
+      console.log('bone', skeleton, bone)
       // console.log('bone.polygonFilename INITIAL', bone.polygonFilename, bone.rsdBaseFilenames.length, bone.hasModel)
       if (bone.rsdBaseFilenames.length > 0 || (isBattleModel && bone.hasModel)) {
         // this bone has a mesh
@@ -315,6 +323,7 @@ module.exports = class FF7GltfTranslator {
           let pFileId = boneMetadata.polygonFilename // aaba.p = cloud's head model
           // let pId = pFileId.toLowerCase()
           // let model = require(config.inputJsonDirectory + "models/" + pId + ".p.json");
+          console.log('boneMetadata', boneMetadata)
           let model = PLoader.loadP(config, pFileId, isBattleModel)
           // console.log('p model', pFileId, skbi, bmi, pFileCount)
           currentPFileCount.push(pFileCount)
@@ -616,7 +625,8 @@ module.exports = class FF7GltfTranslator {
       } // end if bone.rsdBaseFilename (if bone has a mesh)
 
       let boneTranslation = [0, 0, 0]
-      if (bone.parent !== 'root') {
+      if (bone.parent !== 'root' && bone.name !== 'LOCATION') {
+        // console.log('parentBone', parentBone)
         boneTranslation = [0, 0, -parentBone.length] // translate in negZ direction (away from parent)
       }
       if (bone.name === 'WEAPON') {
@@ -627,6 +637,8 @@ module.exports = class FF7GltfTranslator {
       let boneRotation = null
       if (bone.name === 'WEAPON') {
         boneRotation = firstWeaponFrame.boneRotations[0]
+      } if (bone.name === 'LOCATION') {
+        // Do nothing
       } else {
         boneRotation = firstFrame.boneRotations[bone.boneIndex]
       }

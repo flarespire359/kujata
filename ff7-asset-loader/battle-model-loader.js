@@ -9,7 +9,34 @@ module.exports = class BattleModelLoader {
 
   loadBattleLocationPiece (config, pieceFilename, boneIndex) {
     console.log('TODO: Read Battle Location Piece for: ' + pieceFilename + ' boneIndex=' + boneIndex)
-    return {}
+    // let model = PLoader.loadP(config, pieceFilename, true)
+
+    const boneParent = boneIndex
+    const boneLength = 1
+    let bone = {
+      boneIndex: boneIndex,
+      // name: '' + boneIndex,
+      name: 'LOCATION',
+      parent: (boneParent === -1 ? 'root' : '' + boneParent),
+      length: -boneLength, // lengths are negative for battle models, positive for field models
+      isBattle: true,
+      rsdBaseFilenames: [], // applies to field models only
+      polygonFilename: pieceFilename, // applies to battle models only
+      hasModel: true
+      // resizeX: 1,
+      // resizeY: 1,
+      // resizeZ: 1
+    }
+    if (bone.parent == -1) {
+      bone.parent = 'root'
+    } else {
+      bone.parent = '' + bone.parent
+    }
+    if (bone.hasModel != 0) {
+      bone.modelFilename = pieceFilename
+      // bone.numModels = 1;
+    }
+    return bone
   }
 
   loadBattleBone (config, r, offset, boneIndex, pieceFilename, loadGeometry) {
@@ -20,12 +47,12 @@ module.exports = class BattleModelLoader {
     let bone = {
       boneIndex: boneIndex,
       name: '' + boneIndex,
-      parent: (boneParent == -1 ? 'root' : '' + boneParent),
+      parent: (boneParent === -1 ? 'root' : '' + boneParent),
       length: -boneLength, // lengths are negative for battle models, positive for field models
       isBattle: true,
       rsdBaseFilenames: [], // applies to field models only
       polygonFilename: pieceFilename, // applies to battle models only
-      hasModel: (hasModel != 0)
+      hasModel: (hasModel !== 0)
       // resizeX: 1,
       // resizeY: 1,
       // resizeZ: 1
@@ -107,16 +134,25 @@ module.exports = class BattleModelLoader {
     let pSufix2 = null
     let b = false
 
-    if (battleModel.numBones == 0) { // It's a battle location model
+    console.log('battleModel', battleModel)
+    if (battleModel.numBones === 0) { // It's a battle location model
       battleModel.isBattleLocation = true
+
       for (let pSufix2 = 109; pSufix2 <= 122; pSufix2++) { // 109='m', 122='z'
-        let pieceFilename = config.inputBattleBattleDirectory + '/' + baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
-        let pieceFilenameAbsolute = config.inputBattleBattleDirectory + '/' + pieceFilename
-        if (fs.existsSync(pieceFilenameAbsolute)) {
+        const pieceFilename = baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
+        const pieceFilepath = config.inputBattleBattleDirectory + '/' + pieceFilename
+        // let pieceFilenameAbsolute = config.inputBattleBattleDirectory + '/' + pieceFilename
+
+        console.log('pieceFilepath', pieceFilepath, pieceFilename)
+
+        if (fs.existsSync(pieceFilepath)) {
           // ReDim Preserve .Bones(.NumBones)
+
+          console.log('pieceFilepath', pieceFilepath, 'present', loadGeometry)
           if (loadGeometry) {
             let boneIndex = battleModel.numBones
-            let bone = this.loadBattleLocationPiece(config, pieceFilenameAbsolute, boneIndex)
+            let bone = this.loadBattleLocationPiece(config, pieceFilename, boneIndex)
+            console.log('bone', bone)
             battleModel.bones.push(bone)
           }
           battleModel.numBones++
@@ -125,7 +161,7 @@ module.exports = class BattleModelLoader {
     } else { // It's a character battle model
       battleModel.isBattleLocation = false
       pSufix2 = 109
-	  // console.log("TOTAL BONES = " + battleModel.numBones);
+	  // console.log('TOTAL BONES = ' + battleModel.numBones)
 
       for (let bi = 0; bi < battleModel.numBones; bi++) {
         let pieceFilename = baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)

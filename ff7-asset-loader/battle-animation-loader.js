@@ -337,6 +337,35 @@ module.exports = class BattleAnimationLoader {
   // similar to Kimera's "ReadDAAnimationsPack" subroutine in FF7DAAnimationsPack.bas
   // filename should be something like "rtda" for Cloud (and will always end in "da")
   loadBattleAnimationPack (config, filename, numBones, numBodyAnimations, numWeaponAnimations) {
+    console.log('loadBattleAnimationPack', filename, numBones, numBodyAnimations, numWeaponAnimations)
+
+    if (!fs.existsSync(config.inputBattleBattleDirectory + '/' + filename)) {
+      let pack = {}
+      pack.numAnimations = 0
+      pack.numBodyAnimations = numBodyAnimations
+      pack.numWeaponAnimations = numWeaponAnimations
+      pack.bodyAnimations = []
+      pack.weaponAnimations = []
+
+      //   let defaultBoneRotations = []
+      //   for (let i = 0; i < numBones; i++) {
+      //     defaultBoneRotations.push({ x: 30 * Math.PI / 180, y: 30 * Math.PI / 180, z: 30 * Math.PI / 180 })
+      //   }
+      //   const baseAnimationData = {
+      //     numFrames: 1,
+      //     numBones: numBones,
+      //     rotationOrder1: 1,
+      //     rotationOrder2: 0,
+      //     rotationOrder3: 2,
+      //     animationFrames: [{
+      //       rootTranslation: { x: 0, y: 0, z: 0 },
+      //       rootRotation: { x: 0, y: 0, z: 0 },
+      //       boneRotations: defaultBoneRotations
+      //     }]
+      //   }
+      //   pack.bodyAnimations.push(baseAnimationData)
+      return pack
+    }
     var buffer = fs.readFileSync(config.inputBattleBattleDirectory + '/' + filename)
 
     var r = new FF7BinaryDataReader(buffer)
