@@ -21,7 +21,7 @@ Problems still to resolve:
 - Layer 3 - COMPLETE, eg anfrst_1
 */
 
-let COEFF_COLOR = 255 / 31 // eg translate 5 bit color to 8 bit
+const COEFF_COLOR = 255 / 31 // eg translate 5 bit color to 8 bit
 const getColorForPalette = (bytes) => { // abbbbbgggggrrrrr
   const color = {
     r: Math.round((bytes & 31) * COEFF_COLOR),
@@ -48,7 +48,7 @@ const getColorForDirect = (bytes) => { // rrrrrgggggabbbbb
 
 const allTiles = (flevel) => {
   let tiles = []
-  let layerNames = Object.keys(flevel.background.tiles)
+  const layerNames = Object.keys(flevel.background.tiles)
   for (let i = 0; i < layerNames.length; i++) {
     const layerName = layerNames[i]
     tiles = tiles.concat(flevel.background.tiles[layerName].tiles)
@@ -78,13 +78,13 @@ const getSizeMetaData = (tiles) => {
       tileSize = 32
     }
   }
-  let height = maxY - minY + tileSize
-  let width = maxX - minX + tileSize
+  const height = maxY - minY + tileSize
+  const width = maxX - minX + tileSize
   // console.log('SIZE',
   //     'x', minX, maxX, '->', width,
   //     'y', minY, maxY, '->', height)
 
-  let channels = 4
+  const channels = 4
   return { minX, maxX, minY, maxY, height, width, channels }
 }
 
@@ -123,22 +123,22 @@ const getSizeMetaData = (tiles) => {
 
 const saveTileGroupImage = (flevel, folder, name, tiles, sizeMeta, setBlackBackground) => {
   // console.log('sizeMeta', name, JSON.stringify(sizeMeta))
-  let n = sizeMeta.height * sizeMeta.width * sizeMeta.channels
-  let data = new Uint8ClampedArray(n)
+  const n = sizeMeta.height * sizeMeta.width * sizeMeta.channels
+  const data = new Uint8ClampedArray(n)
   for (let i = 0; i < n; i++) {
     data[i] = 0x00 // Fill with either black or transparent
     if (setBlackBackground && (i + 1) % sizeMeta.channels === 0) {
       data[i] = 0xFF
     }
   }
-  let pixelData = new Uint8ClampedArray(n)
+  const pixelData = new Uint8ClampedArray(n)
   for (let i = 0; i < n; i++) {
     pixelData[i] = 0x00
   }
   for (let i = 0; i < tiles.length; i++) { // Loop through each tile
     const tile = tiles[i]
-    let tileOverlayX = tile.destinationX - sizeMeta.minX // Get normalised coords for destination of top left of tile
-    let tileOverlayY = tile.destinationY - sizeMeta.minY
+    const tileOverlayX = tile.destinationX - sizeMeta.minX // Get normalised coords for destination of top left of tile
+    const tileOverlayY = tile.destinationY - sizeMeta.minY
 
     let texture = flevel.background.textures[`texture${tile.textureId}`]
 
@@ -152,7 +152,7 @@ const saveTileGroupImage = (flevel, folder, name, tiles, sizeMeta, setBlackBackg
       textureId = tile.textureId2
       texture = flevel.background.textures[`texture${tile.textureId2}`]
     }
-    let textureBytes = texture.data // Get all bytes for texture
+    const textureBytes = texture.data // Get all bytes for texture
 
     let tileSize = 16
     if (tile.layerID >= 2) { // Layer 2 & 3 can have 32 pixel tiles
@@ -171,12 +171,12 @@ const saveTileGroupImage = (flevel, folder, name, tiles, sizeMeta, setBlackBackg
     //         'destinationY:', tile.destinationY, tileOverlayY)
     // }
     for (let j = 0; j < (tileSize * tileSize); j++) { // Loop througheach tile's pixels, eg 16x16
-      let adjustY = Math.floor(j / tileSize)
-      let adjustX = j - (adjustY * tileSize) // Get normalised offset position, eg each new
+      const adjustY = Math.floor(j / tileSize)
+      const adjustX = j - (adjustY * tileSize) // Get normalised offset position, eg each new
       const posX = tileOverlayX + adjustX
       const posY = tileOverlayY + adjustY
 
-      let textureBytesOffset = ((sourceY + adjustY) * 256) + ((sourceX + adjustX)) // Calculate offset based on pixel coords, eg, we have to skip to the next row every 16
+      const textureBytesOffset = ((sourceY + adjustY) * 256) + ((sourceX + adjustX)) // Calculate offset based on pixel coords, eg, we have to skip to the next row every 16
 
       const textureByte = textureBytes[textureBytesOffset] // Get the byte for this pixel from the source image
 
@@ -276,7 +276,7 @@ const saveTileGroupImage = (flevel, folder, name, tiles, sizeMeta, setBlackBackg
           'chosen', JSON.stringify(paletteItem)
         )
       }
-      let byteOffset = ((tileOverlayY + adjustY) * sizeMeta.width * sizeMeta.channels) + ((tileOverlayX + adjustX) * sizeMeta.channels) // Write this into an array so we can print the image (note, each channel, eg RGBA)
+      const byteOffset = ((tileOverlayY + adjustY) * sizeMeta.width * sizeMeta.channels) + ((tileOverlayX + adjustX) * sizeMeta.channels) // Write this into an array so we can print the image (note, each channel, eg RGBA)
 
       if (tile.blending) { // Most blending should happen with webgl in browser
         if (tile.typeTrans === 3) { // Blending 3 is 25%, set colours to 25%
@@ -360,7 +360,7 @@ const arrangeLayers = (tiles) => {
   return arrangedLayers
 }
 const renderBackgroundLayers = (flevel, folder, baseFilename) => {
-  let tiles = allTiles(flevel)
+  const tiles = allTiles(flevel)
 
   const sizeMeta = getSizeMetaData(tiles)
   //   console.log('sizeMeta', JSON.stringify(sizeMeta), tiles.length)
@@ -391,7 +391,7 @@ const renderBackgroundLayers = (flevel, folder, baseFilename) => {
       layerSizeMeta = getSizeMetaData(arrangedLayer.tiles)
     }
 
-    const logLayer = {...arrangedLayer}
+    const logLayer = { ...arrangedLayer }
     logLayer.palettes = logLayer.tiles.map(t => t.paletteId)
     delete logLayer.tiles
     // console.log('arrangedLayer', logLayer, arrangedLayers.length)
@@ -424,14 +424,14 @@ const savePalettes = (flevel, folder, baseFilename) => {
     fs.mkdirSync(folder + '/palettes')
   }
 
-  let dataAll = new Uint8ClampedArray(flevel.palette.header.colorsPerPage * 4 * flevel.palette.pages.length)
+  const dataAll = new Uint8ClampedArray(flevel.palette.header.colorsPerPage * 4 * flevel.palette.pages.length)
 
   for (let i = 0; i < flevel.palette.pages.length; i++) {
     const palette = flevel.palette.pages[i]
 
     const paletteFilePath = folder + '/palettes/' + baseFilename + '-' + i + '.png'
 
-    let data = new Uint8ClampedArray(flevel.palette.header.colorsPerPage * 4)
+    const data = new Uint8ClampedArray(flevel.palette.header.colorsPerPage * 4)
     for (let j = 0; j < palette.length; j++) {
       const color = palette[j]
       data[j * 4 + 0] = color.r
@@ -457,7 +457,7 @@ const savePalettes = (flevel, folder, baseFilename) => {
   return flevel.palette.pages.length
 }
 const getAllLayersSizeMeta = (flevel) => {
-  let tiles = allTiles(flevel)
+  const tiles = allTiles(flevel)
   const sizeMeta = getSizeMetaData(tiles)
   return sizeMeta
 }

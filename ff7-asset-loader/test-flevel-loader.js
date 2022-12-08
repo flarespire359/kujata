@@ -2,16 +2,16 @@ const fs = require('fs')
 const LzsDecompressor = require('../lzs/lzs-decompressor.js')
 const FLevelLoader = require('./flevel-loader.js')
 
-let config = JSON.parse(fs.readFileSync('../config.json', 'utf-8'))
+const config = JSON.parse(fs.readFileSync('../config.json', 'utf-8'))
 
 // Pre-requisite: Must run test-map-list-loader.json first to generate maplist.json
 // TODO: Make flevel-loader smarter so that it can do this automatically.
 
-let mapList = JSON.parse(fs.readFileSync(config.outputFieldFLevelDirectory + '/maplist.json', 'utf-8'))
-let lzsDecompressor = new LzsDecompressor()
-let flevelLoader = new FLevelLoader(lzsDecompressor, mapList)
+const mapList = JSON.parse(fs.readFileSync(config.outputFieldFLevelDirectory + '/maplist.json', 'utf-8'))
+const lzsDecompressor = new LzsDecompressor()
+const flevelLoader = new FLevelLoader(lzsDecompressor, mapList)
 
-var replacer = function (k, v) {
+const replacer = function (k, v) {
   /// /if (k == "entitySections") { return undefined; }
   return v
 }
@@ -22,15 +22,16 @@ var replacer = function (k, v) {
 //   }
 // }
 const decodeOneMap = (fieldName) => {
-  let flevel = flevelLoader.loadFLevel(config, fieldName)
-  let outputFilename = config.outputFieldFLevelDirectory + '/' + fieldName + '.json'
+  const flevel = flevelLoader.loadFLevel(config, fieldName)
+  const outputFilename = config.outputFieldFLevelDirectory + '/' + fieldName + '.json'
   fs.writeFileSync(outputFilename, JSON.stringify(flevel, replacer, 2))
   // console.log('Wrote: ' + outputFilename)
+  return fieldName
 }
 
 const decodeAllMaps = async (maps) => {
   await flevelLoader.ensureTexturesExist(config)
-  let errors = []
+  const errors = []
   for (let i = 0; i < maps.length; i++) {
     const fieldName = maps[i]
 
@@ -78,7 +79,7 @@ const problemMaps = ['blin67_4',
 // console.log('Decode one', decodeOneMap('nmkin_1'))
 // console.log('Decode one', decodeOneMap('md1stin'))
 
-console.log('Decode one', decodeOneMap('md1_2'))
+console.log('Decode one', decodeOneMap('md1_1'))
 // console.log('Decode one', decodeOneMap('yougan2'))
 // console.log('Decode one', decodeOneMap('rckt3'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
