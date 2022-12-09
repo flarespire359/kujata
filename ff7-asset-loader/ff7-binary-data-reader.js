@@ -3224,18 +3224,18 @@ class FF7BinaryDataReader {
     }
     if (op === 0xe6) {
       const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const p = $r.readUByte(); const t = $r.readUByte(); const size = $r.readUByte()
-      const pDesc = b1 === 0 ? p : 'Bank[' + b1 + '][' + p + ']'
+      const t = $r.readUByte(); const p = $r.readUByte(); const size = $r.readUByte()
       const tDesc = b2 === 0 ? t : 'Bank[' + b2 + '][' + t + ']'
+      const pDesc = b1 === 0 ? p : 'Bank[' + b1 + '][' + p + ']'
       // console.log('asdasdas') // TODO - not triggering
       return {
         op: 'LDPAL',
         b1,
         b2,
-        p,
         t,
+        p,
         size,
-        js: 'loadPalette({paletteId:' + pDesc + ', tempPaletteId:' + tDesc + ', size:' + size + '});'
+        js: 'loadPalette({tempPaletteId:' + tDesc + ', paletteId:' + pDesc + ', size:' + size + '});'
       }
     }
 
