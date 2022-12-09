@@ -418,7 +418,7 @@ const renderBackgroundLayers = (flevel, folder, baseFilename) => {
   fs.writeFileSync(`${folder}/${baseFilename}.json`, JSON.stringify(jsonData, null, 2))
 }
 const savePalettes = (flevel, folder, baseFilename) => {
-//   console.log('palette', flevel.palette)
+  // console.log('palette', flevel.palette)
 
   if (!fs.existsSync(folder + '/palettes')) {
     fs.mkdirSync(folder + '/palettes')
@@ -431,13 +431,19 @@ const savePalettes = (flevel, folder, baseFilename) => {
 
     const paletteFilePath = folder + '/palettes/' + baseFilename + '-' + i + '.png'
 
-    const data = new Uint8ClampedArray(flevel.palette.header.colorsPerPage * 4)
+    // NOTE: Doubled palette width to ensure that pixelData is read more consistently
+    // Which seems to work
+    const data = new Uint8ClampedArray(flevel.palette.header.colorsPerPage * 4 * 2)
     for (let j = 0; j < palette.length; j++) {
       const color = palette[j]
-      data[j * 4 + 0] = color.r
-      data[j * 4 + 1] = color.g
-      data[j * 4 + 2] = color.b
-      data[j * 4 + 3] = color.a
+      data[j * 8 + 0] = color.r
+      data[j * 8 + 1] = color.g
+      data[j * 8 + 2] = color.b
+      data[j * 8 + 3] = color.a
+      data[j * 8 + 4] = color.r
+      data[j * 8 + 5] = color.g
+      data[j * 8 + 6] = color.b
+      data[j * 8 + 7] = color.a
 
       dataAll[(i * 256 * 4) + j * 4 + 0] = color.r
       dataAll[(i * 256 * 4) + j * 4 + 1] = color.g
@@ -445,9 +451,10 @@ const savePalettes = (flevel, folder, baseFilename) => {
       dataAll[(i * 256 * 4) + j * 4 + 3] = color.a
     }
 
+    // console.log('paletteFilePath', paletteFilePath, palette.length)
     sharp(
       Buffer.from(data.buffer),
-      { raw: { width: flevel.palette.header.colorsPerPage, height: 1, channels: 4 } })
+      { raw: { width: flevel.palette.header.colorsPerPage * 2, height: 1, channels: 4 } })
       .toFile(paletteFilePath)
   }
   sharp(
