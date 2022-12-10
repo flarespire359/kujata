@@ -3114,8 +3114,8 @@ class FF7BinaryDataReader {
       const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
       const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
       const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0x0F)
-      const s = $r.readUByte(); const d = $r.readUByte(); const i = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
-      const iDesc = b1 === 0 ? i : 'Bank[' + b1 + '][' + i + ']'
+      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
+      const startDesc = b1 === 0 ? start : 'Bank[' + b1 + '][' + start + ']'
       const bDesc = b2 === 0 ? b : 'Bank[' + b2 + '][' + b + ']'
       const gDesc = b3 === 0 ? g : 'Bank[' + b3 + '][' + g + ']'
       const rDesc = b4 === 0 ? r : 'Bank[' + b4 + '][' + r + ']'
@@ -3129,12 +3129,12 @@ class FF7BinaryDataReader {
         b5,
         s,
         d,
-        i,
+        start,
         b,
         g,
         r,
         size,
-        js: 'multiplyPaletteColors({sourcePaletteId:' + s + ', targetPaletteId:' + d + ', startColor:' + iDesc +
+        js: 'multiplyPaletteColors({sourcePaletteId:' + s + ', targetPaletteId:' + d + ', startColor:' + startDesc +
           ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', size:' + sizeDesc + '});',
         pres: 'The colors change.'
       }
@@ -3209,33 +3209,32 @@ class FF7BinaryDataReader {
     }
     if (op === 0xe5) {
       const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const p = $r.readUByte(); const t = $r.readUByte(); const size = $r.readUByte()
-      const pDesc = b1 === 0 ? p : 'Bank[' + b1 + '][' + p + ']'
-      const tDesc = b2 === 0 ? t : 'Bank[' + b2 + '][' + t + ']'
+      const s = $r.readUByte(); const d = $r.readUByte(); const size = $r.readUByte()
+      const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
+      const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       return {
         op: 'STPAL',
         b1,
         b2,
-        p,
-        t,
+        s,
+        d,
         size,
-        js: 'storePalette({paletteId:' + pDesc + ', tempPaletteId:' + tDesc + ', size:' + size + '});'
+        js: 'storePalette({sourcePaletteId:' + sDesc + ', destinationTempPaletteId:' + dDesc + ', size:' + size + '});'
       }
     }
     if (op === 0xe6) {
       const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const t = $r.readUByte(); const p = $r.readUByte(); const size = $r.readUByte()
-      const tDesc = b2 === 0 ? t : 'Bank[' + b2 + '][' + t + ']'
-      const pDesc = b1 === 0 ? p : 'Bank[' + b1 + '][' + p + ']'
-      // console.log('asdasdas') // TODO - not triggering
+      const s = $r.readUByte(); const d = $r.readUByte(); const size = $r.readUByte()
+      const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
+      const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       return {
         op: 'LDPAL',
         b1,
         b2,
-        t,
-        p,
+        s,
+        d,
         size,
-        js: 'loadPalette({tempPaletteId:' + tDesc + ', paletteId:' + pDesc + ', size:' + size + '});'
+        js: 'loadPalette({sourceTempPaletteId:' + sDesc + ', destinationPaletteId:' + dDesc + ', size:' + size + '});'
       }
     }
 
@@ -3250,6 +3249,7 @@ class FF7BinaryDataReader {
         b2,
         s,
         d,
+        size,
         js: 'copyPalette({sourceArrayId:' + sDesc + ', targetArrayId:' + dDesc + ', size:' + size + '});'
       }
     }
@@ -3277,9 +3277,9 @@ class FF7BinaryDataReader {
       const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
       const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
       const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0) >> 4
-      const s = $r.readUByte(); const t = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
+      const s = $r.readUByte(); const d = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
-      const tDesc = b2 === 0 ? t : 'Bank[' + b2 + '][' + t + ']'
+      const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       const bDesc = b3 === 0 ? b : 'Bank[' + b3 + '][' + b + ']'
       const gDesc = b4 === 0 ? g : 'Bank[' + b4 + '][' + g + ']'
       const rDesc = b5 === 0 ? r : 'Bank[' + b5 + '][' + r + ']'
@@ -3291,12 +3291,12 @@ class FF7BinaryDataReader {
         b4,
         b5,
         s,
-        t,
+        d,
         b,
         g,
         r,
         size,
-        js: 'addPaletteColors_0xe9({sourceTempPaletteId:' + s + ', targetTempPaletteId:' + t +
+        js: 'addPaletteColors({sourceTempPaletteId:' + sDesc + ', destinationTempPaletteId:' + dDesc +
           ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', size:' + size + '});'
       }
     }
@@ -3304,7 +3304,7 @@ class FF7BinaryDataReader {
     if (op === 0xea) {
       const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
       const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0)
+      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0) >> 4
       const s = $r.readUByte(); const d = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
@@ -3324,32 +3324,32 @@ class FF7BinaryDataReader {
         g,
         r,
         size,
-        js: 'multiplyPaletteColors2({sourcePaletteId:' + s + ', targetPaletteId:' + d +
+        js: 'multiplyPaletteColors2({sourcePaletteId:' + s + ', destinationTempPaletteId:' + d +
           ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', size:' + size + '});'
       }
     }
 
     if (op === 0xeb) {
-      const p = $r.readUByte(); const t = $r.readUByte(); const start = $r.readUByte(); const size = $r.readUByte()
+      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte(); const size = $r.readUByte()
       return {
         op: 'STPLS',
-        p,
-        t,
+        s,
+        d,
         start,
         size,
-        js: 'storePalette({paletteId:' + p + ', tempPaletteId:' + t + ', start:' + start + ', size:' + size + '});'
+        js: 'storePaletteOffset({paletteId:' + s + ', tempPaletteId:' + d + ', start:' + start + ', size:' + size + '});'
       }
     }
 
     if (op === 0xec) {
-      const t = $r.readUByte(); const p = $r.readUByte(); const start = $r.readUByte(); const size = $r.readUByte()
+      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte(); const size = $r.readUByte()
       return {
         op: 'LDPLS',
-        p,
-        t,
+        s,
+        d,
         start,
         size,
-        js: 'loadPalette({paletteId:' + p + ', tempPaletteId:' + t + ', start:' + start + ', size:' + size + '});'
+        js: 'loadPaletteOffset({sourceTempPaletteId:' + s + ', destinationPaletteId:' + d + ', start:' + start + ', size:' + size + '});'
       }
     }
 
@@ -3384,22 +3384,34 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xef) {
-      const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte(); const p5 = $r.readUByte()
-      const p6 = $r.readUByte(); const p7 = $r.readUByte(); const p8 = $r.readUByte(); const p9 = $r.readUByte(); const p10 = $r.readUByte()
+      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
+      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
+      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0) >> 4; const b6 = (bxb5 & 0x0F)
+      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte()
+      const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte()
+      const size = $r.readUByte()
+      // const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
+      // const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
+      const bDesc = b2 === 0 ? b : 'Bank[' + b2 + '][' + b + ']'
+      const gDesc = b3 === 0 ? g : 'Bank[' + b3 + '][' + g + ']'
+      const rDesc = b4 === 0 ? r : 'Bank[' + b4 + '][' + r + ']'
       return {
         op: 'ADPAL2',
-        p1,
-        p2,
-        p3,
-        p4,
-        p5,
-        p6,
-        p7,
-        p8,
-        p9,
-        p10,
-        js: 'op0xef_ADPAL2(' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ', ' + p5 +
-          ', ' + p6 + ', ' + p7 + ', ' + p8 + ', ' + p9 + ', ' + p10 + ');'
+        b1,
+        b2,
+        b3,
+        b4,
+        b5,
+        b6,
+        s,
+        d,
+        b,
+        g,
+        r,
+        size,
+        start,
+        js: 'addPaletteColors2({sourceTempPaletteId:' + s + ', destinationTempPaletteId:' + d +
+          ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', start:' + start + ', size:' + size + '});'
       }
     }
 
