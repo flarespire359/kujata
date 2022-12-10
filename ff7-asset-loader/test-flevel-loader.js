@@ -79,11 +79,12 @@ const problemMaps = ['blin67_4',
 // console.log('Decode one', decodeOneMap('nmkin_1'))
 // console.log('Decode one', decodeOneMap('md1stin'))
 
+// console.log('Decode one', decodeOneMap('md1_1'))
 console.log('Decode one', decodeOneMap('md1_2'))
-// console.log('Decode one', decodeOneMap('nrthmk'))
+// console.log('Decode one', decodeOneMap('jail1'))
 // console.log('Decode one', decodeOneMap('yougan2'))
 // console.log('Decode one', decodeOneMap('rckt3'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
 // console.log('Decode one', decodeOneMap('ancnt3'))
 
-generateOpCodeUsages(config)
+// generateOpCodeUsages(config)

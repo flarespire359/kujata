@@ -391,9 +391,9 @@ const renderBackgroundLayers = (flevel, folder, baseFilename) => {
       layerSizeMeta = getSizeMetaData(arrangedLayer.tiles)
     }
 
-    const logLayer = { ...arrangedLayer }
-    logLayer.palettes = logLayer.tiles.map(t => t.paletteId)
-    delete logLayer.tiles
+    // const logLayer = { ...arrangedLayer }
+    // logLayer.palettes = logLayer.tiles.map(t => t.paletteId)
+    // delete logLayer.tiles
     // console.log('arrangedLayer', logLayer, arrangedLayers.length)
     saveTileGroupImage(flevel, folder, name, arrangedLayer.tiles, layerSizeMeta, false, arrangedLayer.layerID)
     arrangedLayer.fileName = name
@@ -407,6 +407,7 @@ const renderBackgroundLayers = (flevel, folder, baseFilename) => {
         arrangedLayer.parallaxMax = sizeMeta.height
       }
     }
+    if (arrangedLayer.tiles[0].useBlack !== 0) arrangedLayer.useBlack = true
     delete arrangedLayer.tiles
   }
 

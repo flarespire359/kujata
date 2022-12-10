@@ -14,19 +14,19 @@ module.exports = class FLevelLoader {
   }
 
   loadFLevel (config, baseFilename, isDecompressed) {
-    var charMap = require('./char-map.js')
+    const charMap = require('./char-map.js')
 
-    var buffer = fs.readFileSync(config.inputFieldFLevelDirectory + '/' + baseFilename)
+    let buffer = fs.readFileSync(config.inputFieldFLevelDirectory + '/' + baseFilename)
     if (!isDecompressed) {
       buffer = this.lzsDecompressor.decompress(buffer)
     }
 
-    var r = new FF7BinaryDataReader(buffer)
+    const r = new FF7BinaryDataReader(buffer)
 
-    let fileSizeBytes = buffer.length
+    const fileSizeBytes = buffer.length
     r.offset = 0
 
-    let flevel = {}
+    const flevel = {}
     var sectionOffset = 0
     var sectionOffsetBase = 0
 
@@ -68,7 +68,7 @@ module.exports = class FLevelLoader {
     }
 
     for (let i = 0; i < flevel.script.header.numEntities; i++) {
-      let entitySection = {
+      const entitySection = {
         entityName: flevel.script.header.entityNames[i],
         entityScriptRoutines: []
       }
@@ -95,14 +95,14 @@ module.exports = class FLevelLoader {
       numDialogs = 0
     }
     // console.log('dialog numDialogs', numDialogs)
-    let dialogOffsets = []
+    const dialogOffsets = []
     for (let i = 0; i < numDialogs; i++) {
       dialogOffsets.push(r.readUShort())
     }
     for (let i = 0; i < numDialogs; i++) {
-      let dialogOffset = dialogOffsets[i]
+      const dialogOffset = dialogOffsets[i]
       r.offset = sectionOffsetBase + flevel.script.header.stringOffset + dialogOffset
-      let string = r.readDialogString(1000) // TODO: What's the longest dialog string?
+      const string = r.readDialogString(1000) // TODO: What's the longest dialog string?
 
       // r.offset = sectionOffsetBase + flevel.script.header.stringOffset + dialogOffset
       // const bin = r.readUByteArray(1000).map(b => toHex2(b)).join(' ').split(' ff')[0]
@@ -126,7 +126,7 @@ module.exports = class FLevelLoader {
     r.setDialogStrings(flevel.script.dialogStrings)
 
     for (let i = 0; i < flevel.script.header.numEntities; i++) {
-      let entity = {
+      const entity = {
         entityId: i,
         entityName: flevel.script.header.entityNames[i],
         entityType: '', // Purely added for positioning in JSON, updated delow
@@ -137,7 +137,7 @@ module.exports = class FLevelLoader {
 
       flevel.script.entities.push(entity)
       for (let j = 0; j < 31; j++) { // TODO: support entities with 32 scripts; will need different method of determining endOffset
-        let startOffset = sectionOffsetBase + flevel.script.header.entitySections[i].entityScriptRoutines[j]
+        const startOffset = sectionOffsetBase + flevel.script.header.entitySections[i].entityScriptRoutines[j]
         r.startOffset = startOffset
         r.offset = startOffset
         // if (i==5 && j==0) {
@@ -145,17 +145,17 @@ module.exports = class FLevelLoader {
         //   r.printNextBufferDataAsHex();
         // }
         if (j > 0) {
-          let prevStartOffset = sectionOffsetBase + flevel.script.header.entitySections[i].entityScriptRoutines[j - 1]
+          const prevStartOffset = sectionOffsetBase + flevel.script.header.entitySections[i].entityScriptRoutines[j - 1]
           if (startOffset == prevStartOffset) {
             continue
           }
         }
-        let entityScript = {
+        const entityScript = {
           index: j,
           scriptType: '',
           ops: []
         }
-        var op = {}
+        let op = {}
         let done = false
         // Determine the startOffset for the "next" script (which is the endOffset for the "current" script)
         let nextStartOffset = sectionOffsetBase + flevel.script.header.stringOffset // default
@@ -175,10 +175,10 @@ module.exports = class FLevelLoader {
           if (i === LOG_I) { console.log('  j < 31', startOffset, nextStartOffset) } // Debug
         }
         const lastScriptOffset = sectionOffsetBase + flevel.script.header.entitySections[i].entityScriptRoutines[flevel.script.header.entitySections[i].entityScriptRoutines.length - 1]
-        let isLastScript = (j == 31 || lastScriptOffset == startOffset)
+        const isLastScript = (j == 31 || lastScriptOffset == startOffset)
         if (i === LOG_I) { console.log('  isLastScript', isLastScript, j, nextStartOffset, startOffset, lastScriptOffset) } // Debug
         if (isLastScript) {
-          let isLastEntity = i == flevel.script.header.numEntities - 1
+          const isLastEntity = i == flevel.script.header.numEntities - 1
           if (isLastEntity) {
             // If this is the last entity (and last script), assume it's the end of the entire field section (beginning of string/dialog section)
             nextStartOffset = sectionOffsetBase + flevel.script.header.stringOffset
@@ -194,8 +194,8 @@ module.exports = class FLevelLoader {
         let byteIndexOffset = 0
         while (!done) {
           // let lineNumber = pad5(offset - sectionOffsetBase);
-          let lineNumber = stringUtil.pad5(r.offset)
-          let byteIndex = r.offset - startOffset
+          const lineNumber = stringUtil.pad5(r.offset)
+          const byteIndex = r.offset - startOffset
           try {
             op = r.readOpAndIncludeRawBytes() // r.readOp();
             if (entityScript.ops.length === 0) {
@@ -247,8 +247,8 @@ module.exports = class FLevelLoader {
               opIndex++
             }
           }
-          let initOps = entityScript.ops
-          let mainOps = initOps.splice(opIndex + 1)
+          const initOps = entityScript.ops
+          const mainOps = initOps.splice(opIndex + 1)
           entityScript.ops = initOps
           entity.scripts.push(entityScript)
 
@@ -275,7 +275,7 @@ module.exports = class FLevelLoader {
     const getEntityType = (entity) => {
       if (entity.scripts.length === 0) { return 'Unknown' }
 
-      let ops0 = entity.scripts[0].ops.map(o => o.op)
+      const ops0 = entity.scripts[0].ops.map(o => o.op)
 
       if (ops0.includes('PC')) { return 'Playable Character' }
       if (ops0.includes('CHAR')) { return 'Model' }
@@ -288,7 +288,7 @@ module.exports = class FLevelLoader {
       if (ops0.includes('MPNAM')) { return 'Director' }
 
       if (entity.scripts.length >= 2) {
-        let ops1 = entity.scripts[1].ops.map(o => o.op)
+        const ops1 = entity.scripts[1].ops.map(o => o.op)
         if (ops1.includes('MPNAM')) { return 'Director' }
       }
       return 'Unknown'
@@ -360,19 +360,19 @@ module.exports = class FLevelLoader {
     var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     flevel.script.length = r.readInt()
     var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
-    let blank = r.readShort(), numModels = r.readShort(), modelScale = r.readShort()
+    const blank = r.readShort(); const numModels = r.readShort(); const modelScale = r.readShort()
     flevel.model = {
       header: {
-        numModels: numModels,
-        modelScale: modelScale
+        numModels,
+        modelScale
       },
       modelLoaders: []
     }
     for (let i = 0; i < numModels; i++) {
-      let modelLoader = {}
-      let nameLength = r.readUShort()
+      const modelLoader = {}
+      const nameLength = r.readUShort()
       modelLoader.name = r.readString(nameLength)
-      let unknown = r.readUShort()
+      const unknown = r.readUShort()
       modelLoader.hrcId = r.readString(8)
       modelLoader.scaleString = r.readString(4)
       modelLoader.numAnimations = r.readUShort()
@@ -383,9 +383,9 @@ module.exports = class FLevelLoader {
       modelLoader.animations = []
 
       for (let j = 0; j < modelLoader.numAnimations; j++) {
-        let animNameLength = r.readUShort()
-        let animName = replaceBrokenAnimations(modelLoader.name, r.readString(animNameLength))
-        let unknown = r.readShort()
+        const animNameLength = r.readUShort()
+        const animName = replaceBrokenAnimations(modelLoader.name, r.readString(animNameLength))
+        const unknown = r.readShort()
         modelLoader.animations.push(animName)
         // modelLoader.animations.push({name: animName, unknown: unknown}); // TODO: see if anyone figured out what unknown is
         // console.log('animName', modelLoader.name, animName)
@@ -397,9 +397,9 @@ module.exports = class FLevelLoader {
     // Section 1/2: Camera
     r.offset = flevel.sectionOffsets[1]
     var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
-    let cameraSectionLength = r.readUInt()
+    const cameraSectionLength = r.readUInt()
     var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
-    var readCameraVector = function () {
+    const readCameraVector = function () {
       return {
         x: r.readShort(),
         y: r.readShort(),
@@ -409,7 +409,7 @@ module.exports = class FLevelLoader {
     flevel.cameraSection = {
       cameras: []
     }
-    let camera = {
+    const camera = {
       xAxis: readCameraVector(),
       yAxis: readCameraVector(),
       zAxis: readCameraVector(),
@@ -424,15 +424,15 @@ module.exports = class FLevelLoader {
     // Section 4/5: Walkmesh
     r.offset = flevel.sectionOffsets[4]
     var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
-    let walkmeshSectionLength = r.readUInt()
+    const walkmeshSectionLength = r.readUInt()
     var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
-    let numSectors = r.readUInt()
+    const numSectors = r.readUInt()
     flevel.walkmeshSection = {
-      numSectors: numSectors,
+      numSectors,
       triangles: [],
       accessors: []
     }
-    var readWalkmeshVertex = function () {
+    const readWalkmeshVertex = function () {
       return {
         x: r.readShort(),
         y: r.readShort(),
@@ -449,7 +449,7 @@ module.exports = class FLevelLoader {
 
     // Section 7/8: Triggers
     r.offset = flevel.sectionOffsets[7]
-    let sectionEndOffset = flevel.sectionOffsets[8]
+    const sectionEndOffset = flevel.sectionOffsets[8]
     var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     flevel.script.length = r.readInt()
     var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
@@ -467,10 +467,10 @@ module.exports = class FLevelLoader {
     }
     flevel.triggers.header.bgLayer3 = {}
     flevel.triggers.header.bgLayer4 = {}
-    let off0x20 = [r.readByte(), r.readByte(), r.readByte(), r.readByte()]
+    const off0x20 = [r.readByte(), r.readByte(), r.readByte(), r.readByte()]
     flevel.triggers.header.bgLayer3.animation = { width: r.readUShort(), height: r.readUShort() }
     flevel.triggers.header.bgLayer4.animation = { width: r.readUShort(), height: r.readUShort() }
-    let off0x32 = []
+    const off0x32 = []
     for (let i = 0; i < 24; i++) {
       off0x32.push(r.readByte())
     }
@@ -478,14 +478,14 @@ module.exports = class FLevelLoader {
 
     flevel.triggers.gateways = []
     for (let i = 0; i < 12; i++) {
-      let gateway = {
+      const gateway = {
         exitLineVertex1: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
         exitLineVertex2: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
         destinationVertex: { x: r.readShort(), y: r.readShort(), triangleId: r.readShort() },
         fieldId: r.readUShort()
       }
       gateway.destinationVertex.direction = r.readByte()
-      let unknown = [r.readByte(), r.readByte(), r.readByte()]
+      const unknown = [r.readByte(), r.readByte(), r.readByte()]
       if (gateway.fieldId != 32767) {
         if (gateway.fieldId < this.mapList.length) {
           gateway.fieldName = this.mapList[gateway.fieldId]
@@ -496,7 +496,7 @@ module.exports = class FLevelLoader {
 
     flevel.triggers.triggers = []
     for (let i = 0; i < 12; i++) {
-      let trigger = {
+      const trigger = {
         cornerVertex1: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
         cornerVertex2: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
         bgGroupId_param: r.readUByte(), // see BGON/BGOFF opcodes
@@ -516,11 +516,11 @@ module.exports = class FLevelLoader {
     }
     flevel.triggers.gatewayArrows = []
     for (let i = 0; i < 12; i++) {
-      let gatewayArrow = { x: r.readInt(), z: r.readInt(), y: r.readInt(), type: r.readInt() }
+      const gatewayArrow = { x: r.readInt(), z: r.readInt(), y: r.readInt(), type: r.readInt() }
       flevel.triggers.gatewayArrows.push(gatewayArrow)
     }
 
-    var replacer = function (k, v) {
+    const replacer = function (k, v) {
       if (k == 'entitySections') { return undefined }
       return v
     }
@@ -539,9 +539,9 @@ module.exports = class FLevelLoader {
       pages: []
     }
     for (let i = 0; i < flevel.palette.header.pageCount; i++) {
-      let page = []
+      const page = []
       for (let j = 0; j < flevel.palette.header.colorsPerPage; j++) {
-        let bytes = r.readShort()
+        const bytes = r.readShort()
         const color = backgroundLayerRenderer.getColorForPalette(bytes)
         page.push(color)
       }
@@ -581,7 +581,7 @@ module.exports = class FLevelLoader {
       const param = r.readUByte()
       const statePow2 = r.readUByte()
       const blending = r.readUByte()
-      const unknown7 = r.readUByte()
+      const useBlack = r.readUByte()
       const typeTrans = r.readUByte()
       const unknown8 = r.readUByte()
       const textureId = r.readUByte()
@@ -609,17 +609,28 @@ module.exports = class FLevelLoader {
         statePow2,
         state: statePow2 > 0 ? Math.log2(statePow2) : 0,
         blending,
+        useBlack,
         typeTrans,
         textureId,
         textureId2,
         depth,
         idBig,
         sourceXBig,
-        sourceYBig
-        // unknown: { // Uncomment should they wish to be used
-        //   blank, blank2, unknown1, unknown2, unknown3, unknown4, unknown5, unknown6, unknown7, unknown8,
-        //   unknown9, unknown10, unknown11
-        // }
+        sourceYBig,
+        unknown: { // Uncomment should they wish to be used
+          blank,
+          blank2,
+          unknown1,
+          unknown2,
+          unknown3,
+          unknown4,
+          unknown5,
+          unknown6,
+          unknown8,
+          unknown9,
+          unknown10,
+          unknown11
+        }
       })
     }
     flevel.background = {
@@ -632,10 +643,10 @@ module.exports = class FLevelLoader {
       palette: {}
     }
 
-    let paletteTitle = r.readString(7)
+    const paletteTitle = r.readString(7)
     flevel.background.palette.ignoreFirstPixel = r.readUByteArray(20)
-    let paletteZero2 = r.readUInt()
-    let paletteBack = r.readString(4)
+    const paletteZero2 = r.readUInt()
+    const paletteBack = r.readString(4)
 
     flevel.background.tiles = {
       layer1: {
@@ -648,13 +659,13 @@ module.exports = class FLevelLoader {
     }
     flevel.background.tiles.layer1.blank = r.readUShort()
     for (let i = 0; i < flevel.background.tiles.layer1.tileCount; i++) {
-      let tile = readTile(r)
+      const tile = readTile(r)
       flevel.background.tiles.layer1.tiles.push(tile)
     }
     flevel.background.tiles.layer1.blank2 = r.readUShort()
 
     for (let layerNo = 2; layerNo <= 4; layerNo++) {
-      let layerFlag = r.readUByte()
+      const layerFlag = r.readUByte()
       if (layerFlag === 1) {
         flevel.background.tiles[`layer${layerNo}`] = {
           width: r.readUShort(),
@@ -665,33 +676,33 @@ module.exports = class FLevelLoader {
         }
         flevel.background.tiles[`layer${layerNo}`].blank = r.readUShort()
         for (let i = 0; i < flevel.background.tiles[`layer${layerNo}`].tileCount; i++) {
-          let tile = readTile(r)
+          const tile = readTile(r)
           flevel.background.tiles[`layer${layerNo}`].tiles.push(tile)
         }
         flevel.background.tiles[`layer${layerNo}`].blank2 = r.readUShort()
       }
     }
 
-    let textureHeader = r.readString(7)
+    const textureHeader = r.readString(7)
     // console.log('TEXTURE ->', textureHeader) // Check that all has been read properly
     flevel.background.textures = {}
 
     for (let textureCount = 0; textureCount < 42; textureCount++) { // Max possible 42 - https://github.com/niemasd/PyFF7/wiki/Field-File-Section-9%3A-Background
-      let exists = r.readUShort()
+      const exists = r.readUShort()
       if (exists) {
-        let size = r.readUShort()
-        let depth = r.readUShort()
+        const size = r.readUShort()
+        const depth = r.readUShort()
         let textureData
         if (depth === 2) {
           textureData = r.readUShortArray(256 * 256 * (depth / 2)) // Depth = 2 tiles don't seem to use palettes but instead have the colour directly, so it needs to be 2 bytes
         } else {
           textureData = r.readUByteArray(256 * 256 * depth)
         }
-        flevel.background.textures[`texture${textureCount}`] = { textureId: textureCount, size: size, depth: depth, data: textureData }
+        flevel.background.textures[`texture${textureCount}`] = { textureId: textureCount, size, depth, data: textureData }
       }
     }
-    let end = r.readString(3)
-    let ff7 = r.readString(14)
+    const end = r.readString(3)
+    const ff7 = r.readString(14)
     // console.log('ff7 ->', ff7) // Check that all has been read properly
 
     // Render Backgrounds
@@ -733,7 +744,7 @@ module.exports = class FLevelLoader {
     if (!fs.existsSync(outputDirMetaData)) {
       fs.mkdirSync(outputDirMetaData)
     }
-    const fieldTextureMetadata = {field: []}
+    const fieldTextureMetadata = { field: [] }
     // console.log('ensureTexturesExist', config.inputFieldFLevelDirectory, config.outputFieldFLevelDirectory, texFiles, outputDir)
     for (let i = 0; i < texFiles.length; i++) {
       const texFile = texFiles[i]
@@ -754,7 +765,7 @@ module.exports = class FLevelLoader {
       if (!fs.existsSync(pngPathMetadata)) {
         await tex.saveAsPng(pngPathMetadata)
       }
-      fieldTextureMetadata.field.push({id: i, description: texFile.replace('.tex', ''), x: 0, y: 0, w: w, h: h, palette: 0})
+      fieldTextureMetadata.field.push({ id: i, description: texFile.replace('.tex', ''), x: 0, y: 0, w, h, palette: 0 })
       fs.writeFileSync(metadataFile, JSON.stringify(fieldTextureMetadata))
     }
     // console.log('fieldTextureMetadata', fieldTextureMetadata)
