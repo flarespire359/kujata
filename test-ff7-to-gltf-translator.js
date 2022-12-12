@@ -21,20 +21,23 @@ const gltfTranslator = new FF7GltfTranslator()
 
 const translateBattleFile = (hrcFileId) => {
   try {
-    gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, false, true)
+    gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true, true)
   } catch (err) {
     console.log('Error while trying to translate: ' + hrcFileId + ':', err)
     // break; // uncomment this line to stop on failure
   }
 }
 const translateAllBattleFiles = () => {
+  console.log('translateAllBattleFiles: START')
   const battleFiles = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith('aa'))// .filter(f => f.toLowerCase() !== 'akaa')
   console.log('battleFiles', battleFiles)
   for (const battleFile of battleFiles) {
     translateBattleFile(battleFile)
   }
+  console.log('translateAllBattleFiles: END')
 }
 
+// translateBattleFile('opaa')
 // translateBattleFile('rtaa')
 translateAllBattleFiles()
 

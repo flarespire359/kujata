@@ -75,7 +75,7 @@ module.exports = class FF7GltfTranslator {
         animFileIds = []
       } else {
         if (animFileIds.length === 0) {
-          console.log('Will translate all field animations from Ifalna database.')
+          // console.log('Will translate all field animations from Ifalna database.')
           const ifalnaEntry = ifalnaDatabase[hrcFileId.toUpperCase()]
           if (ifalnaEntry) {
             if (ifalnaEntry.Anims) { animFileIds = animFileIds.concat(ifalnaEntry.Anims) }
@@ -92,7 +92,7 @@ module.exports = class FF7GltfTranslator {
     let baseAnimationData = null
     if (isBattleModel) {
       const battleAnimationFilename = hrcId.substring(0, 2) + 'da'
-      console.log('Will translate and include animations from pack: ' + battleAnimationFilename)
+      // console.log('Will translate and include animations from pack: ' + battleAnimationFilename)
       const battleAnimationLoader = new BattleAnimationLoader()
       const battleModel = skeleton
       battleAnimationPack = battleAnimationLoader.loadBattleAnimationPack(config, battleAnimationFilename, battleModel.numBones, battleModel.numBodyAnimations, battleModel.numWeaponAnimations)
@@ -133,7 +133,7 @@ module.exports = class FF7GltfTranslator {
         if (baseAnimFileId && !isBattleModel) {
           baseAnimationData = ALoader.loadA(config, baseAnimFileId)
         } else {
-          console.log('Warning: Not using base animation; model may look funny without bone rotations.')
+          // console.log('Warning: Not using base animation; model may look funny without bone rotations.')
           const defaultBoneRotations = []
           for (let i = 0; i < numBones; i++) {
             defaultBoneRotations.push({ x: 30 * Math.PI / 180, y: 30 * Math.PI / 180, z: 30 * Math.PI / 180 })
@@ -176,7 +176,7 @@ module.exports = class FF7GltfTranslator {
     for (let i = 0; i < animationDataList.length; i++) {
       const animationData = animationDataList[i]
       if (!animationData.numBones) {
-        console.log('WARN: animation #' + i + ' is blank.')
+        // console.log('WARN: animation #' + i + ' is blank.')
       } else {
         const bonesToCompare = isBattleModel && skeleton.hasWeapon ? skeleton.bones.length - 1 : skeleton.bones.length // battle model with weapon has + 1 bone (body + weapon), so we need to substract that bone
         if (animationData.numBones !== bonesToCompare) {
@@ -340,9 +340,11 @@ module.exports = class FF7GltfTranslator {
               for (let i = 0; i < textureIds.length; i++) {
                 const textureId = textureIds[i].toLowerCase()
 
-                const texturePath = `${config.texturesDirectory}/${textureId}.tex.png`
+                const texSrcDir = isBattleModel ? config.inputBattleBattleDirectory : config.inputFieldCharDirectory
+                const texSrcFile = isBattleModel ? textureIds[i] : `${textureIds[i]}.tex`
+                const texturePath = isBattleModel ? `${config.texturesDirectory}/${textureId}.png` : `${config.texturesDirectory}/${textureId}.tex.png`
 
-                this.ensureTextureExists(outputDirectory, config.inputFieldCharDirectory, textureIds[i], texturePath)
+                this.ensureTextureExists(outputDirectory, texSrcDir, texSrcFile, texturePath)
                 // console.log(pFileId, 'texture - ', texturePath)
                 gltf.images.push({ uri: texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
@@ -697,10 +699,10 @@ module.exports = class FF7GltfTranslator {
       const weaponAnimationData = weaponAnimationDataList[i]
 
       if (!animationData.numBones) {
-        console.log('WARN: Skipping empty animation')
+        // console.log('WARN: Skipping empty animation')
         // if (weaponAnimationData.numBones = null)
         // {
-        console.log('EMPTY WEAPON ANIM')
+        // console.log('EMPTY WEAPON ANIM')
         // }
         continue
       }
@@ -710,7 +712,7 @@ module.exports = class FF7GltfTranslator {
         channels: [],
         samplers: []
       })
-      console.log('DEBUG: animationName=' + animationName)
+      // console.log('DEBUG: animationName=' + animationName)
       const animationIndex = gltf.animations.length - 1
 
       const numFrames = animationData.numFrames
@@ -906,8 +908,8 @@ module.exports = class FF7GltfTranslator {
     // console.log('Wrote: ' + gltfFilenameFull)
   }; // end function translateFF7FieldHrcToGltf
 
-  ensureTextureExists (outputDirectory, texDirectory, textureId, texturePath) {
-    const texPath = `${texDirectory}/${textureId}.tex` // Can be .TEX of .tex, fs sorts this out anyway
+  ensureTextureExists (outputDirectory, texDirectory, textureFile, texturePath) {
+    const texPath = `${texDirectory}/${textureFile}` // Can be .TEX of .tex, fs sorts this out anyway
     const pngPath = `${outputDirectory}/${texturePath}`
 
     if (!fs.existsSync(pngPath)) {

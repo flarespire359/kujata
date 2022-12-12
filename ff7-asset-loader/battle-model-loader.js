@@ -8,9 +8,7 @@ module.exports = class BattleModelLoader {
   }
 
   loadBattleLocationPiece (config, pieceFilename, boneIndex) {
-    console.log('TODO: Read Battle Location Piece for: ' + pieceFilename + ' boneIndex=' + boneIndex)
     // let model = PLoader.loadP(config, pieceFilename, true)
-
     // const boneParent = boneIndex
     const boneLength = 1
     const bone = {
@@ -134,7 +132,7 @@ module.exports = class BattleModelLoader {
     let pSufix2 = null
     const b = false
 
-    console.log('battleModel', battleModel)
+    // console.log('battleModel', battleModel)
     if (battleModel.numBones === 0) { // It's a battle location model
       battleModel.isBattleLocation = true
 
@@ -143,16 +141,16 @@ module.exports = class BattleModelLoader {
         const pieceFilepath = config.inputBattleBattleDirectory + '/' + pieceFilename
         // let pieceFilenameAbsolute = config.inputBattleBattleDirectory + '/' + pieceFilename
 
-        console.log('pieceFilepath', pieceFilepath, pieceFilename)
+        // console.log('pieceFilepath', pieceFilepath, pieceFilename)
 
         if (fs.existsSync(pieceFilepath)) {
           // ReDim Preserve .Bones(.NumBones)
 
-          console.log('pieceFilepath', pieceFilepath, 'present', loadGeometry)
+          // console.log('pieceFilepath', pieceFilepath, 'present', loadGeometry)
           if (loadGeometry) {
             const boneIndex = battleModel.numBones
             const bone = this.loadBattleLocationPiece(config, pieceFilename, boneIndex)
-            console.log('bone', bone)
+            // console.log('bone', bone)
             battleModel.bones.push(bone)
           }
           battleModel.numBones++
@@ -220,7 +218,7 @@ module.exports = class BattleModelLoader {
         const texFileName = baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
         const texFileNameAbsolute = config.inputBattleBattleDirectory + '/' + texFileName
         battleModel.textureFilenames.push(texFileName)
-        console.log('TEXTURES ARE ' + texFileName)
+        // console.log('TEXTURES ARE ' + texFileName)
       }
     }
 
