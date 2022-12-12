@@ -1,15 +1,15 @@
 const fs = require('fs')
 const FF7GltfTranslator = require('./ff7-gltf/ff7-to-gltf.js')
 
-var config = JSON.parse(require('fs').readFileSync('config.json'))
+const config = JSON.parse(require('fs').readFileSync('config.json'))
 
-let hrcFileId = 'AAAA'
-let baseAnimFileId = null
-let animFileIds = null // don't include any animations
-let includeTextures = true
-let isBattleModel = true
+const hrcFileId = 'AAAA'
+const baseAnimFileId = null
+const animFileIds = null // don't include any animations
+const includeTextures = true
+const isBattleModel = true
 
-let gltfTranslator = new FF7GltfTranslator()
+const gltfTranslator = new FF7GltfTranslator()
 // gltfTranslator.translateFF7FieldHrcToGltf(config, 'bybf', baseAnimFileId, animFileIds, includeTextures);
 // gltfTranslator.translateFF7FieldHrcToGltf(config, 'aaaa', baseAnimFileId, animFileIds, includeTextures);
 // gltfTranslator.translateFF7FieldHrcToGltf(config, 'cvba', baseAnimFileId, animFileIds, includeTextures);
@@ -19,13 +19,7 @@ let gltfTranslator = new FF7GltfTranslator()
 //   // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
 // }
 
-let filenamesB = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith(('opaa')))
-
-for (const hrcFileId of filenamesB) {
-  // hrcFileId = prefix + 'aa'
-
-  console.log('battle file', hrcFileId)
-  let gltfTranslator = new FF7GltfTranslator()
+const translateBattleFile = (hrcFileId) => {
   try {
     gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, false, true)
   } catch (err) {
@@ -33,6 +27,16 @@ for (const hrcFileId of filenamesB) {
     // break; // uncomment this line to stop on failure
   }
 }
+const translateAllBattleFiles = () => {
+  const battleFiles = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith('aa'))// .filter(f => f.toLowerCase() !== 'akaa')
+  console.log('battleFiles', battleFiles)
+  for (const battleFile of battleFiles) {
+    translateBattleFile(battleFile)
+  }
+}
+
+// translateBattleFile('rtaa')
+translateAllBattleFiles()
 
 // translate every *.hrc.json file in the skeletons directory
 

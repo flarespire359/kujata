@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const LzsDecompressor = require('../lzs/lzs-decompressor.js')
 const FLevelLoader = require('./flevel-loader.js')
 const { generateOpCodeUsages } = require('./generate-op-codes-usages.js')
@@ -80,10 +80,10 @@ const problemMaps = ['blin67_4',
 // console.log('Decode one', decodeOneMap('md1stin'))
 
 // console.log('Decode one', decodeOneMap('md1_1'))
-console.log('Decode one', decodeOneMap('md1_2'))
+// console.log('Decode one', decodeOneMap('md1_2'))
 // console.log('Decode one', decodeOneMap('jail1'))
 // console.log('Decode one', decodeOneMap('yougan2'))
-// console.log('Decode one', decodeOneMap('rckt3'))
+console.log('Decode one', decodeOneMap('elevtr1'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
 // console.log('Decode one', decodeOneMap('ancnt3'))
 

@@ -64,5 +64,5 @@
     "inputDiscDescription": "Location of extracted assets from disc_us.lgp",
     "outputCDDirectory": "/Users/DanGarfield/code/kujata-data/data/cd",
     "outputCDDirectoryDescription": "Location of exe directory containing text strings, shop listings and other hardcoded data",
-    "renderBackgroundLayers": true
+    "renderBackgroundLayers": false
 }
