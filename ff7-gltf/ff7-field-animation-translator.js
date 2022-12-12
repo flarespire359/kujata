@@ -5,7 +5,7 @@ const { toRadians, rotationToQuaternion } = require('./ff7-gltf-common.js')
 // var HrcLoader = require("../ff7-asset-loader/hrc-loader.js");
 // var RsdLoader = require("../ff7-asset-loader/rsd-loader.js");
 // var PLoader = require("../ff7-asset-loader/p-loader.js");
-var ALoader = require('../ff7-asset-loader/a-loader.js')
+let ALoader = require('../ff7-asset-loader/a-loader.js')
 const BattleModelLoader = require('../ff7-asset-loader/battle-model-loader.js')
 const BattleAnimationLoader = require('../ff7-asset-loader/battle-animation-loader.js')
 
@@ -22,78 +22,78 @@ module.exports = class FF7FieldAnimationTranslator {
   // config = configuration object, see config.json for example
   // animFileId = which animation to include in the output gltf
   translateFF7FieldAnimationToGLTF (config, animFileId) {
-    var outputAnimationsDirectory = config.outputFieldCharDirectory
+    let outputAnimationsDirectory = config.outputFieldCharDirectory
 
     if (!fs.existsSync(outputAnimationsDirectory)) {
       console.log('Creating output directory: ' + outputAnimationsDirectory)
       mkdirp.sync(outputAnimationsDirectory)
     }
 
-    var ROOT_X_ROTATION_DEGREES = 180.0
-    var FRAMES_PER_SECOND = 30.0
+    let ROOT_X_ROTATION_DEGREES = 180.0
+    let FRAMES_PER_SECOND = 30.0
 
     console.log('Will translate the following animFileId: ', animFileId)
 
-    var animationData = ALoader.loadA(config, animFileId)
+    let animationData = ALoader.loadA(config, animFileId)
     // console.log('animationData', animationData)
-    var gltfFilename = animFileId.toLowerCase() + '.a.gltf'
-    var binFilename = animFileId.toLowerCase() + '.a.bin'
-    var rotationOrder = 'YXZ' // TODO: use animation data rotationOrder instead
-    let gltf = {}
+    let gltfFilename = animFileId.toLowerCase() + '.a.gltf'
+    let binFilename = animFileId.toLowerCase() + '.a.bin'
+    let rotationOrder = 'YXZ' // TODO: use animation data rotationOrder instead
+    const gltf = {}
     gltf.asset = {
-      'version': '2.0',
-      'generator': 'kujata'
+      version: '2.0',
+      generator: 'kujata'
     }
     gltf.accessors = []
     gltf.buffers = []
     gltf.bufferViews = []
     gltf.animations = []
-    var allBuffers = [] // array of all individual Buffers, which will be combined at the end
-    var numBuffersCreated = 0
+    let allBuffers = [] // array of all individual Buffers, which will be combined at the end
+    let numBuffersCreated = 0
 
     gltf.animations.push({
       // "name": animId + "_animation", // TODO: name the animation
-      'channels': [],
-      'samplers': []
+      channels: [],
+      samplers: []
     })
-    let animationIndex = gltf.animations.length - 1
+    const animationIndex = gltf.animations.length - 1
 
-    let numFrames = animationData.numFrames
+    const numFrames = animationData.numFrames
 
     // create buffer to store start-time/end-time pair(s)
-    let numTimeMarkers = 2 * numFrames // start time and end time per frame
-    let startAndEndTimeBuffer = Buffer.alloc(numFrames * 2 * 4) // 2 time markers per frame, 4 bytes per float time
+    const numTimeMarkers = 2 * numFrames // start time and end time per frame
+    const startAndEndTimeBuffer = Buffer.alloc(numFrames * 2 * 4) // 2 time markers per frame, 4 bytes per float time
     for (let f = 0; f < numFrames; f++) {
-      let startTime = f / FRAMES_PER_SECOND
-      let endTime = (f + 1) / FRAMES_PER_SECOND
+      const startTime = f / FRAMES_PER_SECOND
+      const endTime = (f + 1) / FRAMES_PER_SECOND
       startAndEndTimeBuffer.writeFloatLE(startTime, f * 8)
       startAndEndTimeBuffer.writeFloatLE(endTime, f * 8 + 4)
     }
     allBuffers.push(startAndEndTimeBuffer)
     numBuffersCreated++
-    let startAndEndTimeAccessorIndex = numBuffersCreated - 1 // will assign to sampler.input
+    const startAndEndTimeAccessorIndex = numBuffersCreated - 1 // will assign to sampler.input
     gltf.accessors.push({
-      'bufferView': startAndEndTimeAccessorIndex,
-      'byteOffset': 0,
-      'type': 'SCALAR',
-      'componentType': COMPONENT_TYPE.FLOAT,
-      'count': numFrames * 2 // 2 time markers per frame
+      bufferView: startAndEndTimeAccessorIndex,
+      byteOffset: 0,
+      type: 'SCALAR',
+      componentType: COMPONENT_TYPE.FLOAT,
+      count: numFrames * 2 // 2 time markers per frame
     })
     gltf.bufferViews.push({
-      'buffer': 0,
-      'byteLength': startAndEndTimeBuffer.length,
+      buffer: 0,
+      byteLength: startAndEndTimeBuffer.length,
       // "byteStride": 4, // 4 bytes per float time
-      'target': ARRAY_BUFFER
+      target: ARRAY_BUFFER
     })
 
     // each bone will get its own series of animation data
     for (let boneIndex = 0; boneIndex < animationData.numBones; boneIndex++) {
       // create buffer for animation frame data for this bone
-      let boneFrameDataBuffer = Buffer.alloc(numFrames * 2 * 4 * 4) // 2 rotations per frame (start and end), 4 floats per rotation, 4 bytes per float
+      const boneFrameDataBuffer = Buffer.alloc(numFrames * 2 * 4 * 4) // 2 rotations per frame (start and end), 4 floats per rotation, 4 bytes per float
       for (let f = 0; f < numFrames; f++) {
-        let frameData = animationData.animationFrames[f]
-        let boneRotation = frameData.boneRotations[boneIndex]
-        let quat = rotationToQuaternion(
+        const frameData = animationData.animationFrames[f]
+        const boneRotation = frameData.boneRotations[boneIndex]
+        const quat = rotationToQuaternion(
           toRadians(boneRotation.x),
           toRadians(boneRotation.y),
           toRadians(boneRotation.z),
@@ -113,44 +113,44 @@ module.exports = class FF7FieldAnimationTranslator {
       // console.log('boneFrameDataBuffer', boneFrameDataBuffer, boneFrameDataBuffer.length)
       allBuffers.push(boneFrameDataBuffer)
       numBuffersCreated++
-      let boneFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
+      const boneFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
       gltf.accessors.push({
-        'bufferView': boneFrameDataAccessorIndex,
-        'byteOffset': 0,
-        'type': 'VEC4',
-        'componentType': COMPONENT_TYPE.FLOAT,
-        'count': numFrames * 2 // 2 rotations per frame
+        bufferView: boneFrameDataAccessorIndex,
+        byteOffset: 0,
+        type: 'VEC4',
+        componentType: COMPONENT_TYPE.FLOAT,
+        count: numFrames * 2 // 2 rotations per frame
       })
       gltf.bufferViews.push({
-        'buffer': 0,
-        'byteLength': boneFrameDataBuffer.length,
-        'target': ARRAY_BUFFER
+        buffer: 0,
+        byteLength: boneFrameDataBuffer.length,
+        target: ARRAY_BUFFER
       })
       gltf.animations[animationIndex].samplers.push({
-        'input': startAndEndTimeAccessorIndex,
-        'interpolation': 'LINEAR',
-        'output': boneFrameDataAccessorIndex
+        input: startAndEndTimeAccessorIndex,
+        interpolation: 'LINEAR',
+        output: boneFrameDataAccessorIndex
       })
-      let nodeIndex = boneIndex + 2 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
-      let samplerIndex = gltf.animations[animationIndex].samplers.length - 1
+      const nodeIndex = boneIndex + 2 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
+      const samplerIndex = gltf.animations[animationIndex].samplers.length - 1
       gltf.animations[animationIndex].channels.push({
-        'sampler': samplerIndex,
-        'target': {
-          'node': nodeIndex,
-          'path': 'rotation'
+        sampler: samplerIndex,
+        target: {
+          node: nodeIndex,
+          path: 'rotation'
         }
       })
     }
 
-    let frameRootTranslationBuffer = Buffer.alloc(numFrames * 2 * 3 * 4) // 2 translation per frame (start and end), 3 floats per translation, 4 bytes per float
-    let frameRootRotationBuffer = Buffer.alloc(numFrames * 2 * 4 * 4)
-    let zList = []
+    const frameRootTranslationBuffer = Buffer.alloc(numFrames * 2 * 3 * 4) // 2 translation per frame (start and end), 3 floats per translation, 4 bytes per float
+    const frameRootRotationBuffer = Buffer.alloc(numFrames * 2 * 4 * 4)
+    const zList = []
     for (let f = 0; f < numFrames; f++) {
-      let nodeIndex = 1 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
+      const nodeIndex = 1 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
 
       // console.log('frame', animationData.animationFrames[f])
       // // Root translation
-      let rootTranslation = animationData.animationFrames[f].rootTranslation
+      const rootTranslation = animationData.animationFrames[f].rootTranslation
       // console.log('rootTranslation', rootTranslation)
 
       zList.push({
@@ -172,38 +172,38 @@ module.exports = class FF7FieldAnimationTranslator {
       allBuffers.push(frameRootTranslationBuffer)
       numBuffersCreated++
 
-      let rootTranslationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
+      const rootTranslationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
       gltf.accessors.push({
-        'bufferView': rootTranslationFrameDataAccessorIndex,
-        'byteOffset': 0,
-        'type': 'VEC3',
-        'componentType': COMPONENT_TYPE.FLOAT,
-        'count': numFrames * 2 // 2 rotations per frame
+        bufferView: rootTranslationFrameDataAccessorIndex,
+        byteOffset: 0,
+        type: 'VEC3',
+        componentType: COMPONENT_TYPE.FLOAT,
+        count: numFrames * 2 // 2 rotations per frame
       })
       gltf.bufferViews.push({
-        'buffer': 0,
-        'byteLength': frameRootTranslationBuffer.length,
-        'target': ARRAY_BUFFER
+        buffer: 0,
+        byteLength: frameRootTranslationBuffer.length,
+        target: ARRAY_BUFFER
       })
       gltf.animations[animationIndex].samplers.push({
-        'input': startAndEndTimeAccessorIndex,
-        'interpolation': 'LINEAR',
-        'output': rootTranslationFrameDataAccessorIndex
+        input: startAndEndTimeAccessorIndex,
+        interpolation: 'LINEAR',
+        output: rootTranslationFrameDataAccessorIndex
       })
 
       const samplerIndexRootTranslation = gltf.animations[animationIndex].samplers.length - 1
       gltf.animations[animationIndex].channels.push({
-        'sampler': samplerIndexRootTranslation,
-        'target': {
-          'node': nodeIndex,
-          'path': 'translation'
+        sampler: samplerIndexRootTranslation,
+        target: {
+          node: nodeIndex,
+          path: 'translation'
         }
       })
 
       // Root rotation
-      let rootRotation = animationData.animationFrames[f].rootRotation
+      const rootRotation = animationData.animationFrames[f].rootRotation
       // console.log('rootRotation', rootRotation)
-      let quat = rotationToQuaternion(
+      const quat = rotationToQuaternion(
         toRadians(rootRotation.x - 180),
         toRadians(360 - rootRotation.y),
         toRadians(rootRotation.z),
@@ -222,31 +222,31 @@ module.exports = class FF7FieldAnimationTranslator {
       allBuffers.push(frameRootRotationBuffer)
       numBuffersCreated++
 
-      let rootRotationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
+      const rootRotationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
       gltf.accessors.push({
-        'bufferView': rootRotationFrameDataAccessorIndex,
-        'byteOffset': 0,
-        'type': 'VEC4',
-        'componentType': COMPONENT_TYPE.FLOAT,
-        'count': numFrames * 2 // 2 rotations per frame
+        bufferView: rootRotationFrameDataAccessorIndex,
+        byteOffset: 0,
+        type: 'VEC4',
+        componentType: COMPONENT_TYPE.FLOAT,
+        count: numFrames * 2 // 2 rotations per frame
       })
       gltf.bufferViews.push({
-        'buffer': 0,
-        'byteLength': frameRootRotationBuffer.length,
-        'target': ARRAY_BUFFER
+        buffer: 0,
+        byteLength: frameRootRotationBuffer.length,
+        target: ARRAY_BUFFER
       })
       gltf.animations[animationIndex].samplers.push({
-        'input': startAndEndTimeAccessorIndex,
-        'interpolation': 'LINEAR',
-        'output': rootRotationFrameDataAccessorIndex
+        input: startAndEndTimeAccessorIndex,
+        interpolation: 'LINEAR',
+        output: rootRotationFrameDataAccessorIndex
       })
       // nodeIndex = 0; // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
       const samplerIndexRootRotation = gltf.animations[animationIndex].samplers.length - 1
       gltf.animations[animationIndex].channels.push({
-        'sampler': samplerIndexRootRotation,
-        'target': {
-          'node': nodeIndex,
-          'path': 'rotation'
+        sampler: samplerIndexRootRotation,
+        target: {
+          node: nodeIndex,
+          path: 'rotation'
         }
       })
     }
@@ -255,7 +255,7 @@ module.exports = class FF7FieldAnimationTranslator {
     if (gltf.bufferViews.length > 0) {
       // We wait until now to set the byteOffset for all buffer views, because that's
       // the easiest way to do it, given the dynamic nature of which buffers we use.
-      let numBufferViews = gltf.bufferViews.length
+      const numBufferViews = gltf.bufferViews.length
       gltf.bufferViews[0].byteOffset = 0
       for (let i = 1; i < numBufferViews; i++) {
         gltf.bufferViews[i].byteOffset = gltf.bufferViews[i - 1].byteOffset + gltf.bufferViews[i - 1].byteLength
@@ -264,22 +264,22 @@ module.exports = class FF7FieldAnimationTranslator {
       // TODO: set min and max for all accessors to help engines optimize
 
       // we can finally add the buffer (containing all buffer views) to gltf because we know the total size
-      let lastBufferView = gltf.bufferViews[numBufferViews - 1]
-      let totalLength = lastBufferView.byteOffset + lastBufferView.byteLength
-      let combinedBuffer = Buffer.concat(allBuffers, totalLength)
+      const lastBufferView = gltf.bufferViews[numBufferViews - 1]
+      const totalLength = lastBufferView.byteOffset + lastBufferView.byteLength
+      const combinedBuffer = Buffer.concat(allBuffers, totalLength)
       gltf.buffers.push({
-        'byteLength': totalLength,
-        'uri': binFilename
+        byteLength: totalLength,
+        uri: binFilename
       })
 
       // create *.bin file
-      let binFilenameFull = outputAnimationsDirectory + '/' + binFilename
+      const binFilenameFull = outputAnimationsDirectory + '/' + binFilename
       fs.writeFileSync(binFilenameFull, combinedBuffer)
       console.log('Wrote: ' + binFilenameFull)
     }
 
     // create *.gltf file
-    let gltfFilenameFull = outputAnimationsDirectory + '/' + gltfFilename
+    const gltfFilenameFull = outputAnimationsDirectory + '/' + gltfFilename
     fs.writeFileSync(gltfFilenameFull, JSON.stringify(gltf, null, 2))
     console.log('Wrote: ' + gltfFilenameFull)
   }; // end function translateFF7FieldAnimationToGLTF
