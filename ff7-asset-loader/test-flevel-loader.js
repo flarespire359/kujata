@@ -74,7 +74,7 @@ const problemMaps = ['blin67_4',
 
 // flevelLoader.ensureTexturesExist(config)
 
-// console.log('Decode all Maps -> All', decodeAllMaps(mapList))
+console.log('Decode all Maps -> All', decodeAllMaps(mapList))
 // console.log('Decode all Maps -> Errors All', decodeAllMaps(problemMaps))
 // console.log('Decode one', decodeOneMap('nmkin_1'))
 // console.log('Decode one', decodeOneMap('md1stin'))
@@ -83,7 +83,7 @@ const problemMaps = ['blin67_4',
 // console.log('Decode one', decodeOneMap('md1_2'))
 // console.log('Decode one', decodeOneMap('jail1'))
 // console.log('Decode one', decodeOneMap('yougan2'))
-console.log('Decode one', decodeOneMap('elevtr1'))
+// console.log('Decode one', decodeOneMap('mds7st2'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
 // console.log('Decode one', decodeOneMap('ancnt3'))
 

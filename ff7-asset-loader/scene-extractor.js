@@ -19,7 +19,7 @@ const getAttackData = (r) => {
 }
 const getEnemyData = (r) => {
   const intialOffset = r.offset
-  const rawName = r.readKernelString(32)
+  const rawName = r.readKernelString(32).trim()
   r.offset = intialOffset + 32
   const data = {
     name: rawName,
@@ -94,9 +94,9 @@ const getCameraPlacement = (r) => {
     // const raw = JSON.stringify(r.readUByteArray(48))
     // r.offset = tempOffset
     const data = {
-      camera1: {pos: readCameraVector(r), dir: readCameraVector(r)},
-      camera2: {pos: readCameraVector(r), dir: readCameraVector(r)},
-      camera3: {pos: readCameraVector(r), dir: readCameraVector(r)}
+      camera1: { pos: readCameraVector(r), dir: readCameraVector(r) },
+      camera2: { pos: readCameraVector(r), dir: readCameraVector(r) },
+      camera3: { pos: readCameraVector(r), dir: readCameraVector(r) }
 
     }
     const unused = r.readUByteArray(12)
@@ -141,7 +141,7 @@ const unzipBuffer = (buffer, from, to) => {
       const sectionBuffer = buffer.slice(from, to - offset)
       //   console.log('unzipBuffer attempt', i, from, to, offset)
       const unzippedBuffer = zlib.unzipSync(sectionBuffer)
-      let s = new FF7BinaryDataReader(unzippedBuffer)
+      const s = new FF7BinaryDataReader(unzippedBuffer)
       //   console.log('unzipBuffer success', from, to, offset, s.length, s.offset, s.readUShort())
       s.offset = 0
       return s
@@ -203,16 +203,16 @@ const getBlocks = (r, buffer) => {
   while (r.offset < r.length) {
     let pointerA = r.readUInt()
     let pointerB = r.readUInt()
-    dataFilePointers.push({blockId, fileId, from: pointerA * 4, to: pointerB * 4})
+    dataFilePointers.push({ blockId, fileId, from: pointerA * 4, to: pointerB * 4 })
 
     while (pointerB !== 0xFFFFFFFF) {
       pointerA = pointerB
       pointerB = r.readUInt()
       fileId++
       if (pointerB !== 0xFFFFFFFF) {
-        dataFilePointers.push({blockId, fileId, from: pointerA * 4, to: pointerB * 4})
+        dataFilePointers.push({ blockId, fileId, from: pointerA * 4, to: pointerB * 4 })
       } else {
-        dataFilePointers.push({blockId, fileId, from: pointerA * 4, to: 0x2000}) // TODO - ????
+        dataFilePointers.push({ blockId, fileId, from: pointerA * 4, to: 0x2000 }) // TODO - ????
       }
     }
     fileId++
@@ -221,7 +221,7 @@ const getBlocks = (r, buffer) => {
   }
   //   console.log('dataFilePointers', r.offset, r.length, dataFilePointers)
 
-  let datas = []
+  const datas = []
   for (let i = 0; i < dataFilePointers.length - 1; i++) {
     const dataFilePointer = dataFilePointers[i]
     const data = getDataFile(buffer, dataFilePointer)
@@ -229,6 +229,7 @@ const getBlocks = (r, buffer) => {
       datas.push(data)
     }
   }
+  const d = datas.filter(d => d.sceneId === 75)
   //   getDataFile(buffer, dataFilePointers[3])
   return datas
 }
@@ -240,8 +241,8 @@ const saveData = async (data, outputFile) => {
 }
 const extractSceneBinData = async (inputBattleSceneDirectory, outputBattleSceneDirectory) => {
   console.log('Extract scene.bin Data: START')
-  let buffer = fs.readFileSync(path.join(inputBattleSceneDirectory, 'scene.bin'))
-  let r = new FF7BinaryDataReader(buffer)
+  const buffer = fs.readFileSync(path.join(inputBattleSceneDirectory, 'scene.bin'))
+  const r = new FF7BinaryDataReader(buffer)
   const datas = getBlocks(r, buffer)
   await saveData(datas, path.join(outputBattleSceneDirectory, 'scene.bin.json'))
 

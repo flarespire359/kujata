@@ -1,10 +1,10 @@
 const fs = require('fs')
 const stringUtil = require('./string-util.js')
-const LzsDecompressor = require('../lzs/lzs-decompressor.js')
+// const LzsDecompressor = require('../lzs/lzs-decompressor.js')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const backgroundLayerRenderer = require('./background-layer-renderer.js')
 const musicList = JSON.parse(fs.readFileSync('../metadata/music-list/music-list-combined.json', 'utf-8'))
-const { toHex2 } = require('./string-util.js')
+// const { toHex2 } = require('./string-util.js')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
 
 module.exports = class FLevelLoader {
@@ -14,7 +14,7 @@ module.exports = class FLevelLoader {
   }
 
   loadFLevel (config, baseFilename, isDecompressed) {
-    const charMap = require('./char-map.js')
+    // const charMap = require('./char-map.js')
 
     let buffer = fs.readFileSync(config.inputFieldFLevelDirectory + '/' + baseFilename)
     if (!isDecompressed) {
@@ -23,12 +23,12 @@ module.exports = class FLevelLoader {
 
     const r = new FF7BinaryDataReader(buffer)
 
-    const fileSizeBytes = buffer.length
+    // const fileSizeBytes = buffer.length
     r.offset = 0
 
     const flevel = {}
-    var sectionOffset = 0
-    var sectionOffsetBase = 0
+    let sectionOffset = 0
+    let sectionOffsetBase = 0
 
     flevel.blank = r.readShort() // always 0x00
     flevel.numSections = r.readInt()
@@ -41,9 +41,9 @@ module.exports = class FLevelLoader {
 
     flevel.script = {}
 
-    var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
+    sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     flevel.script.length = r.readInt()
-    var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // entityScriptRoutines[j] is relative to this offset
+    sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // entityScriptRoutines[j] is relative to this offset
 
     flevel.script.header = {
       unknown: r.readShort(),
@@ -357,9 +357,9 @@ module.exports = class FLevelLoader {
       }
     }
     r.offset = flevel.sectionOffsets[2]
-    var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
+    sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     flevel.script.length = r.readInt()
-    var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
+    sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
     const blank = r.readShort(); const numModels = r.readShort(); const modelScale = r.readShort()
     flevel.model = {
       header: {
@@ -396,9 +396,9 @@ module.exports = class FLevelLoader {
 
     // Section 1/2: Camera
     r.offset = flevel.sectionOffsets[1]
-    var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
+    sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     const cameraSectionLength = r.readUInt()
-    var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
+    sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
     const readCameraVector = function () {
       return {
         x: r.readShort(),
@@ -423,9 +423,9 @@ module.exports = class FLevelLoader {
 
     // Section 4/5: Walkmesh
     r.offset = flevel.sectionOffsets[4]
-    var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
+    sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     const walkmeshSectionLength = r.readUInt()
-    var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
+    sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
     const numSectors = r.readUInt()
     flevel.walkmeshSection = {
       numSectors,
@@ -447,12 +447,39 @@ module.exports = class FLevelLoader {
       flevel.walkmeshSection.accessors.push([r.readShort(), r.readShort(), r.readShort()])
     }
 
+    // Section 6/7: Encounter
+    const encounterShortToObject = (b) => {
+      return { prob: b >> 10, encounterId: b & 0x03FF }
+    }
+    r.offset = flevel.sectionOffsets[6]
+    const encounterSectionLength = r.readUInt()
+    sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
+    flevel.encounters = {}
+    for (const tableId of ['1', '2']) {
+      const enabled = r.readUByte()
+      const rate = r.readUByte()
+      const battles = r.readUShortArray(6).map(b => encounterShortToObject(b))
+      const table = {
+        tableId,
+        enabled,
+        rate,
+        battles,
+        backAttack1: encounterShortToObject(r.readUShort()),
+        backAttack2: encounterShortToObject(r.readUShort()),
+        sideAttack: encounterShortToObject(r.readUShort()),
+        bothSidesAttack: encounterShortToObject(r.readUShort()),
+        padding: r.readUShort()
+      }
+      delete table.padding
+      flevel.encounters[tableId] = table
+    }
+
     // Section 7/8: Triggers
     r.offset = flevel.sectionOffsets[7]
-    const sectionEndOffset = flevel.sectionOffsets[8]
-    var sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
+    // const sectionEndOffset = flevel.sectionOffsets[8]
+    // sectionOffset = r.offset // flevel.sectionOffsets[i]     // this offset is relative to the beginning of file
     flevel.script.length = r.readInt()
-    var sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
+    sectionOffsetBase = r.offset // flevel.sectionOffsets[i] + 4 // offsets within section are relative to this offset
     flevel.triggers = {}
     flevel.triggers.header = {}
     flevel.triggers.header.fieldName = r.readString(9)
@@ -486,7 +513,7 @@ module.exports = class FLevelLoader {
       }
       gateway.destinationVertex.direction = r.readByte()
       const unknown = [r.readByte(), r.readByte(), r.readByte()]
-      if (gateway.fieldId != 32767) {
+      if (gateway.fieldId !== 32767) {
         if (gateway.fieldId < this.mapList.length) {
           gateway.fieldName = this.mapList[gateway.fieldId]
         }
@@ -521,7 +548,7 @@ module.exports = class FLevelLoader {
     }
 
     const replacer = function (k, v) {
-      if (k == 'entitySections') { return undefined }
+      if (k === 'entitySections') { return undefined }
       return v
     }
 
@@ -671,7 +698,7 @@ module.exports = class FLevelLoader {
           width: r.readUShort(),
           height: r.readUShort(),
           tileCount: r.readUShort(),
-          unknown: r.readUByteArray(layerNo == 2 ? 16 : 10),
+          unknown: r.readUByteArray(layerNo === 2 ? 16 : 10),
           tiles: []
         }
         flevel.background.tiles[`layer${layerNo}`].blank = r.readUShort()
