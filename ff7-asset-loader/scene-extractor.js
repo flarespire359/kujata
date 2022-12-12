@@ -158,7 +158,7 @@ const getDataFile = (buffer, dataFilePointer) => {
   const to = dataFilePointer.to + (0x2000 * dataFilePointer.blockId)
 
   const s = unzipBuffer(buffer, from, to)
-  console.log('getDataFile', dataFilePointer)
+  // console.log('getDataFile', dataFilePointer)
 
   try {
     const data = {
@@ -229,7 +229,6 @@ const getBlocks = (r, buffer) => {
       datas.push(data)
     }
   }
-  const d = datas.filter(d => d.sceneId === 75)
   //   getDataFile(buffer, dataFilePointers[3])
   return datas
 }
