@@ -37,9 +37,10 @@ const translateAllBattleFiles = () => {
   console.log('translateAllBattleFiles: END')
 }
 
-// translateBattleFile('opaa')
-// translateBattleFile('rtaa')
-translateAllBattleFiles()
+// translateBattleFile('avaa')
+translateBattleFile('opaa')
+translateBattleFile('rtaa')
+// translateAllBattleFiles()
 
 // translate every *.hrc.json file in the skeletons directory
 

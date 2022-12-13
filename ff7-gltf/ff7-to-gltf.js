@@ -218,6 +218,7 @@ module.exports = class FF7GltfTranslator {
     gltf.scene = 0
     gltf.scenes = []
     gltf.textures = []
+    gltf.extensionsUsed = []
 
     gltf.samplers.push({
       magFilter: FILTER.LINEAR,
@@ -365,20 +366,20 @@ module.exports = class FF7GltfTranslator {
                     baseColorTexture: {
                       index: textureIndex // index to gltf.textures[]
                     },
-                    metallicFactor: 0.0,
-                    roughnessFactor: 0.0
+                    metallicFactor: 1.0,
+                    roughnessFactor: 1.0
                   },
                   alphaMode: 'BLEND', // Has to be blend so that textures colors can both apply
-                  name: textureId + 'Material'
-                // "extensions": { // Uncomment to ensure gltf model does not respond to lights
-                //   "KHR_materials_unlit": {}
-                // }
+                  name: textureId + 'Material',
+                  extensions: { // Uncomment to ensure gltf model does not respond to lights
+                    KHR_materials_unlit: {}
+                  }
                 }
 
                 gltf.materials.push(mat)
-                // gltf.extensionsUsed = [ // Uncomment to ensure gltf model does not respond to lights
-                //   "KHR_materials_unlit"
-                // ]
+                if (!gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
+                  gltf.extensionsUsed.push('KHR_materials_unlit')
+                }
                 // gltfTextureIndexOffset++
                 // console.log('gltfTextureIndexOffset + i', textureIndex)
                 // gltfTextureIndexOffset++
@@ -496,15 +497,20 @@ module.exports = class FF7GltfTranslator {
             const vertexColorBuffer = Buffer.alloc(numVertexColors * 4 * 4) // 4 floats per vertex, 4 bytes per float
             for (let i = 0; i < numVertexColors; i++) {
               const vertexColor = model.vertexColors[i]
+              // TODO: Consider change the color space here to the colors are more as expected
+              vertexColor.r = (vertexColor.r / 255.0)
+              vertexColor.g = (vertexColor.g / 255.0)
+              vertexColor.b = (vertexColor.b / 255.0)
+              vertexColor.a = vertexColor.a / 255.0
               // vertexColor.r = 0
               // vertexColor.g = 0
               // vertexColor.b = 0
               // vertexColor.a = 255
-              vertexColorBuffer.writeFloatLE(vertexColor.r / 255.0, i * 16)
-              vertexColorBuffer.writeFloatLE(vertexColor.g / 255.0, i * 16 + 4)
-              vertexColorBuffer.writeFloatLE(vertexColor.b / 255.0, i * 16 + 8)
-              vertexColorBuffer.writeFloatLE(vertexColor.a / 255.0, i * 16 + 12)
-              // console.log('vertexColor', vertexColor)
+              vertexColorBuffer.writeFloatLE(vertexColor.r, i * 16)
+              vertexColorBuffer.writeFloatLE(vertexColor.g, i * 16 + 4)
+              vertexColorBuffer.writeFloatLE(vertexColor.b, i * 16 + 8)
+              vertexColorBuffer.writeFloatLE(vertexColor.a, i * 16 + 12)
+              console.log('vertexColor', vertexColor)
             }
 
             allBuffers.push(vertexColorBuffer)
@@ -1012,8 +1018,9 @@ module.exports = class FF7GltfTranslator {
     const texPath = `${texDirectory}/${textureFile}` // Can be .TEX of .tex, fs sorts this out anyway
     const pngPath = `${outputDirectory}/${texturePath}`
 
-    if (!fs.existsSync(pngPath)) {
-      new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath)
-    }
+    // if (!fs.existsSync(pngPath)) {
+    // It looks as though battle textures need to be flipped, we can't flip them back (easily) with the current GLTFLoader
+    new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, true)
+    // }
   }
 }

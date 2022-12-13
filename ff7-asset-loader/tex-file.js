@@ -112,8 +112,8 @@ class TexFile {
     return this.tex.header.height
   }
 
-  async saveAsPng (outputPath) {
-    await this.saveAsPngWithPaletteOffset(outputPath, 0)
+  async saveAsPng (outputPath, flip) {
+    await this.saveAsPngWithPaletteOffset(outputPath, 0, flip)
   }
 
   async saveAllPalettesAsPngs (outputPath) {
@@ -135,7 +135,7 @@ class TexFile {
     // }).toFile(outputPath.replace('.png', '-palette.png'))
   }
 
-  async saveAsPngWithPaletteOffset (outputPath, paletteOffset) {
+  async saveAsPngWithPaletteOffset (outputPath, paletteOffset, flip) {
     const n = this.tex.header.height * this.tex.header.width * 4
     const data = new Uint8Array(n)
     for (let i = 0; i < n; i++) {
@@ -189,13 +189,18 @@ class TexFile {
       }
     }
 
-    await sharp(Buffer.from(data.buffer), {
+    let img = sharp(Buffer.from(data.buffer), {
       raw: {
         width: this.tex.header.width,
         height: this.tex.header.height,
         channels: 4
       }
-    }).toFile(outputPath)
+    })
+    if (flip) {
+      img = img.flip()
+    }
+
+    await img.toFile(outputPath)
   }
 
   _dec2hex (dec) {
