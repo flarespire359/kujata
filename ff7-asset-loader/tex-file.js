@@ -113,7 +113,7 @@ class TexFile {
   }
 
   async saveAsPng (outputPath, flip) {
-    await this.saveAsPngWithPaletteOffset(outputPath, 0, flip)
+    return this.saveAsPngWithPaletteOffset(outputPath, 0, flip)
   }
 
   async saveAllPalettesAsPngs (outputPath) {
@@ -141,6 +141,7 @@ class TexFile {
     for (let i = 0; i < n; i++) {
       data[i] = 0xff // Fill with transparent
     }
+    let hasTransparentPixels = false
     if (this.tex.header.noOfPalettes > 1) {
       // console.log('tex multi palette', outputPath, paletteOffset, this.tex.header.colorKeyFlag)
       // console.log('tex palette data', this.tex.paletteData)
@@ -168,8 +169,8 @@ class TexFile {
         data[i * 4 + 0] = color.r
         data[i * 4 + 1] = color.g
         data[i * 4 + 2] = color.b
-        data[i * 4 + 3] =
-          color.r === 0 && color.g === 0 && color.b === 0 ? 0x00 : color.a
+        data[i * 4 + 3] = color.r === 0 && color.g === 0 && color.b === 0 ? 0x00 : color.a
+        if (data[i * 4 + 3] === 0) hasTransparentPixels = true
       }
     } else {
       // console.log('tex single palette')
@@ -184,8 +185,8 @@ class TexFile {
         data[i * 4 + 0] = color.r
         data[i * 4 + 1] = color.g
         data[i * 4 + 2] = color.b
-        data[i * 4 + 3] =
-          color.r === 0 && color.g === 0 && color.b === 0 ? 0x00 : color.a
+        data[i * 4 + 3] = color.r === 0 && color.g === 0 && color.b === 0 ? 0x00 : color.a
+        if (data[i * 4 + 3] === 0) hasTransparentPixels = true
       }
     }
 
@@ -199,8 +200,8 @@ class TexFile {
     if (flip) {
       img = img.flip()
     }
-
     await img.toFile(outputPath)
+    return hasTransparentPixels
   }
 
   _dec2hex (dec) {

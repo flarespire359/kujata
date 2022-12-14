@@ -19,28 +19,35 @@ const gltfTranslator = new FF7GltfTranslator()
 //   // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
 // }
 
-const translateBattleFile = (hrcFileId) => {
+const translateBattleFile = async (hrcFileId) => {
   try {
-    gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true, true)
+    await gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true, true)
   } catch (err) {
     console.log('Error while trying to translate: ' + hrcFileId + ':', err)
     // break; // uncomment this line to stop on failure
   }
 }
-const translateAllBattleFiles = () => {
+const translateAllBattleFiles = async () => {
   console.log('translateAllBattleFiles: START')
   const battleFiles = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith('aa'))// .filter(f => f.toLowerCase() !== 'akaa')
   console.log('battleFiles', battleFiles)
   for (const battleFile of battleFiles) {
-    translateBattleFile(battleFile)
+    await translateBattleFile(battleFile)
   }
   console.log('translateAllBattleFiles: END')
 }
 
-// translateBattleFile('avaa')
-translateBattleFile('opaa')
-translateBattleFile('rtaa')
-// translateAllBattleFiles()
+const init = async () => {
+  // await translateBattleFile('pbaa')
+  // await translateBattleFile('avaa')
+  // await translateBattleFile('opaa')
+  await translateBattleFile('rtaa')
+
+  // await translateAllBattleFiles()
+  console.log('end')
+}
+
+init()
 
 // translate every *.hrc.json file in the skeletons directory
 

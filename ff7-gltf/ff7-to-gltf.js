@@ -32,7 +32,7 @@ module.exports = class FF7GltfTranslator {
   //   ["AAFE, "AAGA"] = include only specific animations
   // includeTextures = whether to include textures in the translation (set to false to disable)
 
-  translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
+  async translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
     const standingAnimations = JSON.parse(fs.readFileSync(config.metadataDirectory + '/field-model-standing-animations.json', 'utf-8'))
     const outputDirectory = isBattleModel ? config.outputBattleBattleDirectory : config.outputFieldCharDirectory
 
@@ -255,14 +255,23 @@ module.exports = class FF7GltfTranslator {
     })
 
     // vertexColoredMaterial is used by polygonGroups that use vertex colors and not textures
-    gltf.materials.push({
+    const vertexMaterial = {
       pbrMetallicRoughness: {
         baseColorFactor: [1, 1, 1, 1],
         metallicFactor: 0,
         roughnessFactor: 0.5
       },
       name: 'vertexColoredMaterial'
-    })
+    }
+    if (isBattleModel) {
+      vertexMaterial.extensions = { // Uncomment to ensure gltf model does not respond to lights
+        KHR_materials_unlit: {}
+      }
+      if (!gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
+        gltf.extensionsUsed.push('KHR_materials_unlit')
+      }
+    }
+    gltf.materials.push(vertexMaterial)
 
     // create map of bone name to bone metadata
     const boneMap = {}
@@ -344,8 +353,7 @@ module.exports = class FF7GltfTranslator {
                 const texSrcDir = isBattleModel ? config.inputBattleBattleDirectory : config.inputFieldCharDirectory
                 const texSrcFile = isBattleModel ? textureIds[i] : `${textureIds[i]}.tex`
                 const texturePath = isBattleModel ? `${config.texturesDirectory}/${textureId}.png` : `${config.texturesDirectory}/${textureId}.tex.png`
-
-                this.ensureTextureExists(outputDirectory, texSrcDir, texSrcFile, texturePath)
+                const hasTransparentPixels = await this.ensureTextureExists(outputDirectory, texSrcDir, texSrcFile, texturePath)
                 // console.log(pFileId, 'texture - ', texturePath)
                 gltf.images.push({ uri: texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
@@ -356,9 +364,6 @@ module.exports = class FF7GltfTranslator {
                   sampler: 0, // index to gltf.samplers[]
                   name: textureId + 'Texture'
                 })
-                // TODO: Figure out why materials look reddish
-                // let roughnessFactor = isBattleModel ? 1.0 : 0.5;
-                // let alphaMode = isBattleModel ? "OPAQUE" : "BLEND";
 
                 const mat = {
                   pbrMetallicRoughness: {
@@ -369,7 +374,7 @@ module.exports = class FF7GltfTranslator {
                     metallicFactor: 1.0,
                     roughnessFactor: 1.0
                   },
-                  alphaMode: 'BLEND', // Has to be blend so that textures colors can both apply
+                  alphaMode: hasTransparentPixels ? 'BLEND' : 'OPAQUE', // Has to be blend so that textures colors can both apply
                   name: textureId + 'Material',
                   extensions: { // Uncomment to ensure gltf model does not respond to lights
                     KHR_materials_unlit: {}
@@ -377,7 +382,7 @@ module.exports = class FF7GltfTranslator {
                 }
 
                 gltf.materials.push(mat)
-                if (!gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
+                if (hasTransparentPixels && !gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
                   gltf.extensionsUsed.push('KHR_materials_unlit')
                 }
                 // gltfTextureIndexOffset++
@@ -510,7 +515,7 @@ module.exports = class FF7GltfTranslator {
               vertexColorBuffer.writeFloatLE(vertexColor.g, i * 16 + 4)
               vertexColorBuffer.writeFloatLE(vertexColor.b, i * 16 + 8)
               vertexColorBuffer.writeFloatLE(vertexColor.a, i * 16 + 12)
-              console.log('vertexColor', vertexColor)
+              // console.log('vertexColor', vertexColor)
             }
 
             allBuffers.push(vertexColorBuffer)
@@ -1020,7 +1025,7 @@ module.exports = class FF7GltfTranslator {
 
     // if (!fs.existsSync(pngPath)) {
     // It looks as though battle textures need to be flipped, we can't flip them back (easily) with the current GLTFLoader
-    new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, true)
+    return new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, true)
     // }
   }
 }
