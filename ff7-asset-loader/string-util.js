@@ -14,9 +14,9 @@ const pad5 = function (n) {
   return ('' + n).padStart(5, '0')
 }
 
-const dec2hex = (dec, padding) => {
+const dec2hex = (dec, padding, rawWithSpaces) => {
   const h = parseInt(dec).toString(16)
-  return `0x${padding ? h.padStart(4, '0') : h}`
+  return `${!rawWithSpaces ? '0x' : ''}${padding ? h.padStart(padding, '0') : h}`
 }
 const dec2bin = (dec) => { // For debug only
   return (dec >>> 0).toString(2).padStart(8, '0')

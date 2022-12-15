@@ -313,6 +313,9 @@ const extractSceneBinData = async (inputBattleSceneDirectory, outputBattleSceneD
   const buffer = fs.readFileSync(path.join(inputBattleSceneDirectory, 'scene.bin'))
   const r = new FF7BinaryDataReader(buffer)
   const datas = getBlocks(r, buffer)
+  // .filter(d => d.sceneId === 27)
+  // .map(d => d.enemyScript1 ? { i: d.sceneId, m: d.enemyData1.name, l: d.enemyScript1.main.length } : { i: d.sceneId, m: d.enemyData1.name, l: 999999 })
+  // .sort((a, b) => a.l - b.l)
   await saveData(datas, path.join(outputBattleSceneDirectory, 'scene.bin.json'))
 
   console.log('Extract scene.bin Data: END')
