@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const zlib = require('zlib')
-
+const { dec2hex } = require('./string-util.js')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const { parseKernelEnums, Enums } = require('./kernel-enums.js')
 const { parseAttackData } = require('./kernel-sections.js')
@@ -31,8 +31,8 @@ const getEnemyData = (r) => {
     defense: r.readUByte(),
     magic: r.readUByte(),
     magicDefense: r.readUByte(),
-    elementTypes: Array(8).fill().map(a => parseKernelEnums(Enums.Elements, r.readUByte())),
-    elementRates: Array(8).fill().map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())),
+    elementTypes: Array(8).fill().map(a => parseKernelEnums(Enums.Elements, r.readUByte())), // Not right yet
+    elementRates: Array(8).fill().map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())), // Not right yet
     actionAnimationIndex: Array(16).fill().map(a => r.readUByte()),
     attackIds: Array(16).fill().map(a => r.readUShort()),
     attackCameraMovementIds: Array(16).fill().map(a => r.readUShort()),
@@ -49,7 +49,7 @@ const getEnemyData = (r) => {
     exp: r.readUInt(),
     gil: r.readUInt(),
     statusImmunities: parseKernelEnums(Enums.Statuses, r.readUInt()), // TODO: Not sure that this gives the right data
-    unknown2: r.readUInt()
+    unknown2: Array(4).fill().map(a => r.readUByte())
   }
   r.offset = intialOffset + 184
   return data
@@ -97,9 +97,8 @@ const getCameraPlacement = (r) => {
       camera1: { pos: readCameraVector(r), dir: readCameraVector(r) },
       camera2: { pos: readCameraVector(r), dir: readCameraVector(r) },
       camera3: { pos: readCameraVector(r), dir: readCameraVector(r) }
-
     }
-    const unused = r.readUByteArray(12)
+    r.readUByteArray(12) // unusued
     // data.locationName = parseKernelEnums(Enums.Battle.Location, data.locationId)
     // console.log('data', JSON.stringify(data))
     datas.push(data)
@@ -121,8 +120,8 @@ const getBattleSetup = (r) => {
       unused: r.readUShort(),
       battleArenaNextBattleFormationId: [r.readUShort(), r.readUShort(), r.readUShort(), r.readUShort()],
       escapableFlag: r.readUShort(),
-      battleLayoutType: r.readUByte(),
-      initialCameraPosition: parseKernelEnums(Enums.Battle.Layout, r.readUByte())
+      battleLayoutType: parseKernelEnums(Enums.Battle.Layout, r.readUByte()),
+      initialCameraPosition: r.readUByte()
     }
     data.locationName = parseKernelEnums(Enums.Battle.Location, data.locationId)
     // console.log('data', data)
@@ -184,9 +183,80 @@ const getDataFile = (buffer, dataFilePointer) => {
       }),
       formationAIOffsets: Array(4).fill().map(a => s.readUShort()),
       formationAIData: s.readUByteArray(504), // TODO
-      enemyAIOffsets: Array(3).fill().map(a => s.readUShort()),
-      enemyAIData: s.readUByteArray(4090) // TODO
+      enemyAIOffsets: Array(3).fill().map(a => s.readUShort())
+      // enemyAIData: s.readUByteArray(4090) // TODO
     }
+    for (const i in data.attackData) {
+      data.attackData[i].id = data.attackIds[i]
+      data.attackData[i].name = data.attackNames[i]
+    }
+    const scriptOffsetBegin = s.offset
+    // console.log('scriptOffsetBegin', scriptOffsetBegin)
+
+    for (const i in data.enemyAIOffsets) {
+      const enemyAIOffset = data.enemyAIOffsets[i]
+      // const script = data[`enemyScript${parseInt(i) + 1}`] = { }
+      if (enemyAIOffset === 0xFFFF) break
+      const realOffset = scriptOffsetBegin + enemyAIOffset - 6
+      s.offset = realOffset
+
+      const script = data[`enemyScript${parseInt(i) + 1}`] = {
+        init: { id: 0, offset: s.readUShort() },
+        main: { id: 1, offset: s.readUShort() },
+        counterGeneral: { id: 2, offset: s.readUShort() },
+        counterDeath: { id: 3, offset: s.readUShort() },
+        counterPhysical: { id: 4, offset: s.readUShort() },
+        counterMagical: { id: 5, offset: s.readUShort() },
+        battleEnd: { id: 6, offset: s.readUShort() },
+        preActionSetup: { id: 7, offset: s.readUShort() },
+        customEvent1: { id: 8, offset: s.readUShort() },
+        customEvent2: { id: 9, offset: s.readUShort() },
+        customEvent3: { id: 10, offset: s.readUShort() },
+        customEvent4: { id: 11, offset: s.readUShort() },
+        customEvent5: { id: 12, offset: s.readUShort() },
+        customEvent6: { id: 13, offset: s.readUShort() },
+        customEvent7: { id: 14, offset: s.readUShort() },
+        customEvent8: { id: 15, offset: s.readUShort() }
+      }
+      for (const scriptObj of Object.values(script)) {
+        // console.log('Processing script:', script)
+        scriptObj.script = []
+        if (scriptObj.offset !== 0xFFFF) {
+          s.offset = realOffset + scriptObj.offset
+          let isEnd = false
+          while (!isEnd) {
+            const index = s.offset - realOffset - 32
+            const indexHex = dec2hex(index, 4)
+            const op = s.readBattleOp()
+            op.index = index
+            op.indexHex = indexHex
+            scriptObj.script.push(op)
+            if (op.op === 'END') {
+              isEnd = true
+            }
+          }
+        }
+        scriptObj.text = scriptObj.script.map(s => s.js)
+        scriptObj.count = scriptObj.script.length
+        scriptObj.length = s.offset - realOffset - 32
+        delete scriptObj.offset
+      }
+    }
+
+    /*
+    https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Scenes/Battle_Script
+    https://forums.qhimm.com/index.php?topic=3290.msg45951#msg45951
+    https://forums.qhimm.com/index.php?topic=18668.0
+    https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Scenes/Battle_AI_Addresses
+    https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Mechanics
+    https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Scenes#AI_Data
+    */
+    // s.offset = scriptOffsetBegin
+    // data.enemyAIData = []
+    // while (s.offset < s.length) {
+    //   data.enemyAIData.push(s.readUByte())
+    // }
+    // data.enemyAIDataHex = data.enemyAIData.map(b => dec2hex(b))
     //   console.log('data', data, dec2hex(s.length), dec2hex(s.offset))
     return data
   } catch (error) {

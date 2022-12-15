@@ -496,16 +496,22 @@ module.exports = class FF7GltfTranslator {
                 target: ARRAY_BUFFER
               })
             }
+            function SRGBToLinear (c) {
+              return (c < 0.04045) ? c * 0.0773993808 : Math.pow(c * 0.9478672986 + 0.0521327014, 2.4)
+            }
 
+            function LinearToSRGB (c) {
+              return (c < 0.0031308) ? c * 12.92 : 1.055 * (Math.pow(c, 0.41666)) - 0.055
+            }
             // 4. create "vertex color" js Buffer + gltf bufferView + gltf accessor
             const numVertexColors = numVerticesInGroup
             const vertexColorBuffer = Buffer.alloc(numVertexColors * 4 * 4) // 4 floats per vertex, 4 bytes per float
             for (let i = 0; i < numVertexColors; i++) {
               const vertexColor = model.vertexColors[i]
               // TODO: Consider change the color space here to the colors are more as expected
-              vertexColor.r = (vertexColor.r / 255.0)
-              vertexColor.g = (vertexColor.g / 255.0)
-              vertexColor.b = (vertexColor.b / 255.0)
+              vertexColor.r = SRGBToLinear(vertexColor.r / 255.0)
+              vertexColor.g = SRGBToLinear(vertexColor.g / 255.0)
+              vertexColor.b = SRGBToLinear(vertexColor.b / 255.0)
               vertexColor.a = vertexColor.a / 255.0
               // vertexColor.r = 0
               // vertexColor.g = 0
@@ -1023,9 +1029,7 @@ module.exports = class FF7GltfTranslator {
     const texPath = `${texDirectory}/${textureFile}` // Can be .TEX of .tex, fs sorts this out anyway
     const pngPath = `${outputDirectory}/${texturePath}`
 
-    // if (!fs.existsSync(pngPath)) {
     // It looks as though battle textures need to be flipped, we can't flip them back (easily) with the current GLTFLoader
     return new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, true)
-    // }
   }
 }

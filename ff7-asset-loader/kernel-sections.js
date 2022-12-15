@@ -3,20 +3,14 @@ const { Enums, parseKernelEnums, parseMateriaData } = require('./kernel-enums')
 const path = require('path')
 const fs = require('fs-extra')
 const sharp = require('sharp')
-
-const dec2bin = (dec) => { // For debug only
-  return (dec >>> 0).toString(2).padStart(8, '0')
-}
-const dec2hex = (dec) => { // For debug only
-  return `0x${parseInt(dec).toString(16)}`
-}
+const { dec2hex, dec2bin } = require('./string-util.js')
 
 const getTextSectionData = (sectionData) => {
-  let strings = []
+  const strings = []
 
-  let r = new FF7BinaryDataReader(sectionData.buffer)
-  let firstItem = r.readUShort()
-  let addresses = []
+  const r = new FF7BinaryDataReader(sectionData.buffer)
+  const firstItem = r.readUShort()
+  const addresses = []
   for (let i = 0; i < firstItem; i += 2) {
     addresses.push(r.readUShort())
   }
@@ -41,10 +35,10 @@ const getTextSectionData = (sectionData) => {
 }
 
 const getItemSectionData = (sectionData, names, descriptions) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 28
   // console.log('getItemSectionData', r.length, r.length / objectSize, names.length, descriptions.length)
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     // const sectionOffset = i * objectSize
@@ -63,7 +57,7 @@ const getItemSectionData = (sectionData, names, descriptions) => {
     const status = r.readUInt()
     const element = r.readUShort()
     const specialAttack = r.readUShort()
-    let object = {
+    const object = {
       itemId: i,
       name: names[i],
       description: descriptions[i],
@@ -93,9 +87,9 @@ const getItemSectionData = (sectionData, names, descriptions) => {
   return objects
 }
 const getWeaponSectionData = (sectionData, names, descriptions) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 44
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     const targetData = r.readUByte()
@@ -124,7 +118,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
     const boostedStat3Bonus = r.readUByte()
     const boostedStat4Bonus = r.readUByte()
 
-    let materiaSlots = []
+    const materiaSlots = []
     for (let slot = 0; slot < 8; slot++) {
       const materiaSlotByte = r.readUByte()
       const materiaSlot = parseKernelEnums(Enums.MateriaSlot, materiaSlotByte)
@@ -138,7 +132,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
     const specialAttack = r.readUShort() // Always 0xFFFF
     const restrictions = r.readUShort()
 
-    let object = {
+    const object = {
       index: i,
       itemId: i + 128,
       name: names[i],
@@ -181,9 +175,9 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
   return objects
 }
 const getArmorSectionData = (sectionData, names, descriptions) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 36
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     const unknown1 = r.readUByte()
@@ -194,7 +188,7 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
     const magicEvade = r.readUByte()
     const status = r.readUByte()
     const unknown2 = r.readUShort()
-    let materiaSlots = []
+    const materiaSlots = []
     for (let slot = 0; slot < 8; slot++) {
       const materiaSlotByte = r.readUByte()
       const materiaSlot = parseKernelEnums(Enums.MateriaSlot, materiaSlotByte)
@@ -215,7 +209,7 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
     const restrictions = r.readUShort()
     const unknown4 = r.readUShort()
 
-    let object = {
+    const object = {
       index: 1,
       itemId: i + 256,
       name: names[i],
@@ -248,9 +242,9 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
   return objects
 }
 const getAccessorySectionData = (sectionData, names, descriptions) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 16
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     const boostedStat1 = r.readUByte()
@@ -264,7 +258,7 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
     const equipableBy = r.readUShort()
     const restrictions = r.readUShort()
 
-    let object = {
+    const object = {
       index: i,
       itemId: i + 288,
       name: names[i],
@@ -290,9 +284,9 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
   return objects
 }
 const getMateriaSectionData = (sectionData, names, descriptions, magicNames, commandData) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 20
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     if (i < 2) {
@@ -316,7 +310,7 @@ const getMateriaSectionData = (sectionData, names, descriptions, magicNames, com
     if (level3Ap !== 0xFFFF) { apLevels.push(level3Ap * 100) }
     if (level4Ap !== 0xFFFF) { apLevels.push(level4Ap * 100) }
     if (level5Ap !== 0xFFFF) { apLevels.push(level5Ap * 100) }
-    let object = {
+    const object = {
       index: i,
       name: names[i],
       description: descriptions[i],
@@ -344,9 +338,9 @@ const getMateriaSectionData = (sectionData, names, descriptions, magicNames, com
   return objects
 }
 const getCommandSectionData = (sectionData, names, descriptions) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 8
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     const initialCursorAction = r.readUByte()
@@ -354,7 +348,7 @@ const getCommandSectionData = (sectionData, names, descriptions) => {
     const unknown = r.readUShort()
     const cameraMovementIdSingleTargets = r.readUShort()
     const cameraMovementIdMultipleTargets = r.readUShort()
-    let object = {
+    const object = {
       index: i,
       name: names[i],
       description: descriptions[i],
@@ -389,7 +383,7 @@ const parseAttackData = (r) => {
   const element = r.readUShort()
   const specialAttack = r.readUShort()
 
-  let object = {
+  const object = {
     // index: i,
     // name: names[i],
     // description: descriptions[i],
@@ -421,9 +415,9 @@ const parseAttackData = (r) => {
   return object
 }
 const getAttackSectionData = (sectionData, names, descriptions) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
+  const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 28
-  let objects = []
+  const objects = []
 
   for (let i = 0; i < r.length / objectSize; i++) {
     // if (object.name.includes('Beat')) {
@@ -477,7 +471,7 @@ const getCharacterDataRecord = (r) => {
   const hpDivisorForLimit3 = r.readUInt()
   const hpDivisorForLimit4 = r.readUInt()
 
-  let object = {
+  const object = {
     strengthLevelCurve,
     vitalityLevelCurve,
     magicLevelCurve,
@@ -522,8 +516,8 @@ const getCharacterDataRecord = (r) => {
   return object
 }
 const getBattleAndGrowthSectionData = (sectionData, attackData) => {
-  let r = new FF7BinaryDataReader(sectionData.buffer)
-  let characterDataRecords = {
+  const r = new FF7BinaryDataReader(sectionData.buffer)
+  const characterDataRecords = {
     Cloud: getCharacterDataRecord(r),
     Barret: getCharacterDataRecord(r),
     Tifa: getCharacterDataRecord(r),
@@ -605,7 +599,7 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
 
   const basePalette = 1
   const baseFile = path.join(outputKernelDirectory, `window.bin_${fileId}_${basePalette}.png`)
-  let metadata = await (sharp(baseFile).metadata())
+  const metadata = await (sharp(baseFile).metadata())
   // console.log('metadata', metadata)
   const outputDirMetaDataWindow = path.join(metadataDirectory, 'window-assets')
 
@@ -626,18 +620,18 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
 
   // console.log('created', metadata)
   let overviewCompositionActions = []
-  for (var assetType in windowBinAssetMap) {
+  for (let assetType in windowBinAssetMap) {
     // I was going to simply loop, but need to deal with variable width fonts, plus having the metadata to get the correct widths
     // I'll leave this in, but it's not triggered by the data as I pregenerated it
     if (!Array.isArray(windowBinAssetMap[assetType]) && windowBinAssetMap[assetType].type && windowBinAssetMap[assetType].type === 'text') {
       const textConfig = windowBinAssetMap[assetType]
-      let elements = []
+      const elements = []
       let i = 0
 
       for (let col = 0; col < textConfig.cols; col++) {
         for (let row = 0; row < textConfig.rows; row++) {
-          let x = textConfig.x + (row * textConfig.w)
-          let y = textConfig.y + (col * textConfig.h)
+          const x = textConfig.x + (row * textConfig.w)
+          const y = textConfig.y + (col * textConfig.h)
           // console.log({ "id": 0, "description": "battle menu text 192", "x": 128, "y": 248, "w": 8, "h": 8, "palette": 8 })
           i++
         }
@@ -682,7 +676,7 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
 
       if (overviewCompositionActions.length === 100) { // For some reason 150+ layers is causing issues <- nope, just nodemon
         img.composite(overviewCompositionActions)
-        let compositeAppliedImg = await img.toBuffer()
+        const compositeAppliedImg = await img.toBuffer()
         img = sharp(compositeAppliedImg)
         overviewCompositionActions = []
       }

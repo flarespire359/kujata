@@ -1,8 +1,4 @@
-// const { dec2hex } = require("./kernel-sections")
-
-const dec2hex = (dec) => { // For debug only
-  return `0x${parseInt(dec).toString(16)}`
-}
+const { dec2hex } = require('./string-util.js')
 
 const Enums = {
   SpecialEffects: {
@@ -521,22 +517,22 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     const filteredAttrs = materiaAttributes.filter(a => a !== 255)
     const materiaTypeLowerNybble = materiaType & 0x0F
     if (materiaType === 0x12) {
-      attributes = { type: 'Replace', menu: { id: 1, name: commandData[1].name}, with: filteredAttrs.map(id => { return { id: id, name: commandData[id].name} }) }
+      attributes = { type: 'Replace', menu: { id: 1, name: commandData[1].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
     } else if (materiaTypeLowerNybble === 0x3) {
       if (attr1 === 0x15) {
-        attributes = { type: 'Replace', menu: { id: 2, name: commandData[2].name}, with: filteredAttrs.map(id => { return { id: id, name: commandData[id].name} }) }
+        attributes = { type: 'Replace', menu: { id: 2, name: commandData[2].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
         // attributes = { type: 'Replace', menu: 'Magic', with: 'WMagic' }
       } else if (attr1 === 0x16) {
-        attributes = { type: 'Replace', menu: { id: 3, name: commandData[3].name}, with: filteredAttrs.map(id => { return { id: id, name: commandData[id].name} }) }
+        attributes = { type: 'Replace', menu: { id: 3, name: commandData[3].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
       } else if (attr1 === 0x17) {
-        attributes = { type: 'Replace', menu: { id: 4, name: commandData[4].name}, with: filteredAttrs.map(id => { return { id: id, name: commandData[id].name} }) }
+        attributes = { type: 'Replace', menu: { id: 4, name: commandData[4].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
       }
     } else if (materiaTypeLowerNybble === 0x6) {
-      attributes = { type: 'Add', menu: filteredAttrs.map(id => { return { id: id, name: commandData[id].name} }) }
+      attributes = { type: 'Add', menu: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
     } else if (materiaTypeLowerNybble === 0x7) {
-      attributes = { type: 'Add', menu: filteredAttrs.map(id => { return { id: id, name: commandData[id].name} }), skill: 'EnemySkill'}
+      attributes = { type: 'Add', menu: filteredAttrs.map(id => { return { id, name: commandData[id].name } }), skill: 'EnemySkill' }
     } else if (materiaTypeLowerNybble === 0x8) { // Master Command
-      attributes = { type: 'AddAll', menu: [0x5, 0x6, 0x7, 0x9, 0xA, 0xB, 0xC].map(id => { return { id: id, name: commandData[id].name} }) }
+      attributes = { type: 'AddAll', menu: [0x5, 0x6, 0x7, 0x9, 0xA, 0xB, 0xC].map(id => { return { id, name: commandData[id].name } }) }
       attributes.master = 'Command'
     }
     // console.log('  cmd', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), attributes, filteredAttrs)
@@ -554,32 +550,32 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     materiaAttributes.shift()
     if (materiaType === 0x00) {
       if (attr1 === 0x0C) {
-        attributes = { type: 'Underwater'}
+        attributes = { type: 'Underwater' }
       } else if (attr1 === 0x62) {
-        attributes = { type: 'HP<->MP'}
+        attributes = { type: 'HP<->MP' }
       }
     } else if ((materiaType === 0x20 || materiaType === 0x40) && attr1 < 0xa) {
-      attributes = { type: 'StatBoost', stat: parseKernelEnums(Enums.CharacterStat, attr1), attributes: materiaAttributes}
+      attributes = { type: 'StatBoost', stat: parseKernelEnums(Enums.CharacterStat, attr1), attributes: materiaAttributes }
     } else if (materiaType === 0x20 && attr1 === 0x53) {
-      attributes = { type: 'CounterAttack', attributes: materiaAttributes}
+      attributes = { type: 'CounterAttack', attributes: materiaAttributes }
     } else if (materiaType === 0x20 && attr1 === 0xb) {
-      attributes = { type: 'Cover', attributes: materiaAttributes}
+      attributes = { type: 'Cover', attributes: materiaAttributes }
     } else if (materiaType === 0x21) {
-      attributes = { type: 'PreEmptive', attributes: materiaAttributes}
+      attributes = { type: 'PreEmptive', attributes: materiaAttributes }
     } else if (materiaType === 0x30) {
-      attributes = { type: 'LongRange'}
+      attributes = { type: 'LongRange' }
     } else if (materiaType === 0x34) {
-      attributes = { type: 'MegaAll', attributes: materiaAttributes}
+      attributes = { type: 'MegaAll', attributes: materiaAttributes }
     } else if (materiaType === 0x40) {
-      attributes = { type: 'StatBoost', stat: 'EXP', attributes: materiaAttributes.filter(a => a !== 255)}
+      attributes = { type: 'StatBoost', stat: 'EXP', attributes: materiaAttributes.filter(a => a !== 255) }
     } else if (materiaType === 0x41 && attr1 === 0x0) {
-      attributes = { type: 'StatBoost', stat: 'Gil', attributes: materiaAttributes.filter(a => a !== 255)}
+      attributes = { type: 'StatBoost', stat: 'Gil', attributes: materiaAttributes.filter(a => a !== 255) }
     } else if (materiaType === 0x41 && attr1 === 0x1 && index === 7) {
-      attributes = { type: 'StatBoost', stat: 'EncounterDown', attributes: materiaAttributes.filter(a => a !== 255)}
+      attributes = { type: 'StatBoost', stat: 'EncounterDown', attributes: materiaAttributes.filter(a => a !== 255) }
     } else if (materiaType === 0x41 && attr1 === 0x1 && index === 8) {
-      attributes = { type: 'StatBoost', stat: 'EncounterUp', attributes: materiaAttributes.filter(a => a !== 255)}
+      attributes = { type: 'StatBoost', stat: 'EncounterUp', attributes: materiaAttributes.filter(a => a !== 255) }
     } else if (materiaType === 0x41 && attr1 === 0x2) {
-      attributes = { type: 'StatBoost', stat: 'ChocoboUp', attributes: materiaAttributes.filter(a => a !== 255)}
+      attributes = { type: 'StatBoost', stat: 'ChocoboUp', attributes: materiaAttributes.filter(a => a !== 255) }
     }
     // console.log('  ind', index, materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), materiaAttributes)
   }
@@ -647,7 +643,7 @@ const parseKernelEnums = (type, val) => {
     }
     return text
   } else {
-    let enums = []
+    const enums = []
     for (var prop in type) {
       if (inverseBitTypes.includes(type)) {
         if ((val & type[prop]) !== type[prop]) { // Bitwise matching, but inverse, eg 0 is on

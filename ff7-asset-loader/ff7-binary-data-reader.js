@@ -1,4 +1,3 @@
-const fs = require('fs')
 const stringUtil = require('./string-util.js')
 
 class FF7BinaryDataReader {
@@ -201,6 +200,213 @@ class FF7BinaryDataReader {
     }
     opData.raw = raw.join(' ')
     return opData
+  }
+
+  readBattleOp () {
+    const $r = this
+    const op = $r.readUByte()
+
+    if (op === 0x00) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PSHA',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '00',
+        js: `pushAddress(${stringUtil.dec2hex(arg)}, 00);`
+      }
+    }
+    if (op === 0x01) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PSHA',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '01',
+        js: `pushAddress(${stringUtil.dec2hex(arg)}, 01);`
+      }
+    }
+    if (op === 0x02) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PSHA',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '02',
+        js: `pushAddress(${stringUtil.dec2hex(arg)}, 02);`
+      }
+    }
+    if (op === 0x03) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PSHA',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '03',
+        js: `pushAddress(${stringUtil.dec2hex(arg)}, 03);`
+      }
+    }
+    if (op === 0x10) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '10',
+        js: `push(${stringUtil.dec2hex(arg)}, 10);`
+      }
+    }
+    if (op === 0x11) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '11',
+        js: `push(${stringUtil.dec2hex(arg)}, 11);`
+      }
+    }
+    if (op === 0x12) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '12',
+        js: `push(${stringUtil.dec2hex(arg)}, 12);`
+      }
+    }
+    if (op === 0x13) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '13',
+        js: `push(${stringUtil.dec2hex(arg)}, 13);`
+      }
+    }
+    if (op === 0x30) { return { op: 'ADD', js: 'arg();' } }
+    if (op === 0x31) { return { op: 'SUB', js: 'subtract();' } }
+    if (op === 0x32) { return { op: 'MUL', js: 'multiply();' } }
+    if (op === 0x33) { return { op: 'DIV', js: 'divide();' } }
+    if (op === 0x34) { return { op: 'MOD', js: 'modulo();' } }
+    if (op === 0x35) { return { op: 'BAND', js: 'band?();' } }
+    if (op === 0x36) { return { op: 'BOR', js: 'bandOr?();' } }
+    if (op === 0x37) { return { op: 'BNOT', js: 'bandNot?();' } }
+
+    if (op === 0x40) { return { op: 'EQU', js: 'equals();' } }
+    if (op === 0x41) { return { op: 'NEQU', js: 'notEquals();' } }
+    if (op === 0x42) { return { op: 'GEQU', js: 'greaterThanEquals();' } }
+    if (op === 0x43) { return { op: 'LEQU', js: 'lessThanEquals();' } }
+    if (op === 0x44) { return { op: 'GRTN', js: 'greaterThan();' } }
+    if (op === 0x45) { return { op: 'LSTN', js: 'lessThan();' } }
+
+    if (op === 0x50) { return { op: 'AND', js: 'and();' } }
+    if (op === 0x51) { return { op: 'OR', js: 'or();' } }
+    if (op === 0x52) { return { op: 'NOT', js: 'not();' } }
+
+    if (op === 0x60) {
+      const arg = $r.readUByte()
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '60',
+        js: `push(${stringUtil.dec2hex(arg)}, 60);`
+      }
+    }
+
+    if (op === 0x61) {
+      const arg = $r.readUShort()
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '61',
+        js: `push(${stringUtil.dec2hex(arg)}, 61);`
+      }
+    }
+    if (op === 0x62) {
+      const arg = $r.read24bitInteger() // ?
+      return {
+        op: 'PUSH',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        type: '62',
+        js: `push(${stringUtil.dec2hex(arg)}, 62);`
+      }
+    }
+
+    if (op === 0x70) {
+      const arg = $r.readUShort()
+      return {
+        op: 'JMP0',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        js: `jump0(${stringUtil.dec2hex(arg)}, 01);?`
+      }
+    }
+    if (op === 0x71) {
+      const arg = $r.readUShort()
+      return {
+        op: 'JNEQ',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        js: `jumpNotEqual(${stringUtil.dec2hex(arg)}, 01);?`
+      }
+    }
+    if (op === 0x72) {
+      const arg = $r.readUShort()
+      return {
+        op: 'JUMP',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        js: `jump(${stringUtil.dec2hex(arg)}, 01);?`
+      }
+    }
+    if (op === 0x73) { return { op: 'END', js: 'end();' } }
+    if (op === 0x74) { return { op: 'POP', js: 'pop();' } }
+    if (op === 0x75) { return { op: 'LINK', js: 'link();' } }
+
+    if (op === 0x80) { return { op: 'MASK', js: 'mask();' } }
+    if (op === 0x81) { return { op: 'RWRD', js: 'RWRD();' } }
+    if (op === 0x82) { return { op: 'RBYT', js: 'RBYT();' } }
+    if (op === 0x83) { return { op: 'CNTB', js: 'CNTB();' } }
+    if (op === 0x84) { return { op: 'HMSK', js: 'HMSK();' } }
+    if (op === 0x85) { return { op: 'LMSK', js: 'LMSK();' } }
+    if (op === 0x86) { return { op: 'MPCT', js: 'MPCT();' } }
+    if (op === 0x87) { return { op: 'TBIT', js: 'TBIT();' } }
+
+    if (op === 0x90) { return { op: 'STRA', js: 'STRA();' } }
+    if (op === 0x91) { return { op: 'POPX', js: 'POPX();' } }
+    if (op === 0x92) { return { op: 'ATTK', js: 'attack();' } }
+    if (op === 0x94) { return { op: 'COPY', js: 'copy();' } }
+    if (op === 0x95) { return { op: 'GLOB', js: 'GLOB();' } }
+    if (op === 0x96) { return { op: 'EDEF', js: 'EDEF();' } }
+
+    if (op === 0x93) {
+      const arg = $r.readUShort() // TODO - NULL Terminated String
+      return {
+        op: 'DSTR',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        js: `displayString(${stringUtil.dec2hex(arg)}, 01);`
+      }
+    }
+    if (op === 0xA0) {
+      const arg = $r.readUByte() // TODO - One byte then NULL Terminated String
+      return {
+        op: 'DEBG',
+        arg,
+        argHex: stringUtil.dec2hex(arg),
+        js: `displayDebug(${stringUtil.dec2hex(arg)}, 01);`
+      }
+    }
+    if (op === 0xA1) { return { op: 'POP2', js: 'POP2();' } }
+
+    console.error('unsupported opCode: 0x' + stringUtil.toHex2(op))
+    throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
   }
 
   readOp () {
