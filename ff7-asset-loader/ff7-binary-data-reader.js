@@ -220,7 +220,7 @@ class FF7BinaryDataReader {
         arg,
         argHex: stringUtil.dec2hex(arg),
         type: '00',
-        js: `pushAddress(${stringUtil.dec2hex(arg)}, 00);`,
+        js: `pushFromAddress(${stringUtil.dec2hex(arg)}, 00);`,
         raw: getRaw(op, arg)
       }
     }
@@ -231,7 +231,7 @@ class FF7BinaryDataReader {
         arg,
         argHex: stringUtil.dec2hex(arg),
         type: '01',
-        js: `pushAddress(${stringUtil.dec2hex(arg)}, 01);`,
+        js: `pushFromAddress(${stringUtil.dec2hex(arg)}, 01);`,
         raw: getRaw(op, arg)
       }
     }
@@ -242,7 +242,7 @@ class FF7BinaryDataReader {
         arg,
         argHex: stringUtil.dec2hex(arg),
         type: '02',
-        js: `pushAddress(${stringUtil.dec2hex(arg)}, 02);`,
+        js: `pushFromAddress(${stringUtil.dec2hex(arg)}, 02);`,
         raw: getRaw(op, arg)
       }
     }
@@ -253,7 +253,7 @@ class FF7BinaryDataReader {
         arg,
         argHex: stringUtil.dec2hex(arg),
         type: '03',
-        js: `pushAddress(${stringUtil.dec2hex(arg)}, 03);`,
+        js: `pushFromAddress(${stringUtil.dec2hex(arg)}, 03);`,
         raw: getRaw(op, arg)
       }
     }
@@ -301,14 +301,14 @@ class FF7BinaryDataReader {
         raw: getRaw(op, arg)
       }
     }
-    if (op === 0x30) { return { op: 'ADD', js: 'arg();', raw: getRaw(op) } }
+    if (op === 0x30) { return { op: 'ADD', js: 'add();', raw: getRaw(op) } }
     if (op === 0x31) { return { op: 'SUB', js: 'subtract();', raw: getRaw(op) } }
     if (op === 0x32) { return { op: 'MUL', js: 'multiply();', raw: getRaw(op) } }
     if (op === 0x33) { return { op: 'DIV', js: 'divide();', raw: getRaw(op) } }
     if (op === 0x34) { return { op: 'MOD', js: 'modulo();', raw: getRaw(op) } }
-    if (op === 0x35) { return { op: 'BAND', js: 'band?();', raw: getRaw(op) } }
-    if (op === 0x36) { return { op: 'BOR', js: 'bandOr?();', raw: getRaw(op) } }
-    if (op === 0x37) { return { op: 'BNOT', js: 'bandNot?();', raw: getRaw(op) } }
+    if (op === 0x35) { return { op: 'BAND', js: 'binaryAnd();', raw: getRaw(op) } }
+    if (op === 0x36) { return { op: 'BOR', js: 'binaryOr();', raw: getRaw(op) } }
+    if (op === 0x37) { return { op: 'BNOT', js: 'binaryNot();', raw: getRaw(op) } }
 
     if (op === 0x40) { return { op: 'EQU', js: 'equals();', raw: getRaw(op) } }
     if (op === 0x41) { return { op: 'NEQU', js: 'notEquals();', raw: getRaw(op) } }
@@ -317,18 +317,18 @@ class FF7BinaryDataReader {
     if (op === 0x44) { return { op: 'GRTN', js: 'greaterThan();', raw: getRaw(op) } }
     if (op === 0x45) { return { op: 'LSTN', js: 'lessThan();', raw: getRaw(op) } }
 
-    if (op === 0x50) { return { op: 'AND', js: 'and();', raw: getRaw(op) } }
-    if (op === 0x51) { return { op: 'OR', js: 'or();', raw: getRaw(op) } }
-    if (op === 0x52) { return { op: 'NOT', js: 'not();', raw: getRaw(op) } }
+    if (op === 0x50) { return { op: 'AND', js: 'bothPopsNonZero();', raw: getRaw(op) } }
+    if (op === 0x51) { return { op: 'OR', js: 'eitherPopsNonZero();', raw: getRaw(op) } }
+    if (op === 0x52) { return { op: 'NOT', js: 'isZero();', raw: getRaw(op) } }
 
     if (op === 0x60) {
       const arg = $r.readUByte()
       return {
-        op: 'PUSH',
+        op: 'PUSHV',
         arg,
         argHex: stringUtil.dec2hex(arg),
-        type: '60',
-        js: `push(${stringUtil.dec2hex(arg)}, 60);`,
+        length: 1,
+        js: `pushValue(${stringUtil.dec2hex(arg)}, 1);`,
         raw: getRaw(op, arg)
       }
     }
@@ -336,22 +336,22 @@ class FF7BinaryDataReader {
     if (op === 0x61) {
       const arg = $r.readUShort()
       return {
-        op: 'PUSH',
+        op: 'PUSHV',
         arg,
         argHex: stringUtil.dec2hex(arg),
-        type: '61',
-        js: `push(${stringUtil.dec2hex(arg)}, 61);`,
+        length: 2,
+        js: `pushValue(${stringUtil.dec2hex(arg)}, 2);`,
         raw: getRaw(op, arg)
       }
     }
     if (op === 0x62) {
       const arg = $r.read24bitInteger() // ?
       return {
-        op: 'PUSH',
+        op: 'PUSHV',
         arg,
         argHex: stringUtil.dec2hex(arg),
-        type: '62',
-        js: `push(${stringUtil.dec2hex(arg)}, 62);`,
+        length: 3,
+        js: `pushValue(${stringUtil.dec2hex(arg)}, 3);`,
         raw: getRaw(op, arg)
       }
     }
@@ -362,7 +362,7 @@ class FF7BinaryDataReader {
         op: 'JMP0',
         arg,
         argHex: stringUtil.dec2hex(arg),
-        js: `jump0(${stringUtil.dec2hex(arg)}, 70);`,
+        js: `jumpIfZero(${stringUtil.dec2hex(arg)}, 70);`,
         raw: getRaw(op, arg)
       }
     }
@@ -382,7 +382,7 @@ class FF7BinaryDataReader {
         op: 'JUMP',
         arg,
         argHex: stringUtil.dec2hex(arg),
-        js: `jump(${stringUtil.dec2hex(arg)}, 01);?`,
+        js: `jump(${stringUtil.dec2hex(arg)}, 72);`,
         raw: getRaw(op, arg)
       }
     }
@@ -390,40 +390,41 @@ class FF7BinaryDataReader {
     if (op === 0x74) { return { op: 'POP', js: 'pop();', raw: getRaw(op) } }
     if (op === 0x75) { return { op: 'LINK', js: 'link();', raw: getRaw(op) } }
 
-    if (op === 0x80) { return { op: 'MASK', js: 'mask();', raw: getRaw(op) } }
-    if (op === 0x81) { return { op: 'RWRD', js: 'RWRD();', raw: getRaw(op) } }
-    if (op === 0x82) { return { op: 'RBYT', js: 'RBYT();', raw: getRaw(op) } }
-    if (op === 0x83) { return { op: 'CNTB', js: 'CNTB();', raw: getRaw(op) } }
-    if (op === 0x84) { return { op: 'HMSK', js: 'HMSK();', raw: getRaw(op) } }
-    if (op === 0x85) { return { op: 'LMSK', js: 'LMSK();', raw: getRaw(op) } }
-    if (op === 0x86) { return { op: 'MPCT', js: 'MPCT();', raw: getRaw(op) } }
-    if (op === 0x87) { return { op: 'TBIT', js: 'TBIT();', raw: getRaw(op) } }
+    if (op === 0x80) { return { op: 'MASK', js: 'maskSet();', raw: getRaw(op) } }
+    if (op === 0x81) { return { op: 'RWRD', js: 'random();', raw: getRaw(op) } }
+    if (op === 0x82) { return { op: 'RBYT', js: 'pickRandomBit();', raw: getRaw(op) } }
+    if (op === 0x83) { return { op: 'CNTB', js: 'countBits();', raw: getRaw(op) } }
+    if (op === 0x84) { return { op: 'HMSK', js: 'highMask();', raw: getRaw(op) } }
+    if (op === 0x85) { return { op: 'LMSK', js: 'lowMask();', raw: getRaw(op) } }
+    if (op === 0x86) { return { op: 'MPCT', js: 'getMPCost();', raw: getRaw(op) } }
+    if (op === 0x87) { return { op: 'TBIT', js: 'toBit();', raw: getRaw(op) } }
 
-    if (op === 0x90) { return { op: 'STRA', js: 'STRA();', raw: getRaw(op) } }
-    if (op === 0x91) { return { op: 'POPX', js: 'POPX();', raw: getRaw(op) } }
+    if (op === 0x90) { return { op: 'STRA', js: 'saveToAddress();', raw: getRaw(op) } }
+    if (op === 0x91) { return { op: 'POPX', js: 'popX();', raw: getRaw(op) } }
     if (op === 0x92) { return { op: 'ATTK', js: 'attack();', raw: getRaw(op) } }
-    if (op === 0x94) { return { op: 'COPY', js: 'copy();', raw: getRaw(op) } }
-    if (op === 0x95) { return { op: 'GLOB', js: 'GLOB();', raw: getRaw(op) } }
-    if (op === 0x96) { return { op: 'EDEF', js: 'EDEF();', raw: getRaw(op) } }
-
     if (op === 0x93) {
-      const arg = $r.readUShort() // TODO - NULL Terminated String
+      const text = this.readKernelString(255)
       return {
         op: 'DSTR',
-        arg,
-        argHex: stringUtil.dec2hex(arg),
-        js: `displayString(${stringUtil.dec2hex(arg)}, 01);`,
-        raw: getRaw(op, arg)
+        text,
+        js: `displayString(${text});`,
+        raw: getRaw(op) // TODO - Add text to this if required
       }
     }
+    if (op === 0x94) { return { op: 'COPY', js: 'copyMiscData();', raw: getRaw(op) } }
+    if (op === 0x95) { return { op: 'GLOB', js: 'copyToMemoryBank();', raw: getRaw(op) } }
+    if (op === 0x96) { return { op: 'EDEF', js: 'elementalDefense();', raw: getRaw(op) } }
+
     if (op === 0xA0) {
-      const arg = $r.readUByte() // TODO - One byte then NULL Terminated String
+      const arg = $r.readUByte()
+      const text = this.readKernelString(255)
       return {
         op: 'DEBG',
         arg,
         argHex: stringUtil.dec2hex(arg),
-        js: `displayDebug(${stringUtil.dec2hex(arg)}, 01);`,
-        raw: getRaw(op, arg)
+        text,
+        js: `displayDebug(${stringUtil.dec2hex(arg)}, ${text});`,
+        raw: getRaw(op) // TODO - Add text to this if required
       }
     }
     if (op === 0xA1) { return { op: 'POP2', js: 'POP2();', raw: getRaw(op) } }
