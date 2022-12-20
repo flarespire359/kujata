@@ -13,6 +13,12 @@
     ],
     "labels": [
         {"id":1, "description":"mp-needed", "x":0,"y":40,"w":80,"h":24, "palette": 2},
-        {"id":1, "description":"times", "x":240,"y":16,"w":16,"h":16, "palette": 8}
+        {"id":1, "description":"times", "x":240,"y":16,"w":16,"h":16, "palette": 8},
+        {"id":1, "description":"limit", "x":112,"y":0,"w":48,"h":10, "palette": 2},
+        {"id":1, "description":"hp", "x":160,"y":0,"w":28,"h":10, "palette": 2},
+        {"id":1, "description":"mp", "x":192,"y":0,"w":30,"h":10, "palette": 2},
+        {"id":1, "description":"time-1", "x":224,"y":0,"w":32,"h":10, "palette": 2},
+        {"id":1, "description":"barrier", "x":112,"y":16,"w":76,"h":10, "palette": 2},
+        {"id":1, "description":"wait", "x":192,"y":16,"w":44,"h":10, "palette": 2}
     ]
 }
