@@ -24,12 +24,12 @@ const getEnemyData = (r) => {
   const data = {
     name: rawName,
     level: r.readUByte(),
-    speed: r.readUByte(),
+    dexterity: r.readUByte(),
     luck: r.readUByte(),
-    evade: r.readUByte(),
-    strength: r.readUByte(),
+    defensePercent: r.readUByte(),
+    attack: r.readUByte(),
     defense: r.readUByte(),
-    magic: r.readUByte(),
+    magicAttack: r.readUByte(),
     magicDefense: r.readUByte(),
     elementTypes: Array(8).fill().map(a => parseKernelEnums(Enums.Elements, r.readUByte())), // Not right yet
     elementRates: Array(8).fill().map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())), // Not right yet

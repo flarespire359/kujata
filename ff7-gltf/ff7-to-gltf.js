@@ -182,6 +182,10 @@ module.exports = class FF7GltfTranslator {
         if (animationData.numBones !== bonesToCompare) {
           throw new Error('number of bones do not match between hrcId=' + hrcId + ' and animationData=' + animationData)
         }
+        // while (animationData.numBones < bonesToCompare) {
+        //   animationData.animationFrames.push(animationData.animationFrames[animationData.animationFrames.length - 1])
+        //   animationData.numBones = animationData.animationFrames.length - 3
+        // }
       }
     }
 
@@ -444,8 +448,26 @@ module.exports = class FF7GltfTranslator {
 
             // 2. create "vertex" js Buffer + gltf bufferView + gltf accessor
             const vertexBuffer = Buffer.alloc(numVerticesInGroup * 3 * 4) // 3 floats per vertex, 4 bytes per float
+            const minMax = {
+              min: {
+                x: model.vertices[offsetVertexIndex].x,
+                y: model.vertices[offsetVertexIndex].y,
+                z: model.vertices[offsetVertexIndex].z
+              },
+              max: {
+                x: model.vertices[offsetVertexIndex].x,
+                y: model.vertices[offsetVertexIndex].y,
+                z: model.vertices[offsetVertexIndex].z
+              }
+            }
             for (let i = 0; i < numVerticesInGroup; i++) {
               const vertex = model.vertices[offsetVertexIndex + i]
+              if (vertex.x < minMax.min.x) minMax.min.x = vertex.x
+              if (vertex.y < minMax.min.y) minMax.min.y = vertex.y
+              if (vertex.z < minMax.min.z) minMax.min.z = vertex.z
+              if (vertex.x > minMax.max.x) minMax.max.x = vertex.x
+              if (vertex.y > minMax.max.y) minMax.max.y = vertex.y
+              if (vertex.z > minMax.max.z) minMax.max.z = vertex.z
               vertexBuffer.writeFloatLE(vertex.x, i * 12)
               vertexBuffer.writeFloatLE(vertex.y, i * 12 + 4)
               vertexBuffer.writeFloatLE(vertex.z, i * 12 + 8)
@@ -458,8 +480,11 @@ module.exports = class FF7GltfTranslator {
               byteOffset: 0,
               type: 'VEC3',
               componentType: COMPONENT_TYPE.FLOAT,
-              count: numVerticesInGroup
+              count: numVerticesInGroup,
+              min: [minMax.min.x, minMax.min.y, minMax.min.z],
+              max: [minMax.max.x, minMax.max.y, minMax.max.z]
             })
+            // console.log('min max here', vertexAccessorIndex, minMax)
             gltf.bufferViews.push(
               {
                 buffer: 0,
@@ -957,7 +982,6 @@ module.exports = class FF7GltfTranslator {
               path: 'rotation'
             }
           })
-
           allBuffers.push(boneTranslationFrameDataBuffer)
           numBuffersCreated++
           const boneTranslationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
@@ -1019,6 +1043,7 @@ module.exports = class FF7GltfTranslator {
       // console.log('Wrote: ' + binFilenameFull)
     }
 
+    // console.log('gltf.animations', gltf.animations[0])
     // create *.gltf file
     const gltfFilenameFull = outputDirectory + '/' + gltfFilename
     fs.writeFileSync(gltfFilenameFull, JSON.stringify(gltf, null, 2))

@@ -630,13 +630,15 @@ const parseKernelEnums = (type, val) => {
 
   if (type === Enums.Elements && val === 0xFFFF) {
     return []
-  } else if (type === Enums.Statuses && val === 0xFF || type === Enums.EquipmentStatus && val === 0xFF) {
+  } else if ((type === Enums.Statuses && val === 0xFF) || (type === Enums.EquipmentStatus && val === 0xFF)) {
+    return []
+  } else if (type === Enums.TargetData && val === 0xFF) {
     return []
   } else if (type === Enums.MateriaType) {
     return getMateriaType(val) // Specific behaviour required, but it is nice to abstract it behind parseKernelEnums
   } else if (singleResultTypes.includes(type)) { // Is this exhaustive? Restrictions, CharacterStat, MateriaType?
     let text = 'None'
-    for (var prop in type) {
+    for (const prop in type) {
       if (val === type[prop]) { // Id matching
         text = prop
       }
@@ -644,7 +646,7 @@ const parseKernelEnums = (type, val) => {
     return text
   } else {
     const enums = []
-    for (var prop in type) {
+    for (const prop in type) {
       if (inverseBitTypes.includes(type)) {
         if ((val & type[prop]) !== type[prop]) { // Bitwise matching, but inverse, eg 0 is on
           enums.push(prop)

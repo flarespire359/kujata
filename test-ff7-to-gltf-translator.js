@@ -39,10 +39,10 @@ const translateAllBattleFiles = async () => {
 
 const init = async () => {
   // await translateBattleFile('pbaa')
-  await translateBattleFile('aqaa')
+  // await translateBattleFile('aqaa')
   // await translateBattleFile('avaa')
   // await translateBattleFile('opaa')
-  // await translateBattleFile('rtaa')
+  await translateBattleFile('rtaa')
   // await translateBattleFile('nbaa')
 
   // await translateAllBattleFiles()
