@@ -25,8 +25,8 @@
 
     "inputBattleDataDirectory": "/Users/DanGarfield/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam/steamapps/common/FINAL FANTASY VII/data/battle",
     "inputBattleDirectoryDescription": "Location of raw battle data files like stage57.dat and enemy012.dat",
-    "outputBattleStageDirectory": "/Users/DanGarfield/code/kujata-data/data/battle/stage",
-    "outputBattleStageDirectoryDescription": "Where the translator will put out battle data",
+    "outputBattleMiscDirectory": "/Users/DanGarfield/code/kujata-data/data/battle",
+    "outputBattleMiscDirectoryDescription": "Where the translator will put out misc battle data",
 
     "inputKernelDirectory": "/Users/DanGarfield/Library/Application Support/CrossOver/Bottles/Steam/drive_c/Program Files (x86)/Steam/steamapps/common/FINAL FANTASY VII/data/lang-en/kernel",
     "inputKernelDirectoryDescription": "Location of kernel directory containing KERNEL.BIN, kernel2.bin, WINDOW.BIN",
