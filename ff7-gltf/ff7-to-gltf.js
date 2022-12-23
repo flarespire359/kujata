@@ -357,7 +357,8 @@ module.exports = class FF7GltfTranslator {
                 const texSrcDir = isBattleModel ? config.inputBattleBattleDirectory : config.inputFieldCharDirectory
                 const texSrcFile = isBattleModel ? textureIds[i] : `${textureIds[i]}.tex`
                 const texturePath = isBattleModel ? `${config.texturesDirectory}/${textureId}.png` : `${config.texturesDirectory}/${textureId}.tex.png`
-                const hasTransparentPixels = await this.ensureTextureExists(outputDirectory, texSrcDir, texSrcFile, texturePath)
+                const textureFlip = isBattleModel
+                const hasTransparentPixels = await this.ensureTextureExists(outputDirectory, texSrcDir, texSrcFile, texturePath, textureFlip)
                 // console.log(pFileId, 'texture - ', texturePath)
                 gltf.images.push({ uri: texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
@@ -379,16 +380,13 @@ module.exports = class FF7GltfTranslator {
                     roughnessFactor: 1.0
                   },
                   alphaMode: hasTransparentPixels ? 'BLEND' : 'OPAQUE', // Has to be blend so that textures colors can both apply
-                  name: textureId + 'Material',
-                  extensions: { // Uncomment to ensure gltf model does not respond to lights
-                    KHR_materials_unlit: {}
-                  }
+                  name: textureId + 'Material'
                 }
-
-                gltf.materials.push(mat)
                 if (hasTransparentPixels && !gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
                   gltf.extensionsUsed.push('KHR_materials_unlit')
+                  mat.extensions = { KHR_materials_unlit: {} }
                 }
+                gltf.materials.push(mat)
                 // gltfTextureIndexOffset++
                 // console.log('gltfTextureIndexOffset + i', textureIndex)
                 // gltfTextureIndexOffset++
@@ -1050,11 +1048,11 @@ module.exports = class FF7GltfTranslator {
     // console.log('Wrote: ' + gltfFilenameFull)
   }; // end function translateFF7FieldHrcToGltf
 
-  ensureTextureExists (outputDirectory, texDirectory, textureFile, texturePath) {
+  ensureTextureExists (outputDirectory, texDirectory, textureFile, texturePath, textureFlip) {
     const texPath = `${texDirectory}/${textureFile}` // Can be .TEX of .tex, fs sorts this out anyway
     const pngPath = `${outputDirectory}/${texturePath}`
 
     // It looks as though battle textures need to be flipped, we can't flip them back (easily) with the current GLTFLoader
-    return new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, true)
+    return new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, textureFlip)
   }
 }

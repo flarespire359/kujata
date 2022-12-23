@@ -38,6 +38,14 @@ class FF7BinaryDataReader {
     return array
   };
 
+  readByteArray (length) {
+    const array = []
+    for (let i = 0; i < length; i++) {
+      array.push(this.readByte())
+    }
+    return array
+  };
+
   readUShortArray (length) {
     const array = []
     for (let i = 0; i < length; i++) {

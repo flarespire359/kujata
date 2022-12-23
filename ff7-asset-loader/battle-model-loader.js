@@ -182,7 +182,7 @@ module.exports = class BattleModelLoader {
         const weaponFilename = baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
         const weaponFilenameAbsolute = config.inputBattleBattleDirectory + '/' + weaponFilename
         if (fs.existsSync(weaponFilenameAbsolute)) {
-          console.log('weapon', weaponFilenameAbsolute)
+          // console.log('weapon', weaponFilenameAbsolute)
           if (loadGeometry) {
             battleModel.weaponModelFilenames.push(weaponFilename)
           }
