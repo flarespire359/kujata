@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
+const { toHex2 } = require('./string-util.js')
 
 const saveData = async (data, outputFile) => {
   await fs.outputFile(outputFile, JSON.stringify(data))
@@ -29,118 +30,95 @@ const transformVertexColorsToModernOrientation = (vertexColors, vertexColorSet) 
 const extractMarkDat = async (inputBattleDataDirectory, outputBattleMiscDirectory) => {
   const buffer = fs.readFileSync(path.join(inputBattleDataDirectory, 'mark.dat'))
   const r = new FF7BinaryDataReader(buffer)
-  // Not sure about the beginning part for vertices etc
 
-  /*
-    3.552713678800501e-15,    -100,     0,
-    36.6025390625,            100,      136.6025390625,
-    -136.6025390625,          100,     -36.6025390625,
-    100,                      100,      -100,
-    -136.6025390625,          100,      -36.6025390625,
-    36.6025390625,            100,      136.6025390625,
-    100,                      100,      -100,
-    36.6025390625,            100,      136.6025390625,
-    3.552713678800501e-15,    -100,     0,
-    100,                      100,      -100,
-    3.552713678800501e-15,    -100,     0,
-    -136.6025390625,          100,      -36.6025390625
+  const vertexCount = r.readUByte() / 8 // ? Untested
+  const unknown = {}
+  unknown.unknown1 = r.read24bitInteger()
+  const vertexPositions = []
+  unknown.unknown2 = []
+  for (let vertexI = 0; vertexI < vertexCount; vertexI++) {
+    const x = r.readShort()
+    const y = r.readShort()
+    const z = r.readShort()
+    unknown.unknown2.push(r.readShort())
+    vertexPositions.push([x, y, z])
+  }
+  unknown.unknown3 = r.readUByteArray(8)
+  const facesCount = r.readUInt() // ? Untested
+  const faces = []
+  unknown.unknown4 = []
+  unknown.unknown5 = []
+  for (let facesI = 0; facesI < facesCount; facesI++) {
+    const face = { positions: [], colors: [] }
+    for (let i = 0; i < 3; i++) {
+      face.positions.push(vertexPositions[r.readShort() / 8])
+    }
+    unknown.unknown4.push(r.readShort())
+    for (let i = 0; i < 3; i++) {
+      face.colors.push('#' + r.readUByteArray(3).map(c => toHex2(c)).join(''))
+      unknown.unknown5.push(r.readByte())
+    }
+    faces.push(face)
+  }
+  const markData = {
+    faces,
+    unknown
+  }
+  // console.log('markData', JSON.stringify(markData, null, 4))
+  await saveData(markData.faces, path.join(outputBattleMiscDirectory, 'mark.dat.json'))
+}
+const extractCamDatData = async (inputBattleSceneDirectory, outputBattleMiscDirectory) => {
+  // TODO - Work In Progress
+  const buffer = fs.readFileSync(path.join(inputBattleSceneDirectory, 'camdat0.bin'))
+  const r = new FF7BinaryDataReader(buffer)
 
-     a -b  c *4
-     d  b  e *2
-    -e  b -d *1
-     b  b -b *3
-    -e  b -d *1
-     d  b  e *2
-     b  b -b *3
-     d  b  e *2
-     a -b  c *4
-     b  b -b *3
-     a -b  c *4
-    -e  b -d *1
+  r.offset = 82
+  const cameraPositions = []
+  for (let j = 0; j < 30; j++) {
+    const camera = {
+      xAxis: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
+      yAxis: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
+      zAxis: { x: r.readShort(), y: r.readShort(), z: r.readShort() },
+      unknown1: r.readShort(), // dupe of zAxis.z
+      position: { x: r.readInt(), y: r.readInt(), z: r.readInt() },
+      unknown2: r.readInt(),
+      zoom: r.readUShort(),
+      unknown3: r.readShort()
+    }
+    delete camera.unknown1
+    delete camera.unknown2
+    delete camera.unknown3
+    console.log('camera', camera, r.offset)
+    cameraPositions.push(camera)
+  }
 
-    -136.6025390625,          100,      -36.6025390625
-    36.6025390625,            100,      136.6025390625,
-    100,                      100,      -100,
-    3.552713678800501e-15,    -100,     0,
-'
-    -a  b -c
-     c  b -a
-     b  b -b
-     d -b  f
+  console.log('example', r.readUByteArray(24 * 4))
+  // 0x481, 0x493
+  const a = 0x481
+  r.offset = a
+  console.log('example2', r.readUByteArray(40 * 2))
+  r.offset = r.offset - (40 * 2)
+  let x = r.readShort(); let y = r.readShort(); let z = r.readShort()
+  console.log('xyz', x, y, z, 'o', a)
+  for (let i = 0; i < 1260; i++) {
+    r.offset = a + 6 + i
+    const px = r.readShort(); const py = r.readShort(); const pz = r.readShort()
+    const dx = x - px
+    const dy = y - py
+    const dz = z - pz
 
-  200000 00 000036 FC 000000 00
-  00005F FB 68FF00 00 7DFF5F FB
-  4C0000 00 83005F FB 4C0000 00
-  000000 00 000000 00 040000 00
-
-  080010 00 180000 00 FFFF00 30 9B7800 00 FFD800 00
-  000018 00 100000 00 332700 30 FFD800 00 9B7800 00
-  000008 00 180000 00 332700 30 FFFF00 00 FFD800 00
-  000010 00 080000 00 332700 30 9B7800 00 FFFF00 00
-
-  000000 00
-
-  */
-  // for (let i = 0; i < 4; i++) {
-  //   const x = r.readByteArray(4)
-  //   const y = r.readByteArray(4)
-  //   const z = r.readByteArray(4)
-  //   console.log(i, '-', x, y, z)
-  // }
-  // r.offset = 0x34
-  // console.log('all', r.readUByteArray(0x34))
-
-  r.offset = 0x30
-  const vertexColors = []
-  const vertexColorSet = {}
-  for (let i = 0; i < 4; i++) {
-    const colors = []
-    const positions = [r.readUShort(), r.readUShort(), r.readUShort()]
-    r.readUShort()
-    const r1 = r.readUByte()
-    const g1 = r.readUByte()
-    const b1 = r.readUByte()
-    r.offset = r.offset - 3
-    const rgb1 = r.read24bitInteger()
-    r.readUByte()
-
-    const r2 = r.readUByte()
-    const g2 = r.readUByte()
-    const b2 = r.readUByte()
-    r.offset = r.offset - 3
-    const rgb2 = r.read24bitInteger()
-    r.readUByte()
-
-    const r3 = r.readUByte()
-    const g3 = r.readUByte()
-    const b3 = r.readUByte()
-    r.offset = r.offset - 3
-    const rgb3 = r.read24bitInteger()
-    r.readUByte()
-
-    colors.push([r1, g1, b1, rgb1])
-    colors.push([r2, g2, b2, rgb2])
-    colors.push([r3, g3, b3, rgb3])
-    vertexColors.push(positions)
-    // console.log('vertex', positions, '-', colors)
-    for (const [i, pos] of positions.entries()) {
-      vertexColorSet[pos] = colors[i]
+    // console.log('dxyz', dx, dy, dz)
+    const t = 300
+    if (Math.abs(dx) < t && Math.abs(dy) < t && Math.abs(dz) < t) {
+      console.log('dxyz', dx, dy, dz, 'FOUND SOMETHING', r.offset)
+      x = px; y = py; z = pz
     }
   }
-  transformVertexColorsToModernOrientation(vertexColors, vertexColorSet)
-
-  const markData = {
-    vertexColors: vertexColors.map(v1 => v1.map(v2 => vertexColorSet[v2])),
-    vertexPositions: 'tbc',
-    vertexSize: 'tbc'
-  }
-
-  // console.log('markData', markData)
-  await saveData(markData, path.join(outputBattleMiscDirectory, 'mark.dat.json'))
 }
-const extractMiscBattleData = async (inputBattleDataDirectory, outputBattleMiscDirectory) => {
+const extractMiscBattleData = async (inputBattleDataDirectory, inputBattleSceneDirectory, outputBattleMiscDirectory) => {
   console.log('Extract Misc Battle Data: START')
   await extractMarkDat(inputBattleDataDirectory, outputBattleMiscDirectory)
+  // await extractCamDatData(inputBattleSceneDirectory, outputBattleMiscDirectory)
   console.log('Extract Misc Battle Data: END')
 }
 module.exports = {

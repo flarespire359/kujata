@@ -9,6 +9,6 @@ const init = async () => {
   //   config.outputBattleSceneDirectory,
   //   config.metadataDirectory
   // )
-  await extractMiscBattleData(config.inputBattleDataDirectory, config.outputBattleMiscDirectory)
+  await extractMiscBattleData(config.inputBattleDataDirectory, config.inputBattleSceneDirectory, config.outputBattleMiscDirectory)
 }
 init()
