@@ -65,10 +65,13 @@ const init = async () => {
   // await translateBattleFile('opaa')
   // await translateBattleFile('rtaa')
   // await translateBattleFile('nbaa')
+  await translateBattleFile('oqaa')
 
   // await translateAllBattleFiles()
 
-  await translateFieldFile('aaaa')
+  // await translateFieldFile('aaaa')
+  // await translateFieldFile('aagb')
+  // await translateFieldFile('acgd')
   // await translateFieldFile('byba')
 
   // await translateAllFieldFiles()

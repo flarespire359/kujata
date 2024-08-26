@@ -14,7 +14,7 @@ let translator = new FF7FieldAnimationTranslator()
 
 for (let animFileId of animFileIds) {
   console.log('anim', animFileId)
-  // translator.translateFF7FieldAnimationToGLTF(config, animFileId)
+  translator.translateFF7FieldAnimationToGLTF(config, animFileId)
 }
 
 /*
