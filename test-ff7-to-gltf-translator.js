@@ -19,9 +19,16 @@ const gltfTranslator = new FF7GltfTranslator()
 //   // gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel);
 // }
 
-const translateBattleFile = async (hrcFileId) => {
+const translateBattleFile = async hrcFileId => {
   try {
-    await gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true, true)
+    await gltfTranslator.translateFF7FieldHrcToGltf(
+      config,
+      hrcFileId,
+      null,
+      null,
+      true,
+      true
+    )
   } catch (err) {
     console.log('Error while trying to translate: ' + hrcFileId + ':', err)
     // break; // uncomment this line to stop on failure
@@ -29,7 +36,9 @@ const translateBattleFile = async (hrcFileId) => {
 }
 const translateAllBattleFiles = async () => {
   console.log('translateAllBattleFiles: START')
-  const battleFiles = fs.readdirSync(config.inputBattleBattleDirectory).filter(f => f.toLowerCase().endsWith('aa'))// .filter(f => f.toLowerCase() !== 'akaa')
+  const battleFiles = fs
+    .readdirSync(config.inputBattleBattleDirectory)
+    .filter(f => f.toLowerCase().endsWith('aa')) // .filter(f => f.toLowerCase() !== 'akaa')
   console.log('battleFiles', battleFiles)
   for (const battleFile of battleFiles) {
     await translateBattleFile(battleFile)
@@ -37,9 +46,16 @@ const translateAllBattleFiles = async () => {
   console.log('translateAllBattleFiles: END')
 }
 
-const translateFieldFile = async (hrcFileId) => {
+const translateFieldFile = async hrcFileId => {
   try {
-    await gltfTranslator.translateFF7FieldHrcToGltf(config, hrcFileId, null, null, true, false)
+    await gltfTranslator.translateFF7FieldHrcToGltf(
+      config,
+      hrcFileId,
+      null,
+      null,
+      true,
+      false
+    )
   } catch (err) {
     console.log('Error while trying to translate: ' + hrcFileId + ':', err)
     // break; // uncomment this line to stop on failure
@@ -47,7 +63,8 @@ const translateFieldFile = async (hrcFileId) => {
 }
 const translateAllFieldFiles = async () => {
   console.log('translateAllFieldFiles: START')
-  const fieldFiles = fs.readdirSync(config.inputFieldCharDirectory)
+  const fieldFiles = fs
+    .readdirSync(config.inputFieldCharDirectory)
     // .filter(f => f.toLowerCase().startsWith('aa'))
     .filter(f => f.toLowerCase().endsWith('.hrc'))
     .map(f => f.toLowerCase().replace('.hrc', ''))
@@ -62,7 +79,7 @@ const init = async () => {
   // await translateBattleFile('pbaa')
   // await translateBattleFile('aqaa')
   // await translateBattleFile('avaa')
-  // await translateBattleFile('opaa')
+  await translateBattleFile('opaa')
   // await translateBattleFile('rtaa')
   // await translateBattleFile('nbaa')
   await translateBattleFile('oqaa')

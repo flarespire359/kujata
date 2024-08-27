@@ -32,9 +32,23 @@ module.exports = class FF7GltfTranslator {
   //   ["AAFE, "AAGA"] = include only specific animations
   // includeTextures = whether to include textures in the translation (set to false to disable)
 
-  async translateFF7FieldHrcToGltf (config, hrcFileId, baseAnimFileId, animFileIds, includeTextures, isBattleModel) {
-    const standingAnimations = JSON.parse(fs.readFileSync(config.metadataDirectory + '/field-model-standing-animations.json', 'utf-8'))
-    const outputDirectory = isBattleModel ? config.outputBattleBattleDirectory : config.outputFieldCharDirectory
+  async translateFF7FieldHrcToGltf (
+    config,
+    hrcFileId,
+    baseAnimFileId,
+    animFileIds,
+    includeTextures,
+    isBattleModel
+  ) {
+    const standingAnimations = JSON.parse(
+      fs.readFileSync(
+        config.metadataDirectory + '/field-model-standing-animations.json',
+        'utf-8'
+      )
+    )
+    const outputDirectory = isBattleModel
+      ? config.outputBattleBattleDirectory
+      : config.outputFieldCharDirectory
 
     if (!fs.existsSync(outputDirectory)) {
       console.log('Creating output directory: ' + outputDirectory)
@@ -68,7 +82,6 @@ module.exports = class FF7GltfTranslator {
 
     // create list of animation files to translate (field only)
     if (isBattleModel) {
-
     } else {
       if (animFileIds === null) {
         // console.log('Will not translate any field animations.')
@@ -78,9 +91,15 @@ module.exports = class FF7GltfTranslator {
           // console.log('Will translate all field animations from Ifalna database.')
           const ifalnaEntry = ifalnaDatabase[hrcFileId.toUpperCase()]
           if (ifalnaEntry) {
-            if (ifalnaEntry.Anims) { animFileIds = animFileIds.concat(ifalnaEntry.Anims) }
-            if (ifalnaEntry.Anims2) { animFileIds = animFileIds.concat(ifalnaEntry.Anims2) }
-            if (ifalnaEntry.Anims3) { animFileIds = animFileIds.concat(ifalnaEntry.Anims3) }
+            if (ifalnaEntry.Anims) {
+              animFileIds = animFileIds.concat(ifalnaEntry.Anims)
+            }
+            if (ifalnaEntry.Anims2) {
+              animFileIds = animFileIds.concat(ifalnaEntry.Anims2)
+            }
+            if (ifalnaEntry.Anims3) {
+              animFileIds = animFileIds.concat(ifalnaEntry.Anims3)
+            }
           }
         }
       }
@@ -95,7 +114,13 @@ module.exports = class FF7GltfTranslator {
       // console.log('Will translate and include animations from pack: ' + battleAnimationFilename)
       const battleAnimationLoader = new BattleAnimationLoader()
       const battleModel = skeleton
-      battleAnimationPack = battleAnimationLoader.loadBattleAnimationPack(config, battleAnimationFilename, battleModel.numBones, battleModel.numBodyAnimations, battleModel.numWeaponAnimations)
+      battleAnimationPack = battleAnimationLoader.loadBattleAnimationPack(
+        config,
+        battleAnimationFilename,
+        battleModel.numBones,
+        battleModel.numBodyAnimations,
+        battleModel.numWeaponAnimations
+      )
       animationDataList = battleAnimationPack.bodyAnimations
       weaponAnimationDataList = battleAnimationPack.weaponAnimations
 
@@ -136,7 +161,11 @@ module.exports = class FF7GltfTranslator {
           // console.log('Warning: Not using base animation; model may look funny without bone rotations.')
           const defaultBoneRotations = []
           for (let i = 0; i < numBones; i++) {
-            defaultBoneRotations.push({ x: 30 * Math.PI / 180, y: 30 * Math.PI / 180, z: 30 * Math.PI / 180 })
+            defaultBoneRotations.push({
+              x: (30 * Math.PI) / 180,
+              y: (30 * Math.PI) / 180,
+              z: (30 * Math.PI) / 180
+            })
           }
           baseAnimationData = {
             numFrames: 1,
@@ -144,11 +173,13 @@ module.exports = class FF7GltfTranslator {
             rotationOrder1: 1,
             rotationOrder2: 0,
             rotationOrder3: 2,
-            animationFrames: [{
-              rootTranslation: { x: 0, y: 0, z: 0 },
-              rootRotation: { x: 0, y: 0, z: 0 },
-              boneRotations: defaultBoneRotations
-            }]
+            animationFrames: [
+              {
+                rootTranslation: { x: 0, y: 0, z: 0 },
+                rootRotation: { x: 0, y: 0, z: 0 },
+                boneRotations: defaultBoneRotations
+              }
+            ]
           }
         }
       }
@@ -168,7 +199,11 @@ module.exports = class FF7GltfTranslator {
 
     if (baseAnimFileId) {
       if (baseAnimationData.numBones !== skeleton.bones.length) {
-        throw new Error('number of bones do not match between hrcId=' + hrcId + ' and baseAnimId=')// + baseAnimId)
+        throw new Error(
+          'number of bones do not match between hrcId=' +
+            hrcId +
+            ' and baseAnimId='
+        ) // + baseAnimId)
       }
     }
     // for (let animationData of animationDataList) {
@@ -178,9 +213,17 @@ module.exports = class FF7GltfTranslator {
       if (!animationData.numBones) {
         // console.log('WARN: animation #' + i + ' is blank.')
       } else {
-        const bonesToCompare = isBattleModel && skeleton.hasWeapon ? skeleton.bones.length - 1 : skeleton.bones.length // battle model with weapon has + 1 bone (body + weapon), so we need to substract that bone
+        const bonesToCompare =
+          isBattleModel && skeleton.hasWeapon
+            ? skeleton.bones.length - 1
+            : skeleton.bones.length // battle model with weapon has + 1 bone (body + weapon), so we need to substract that bone
         if (animationData.numBones !== bonesToCompare) {
-          throw new Error('number of bones do not match between hrcId=' + hrcId + ' and animationData=' + animationData)
+          throw new Error(
+            'number of bones do not match between hrcId=' +
+              hrcId +
+              ' and animationData=' +
+              animationData
+          )
         }
         // while (animationData.numBones < bonesToCompare) {
         //   animationData.animationFrames.push(animationData.animationFrames[animationData.animationFrames.length - 1])
@@ -190,7 +233,11 @@ module.exports = class FF7GltfTranslator {
     }
 
     let firstFrame = null
-    if (baseAnimationData && baseAnimationData.animationFrames && baseAnimationData.animationFrames.length > 0) {
+    if (
+      baseAnimationData &&
+      baseAnimationData.animationFrames &&
+      baseAnimationData.animationFrames.length > 0
+    ) {
       firstFrame = baseAnimationData.animationFrames[0]
     } else {
       firstFrame = {
@@ -199,7 +246,8 @@ module.exports = class FF7GltfTranslator {
       }
     }
     let firstWeaponFrame = null
-    if (skeleton.hasWeapon) { // later for not char battle model
+    if (skeleton.hasWeapon) {
+      // later for not char battle model
       firstWeaponFrame = baseWeaponAnimationData.animationFrames[0]
     }
 
@@ -252,7 +300,11 @@ module.exports = class FF7GltfTranslator {
     gltf.nodes.push({
       name: hrcId + 'BoneRoot',
       children: [], // will populate below
-      translation: [firstFrame.rootTranslation.x, firstFrame.rootTranslation.y, firstFrame.rootTranslation.z],
+      translation: [
+        firstFrame.rootTranslation.x,
+        firstFrame.rootTranslation.y,
+        firstFrame.rootTranslation.z
+      ],
       rotation: [quat.x, quat.y, quat.z, quat.w],
       scale: [1, 1, 1]
       // no mesh
@@ -267,12 +319,16 @@ module.exports = class FF7GltfTranslator {
       },
       name: 'vertexColoredMaterial'
     }
+    // console.log('isBattleModel', isBattleModel)
     if (isBattleModel) {
-      vertexMaterial.extensions = { // Uncomment to ensure gltf model does not respond to lights
+      vertexMaterial.extensions = {
+        // Uncomment to ensure gltf model does not respond to lights
         KHR_materials_unlit: {}
       }
-      if (!gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
+      if (!gltf.extensionsUsed.includes('KHR_materials_unlit')) {
+        // Uncomment to ensure gltf model does not respond to lights
         gltf.extensionsUsed.push('KHR_materials_unlit')
+        // console.log('Add KHR_materials_unlit')
       }
     }
     gltf.materials.push(vertexMaterial)
@@ -299,7 +355,10 @@ module.exports = class FF7GltfTranslator {
       const currentPFileCount = []
       // console.log('bone', skeleton, bone)
       // console.log('bone.polygonFilename INITIAL', bone.polygonFilename, bone.rsdBaseFilenames.length, bone.hasModel)
-      if (bone.rsdBaseFilenames.length > 0 || (isBattleModel && bone.hasModel)) {
+      if (
+        bone.rsdBaseFilenames.length > 0 ||
+        (isBattleModel && bone.hasModel)
+      ) {
         // this bone has a mesh
         const boneMetadatas = []
         // console.log('bone.polygonFilename', bone.polygonFilename)
@@ -326,7 +385,9 @@ module.exports = class FF7GltfTranslator {
 
         const mesh = {
           primitives: [], // will add 1 primitive per polygonGroup
-          name: boneMetadatas.map(b => b.polygonFilename.toLowerCase()).join('') + 'Mesh'
+          name:
+            boneMetadatas.map(b => b.polygonFilename.toLowerCase()).join('') +
+            'Mesh'
         }
         gltf.meshes.push(mesh)
         numMeshesCreated++
@@ -354,11 +415,23 @@ module.exports = class FF7GltfTranslator {
               for (let i = 0; i < textureIds.length; i++) {
                 const textureId = textureIds[i].toLowerCase()
 
-                const texSrcDir = isBattleModel ? config.inputBattleBattleDirectory : config.inputFieldCharDirectory
-                const texSrcFile = isBattleModel ? textureIds[i] : `${textureIds[i]}.tex`
-                const texturePath = isBattleModel ? `${config.texturesDirectory}/${textureId}.png` : `${config.texturesDirectory}/${textureId}.tex.png`
+                const texSrcDir = isBattleModel
+                  ? config.inputBattleBattleDirectory
+                  : config.inputFieldCharDirectory
+                const texSrcFile = isBattleModel
+                  ? textureIds[i]
+                  : `${textureIds[i]}.tex`
+                const texturePath = isBattleModel
+                  ? `${config.texturesDirectory}/${textureId}.png`
+                  : `${config.texturesDirectory}/${textureId}.tex.png`
                 const textureFlip = isBattleModel
-                const hasTransparentPixels = await this.ensureTextureExists(outputDirectory, texSrcDir, texSrcFile, texturePath, textureFlip)
+                const hasTransparentPixels = await this.ensureTextureExists(
+                  outputDirectory,
+                  texSrcDir,
+                  texSrcFile,
+                  texturePath,
+                  textureFlip
+                )
                 // console.log(pFileId, 'texture - ', texturePath)
                 gltf.images.push({ uri: texturePath })
                 // gltf.images.push({config.texturesDirectory + '/' + textureId + ".tex.png"});
@@ -382,10 +455,16 @@ module.exports = class FF7GltfTranslator {
                   alphaMode: hasTransparentPixels ? 'BLEND' : 'OPAQUE', // Has to be blend so that textures colors can both apply
                   name: textureId + 'Material'
                 }
-                if (hasTransparentPixels && !gltf.extensionsUsed.includes('KHR_materials_unlit')) { // Uncomment to ensure gltf model does not respond to lights
-                  gltf.extensionsUsed.push('KHR_materials_unlit')
+                if (hasTransparentPixels || isBattleModel) {
+                  if (!gltf.extensionsUsed.includes('KHR_materials_unlit')) {
+                    gltf.extensionsUsed.push('KHR_materials_unlit')
+                  }
                   mat.extensions = { KHR_materials_unlit: {} }
                 }
+                // console.log('textureId', textureId, textureId === 'oqac')
+                // if (textureId === 'opac') {
+                //   console.log('opac', mat)
+                // }
                 gltf.materials.push(mat)
                 // gltfTextureIndexOffset++
                 // console.log('gltfTextureIndexOffset + i', textureIndex)
@@ -402,11 +481,13 @@ module.exports = class FF7GltfTranslator {
             const numVerticesInGroup = polygonGroup.numVerticesInGroup
             const offsetPolyIndex = polygonGroup.offsetPolyIndex
             const offsetVertexIndex = polygonGroup.offsetVertexIndex
-            const offsetTextureCoordinateIndex = polygonGroup.offsetTextureCoordinateIndex
+            const offsetTextureCoordinateIndex =
+              polygonGroup.offsetTextureCoordinateIndex
 
             // flatten the normal data so that each vertex index maps to 1 vertex normal as well
             const flattenedNormals = []
-            if (model.numNormals > 0) { // Note: it appears that field models have vertex normals, but battle models don't
+            if (model.numNormals > 0) {
+              // Note: it appears that field models have vertex normals, but battle models don't
               flattenedNormals.length = numVerticesInGroup
               for (let i = 0; i < numPolysInGroup; i++) {
                 const polygon = model.polygons[offsetPolyIndex + i]
@@ -420,12 +501,23 @@ module.exports = class FF7GltfTranslator {
             }
 
             // 1. create "polygon vertex index" js Buffer + gltf bufferView + gltf accessor
-            const polygonVertexIndexBuffer = Buffer.alloc(numPolysInGroup * 3 * 2) // 3 vertexIndex per triangle, 2 bytes for vertexIndex(short)
+            const polygonVertexIndexBuffer = Buffer.alloc(
+              numPolysInGroup * 3 * 2
+            ) // 3 vertexIndex per triangle, 2 bytes for vertexIndex(short)
             for (let i = 0; i < numPolysInGroup; i++) {
               const polygon = model.polygons[offsetPolyIndex + i]
-              polygonVertexIndexBuffer.writeUInt16LE(polygon.vertexIndex3, i * 6)
-              polygonVertexIndexBuffer.writeUInt16LE(polygon.vertexIndex2, i * 6 + 2)
-              polygonVertexIndexBuffer.writeUInt16LE(polygon.vertexIndex1, i * 6 + 4)
+              polygonVertexIndexBuffer.writeUInt16LE(
+                polygon.vertexIndex3,
+                i * 6
+              )
+              polygonVertexIndexBuffer.writeUInt16LE(
+                polygon.vertexIndex2,
+                i * 6 + 2
+              )
+              polygonVertexIndexBuffer.writeUInt16LE(
+                polygon.vertexIndex1,
+                i * 6 + 4
+              )
             }
             allBuffers.push(polygonVertexIndexBuffer)
             numBuffersCreated++
@@ -483,13 +575,12 @@ module.exports = class FF7GltfTranslator {
               max: [minMax.max.x, minMax.max.y, minMax.max.z]
             })
             // console.log('min max here', vertexAccessorIndex, minMax)
-            gltf.bufferViews.push(
-              {
-                buffer: 0,
-                byteLength: vertexBuffer.length,
-                byteStride: 12, // 12 bytes per vertex
-                target: ARRAY_BUFFER
-              })
+            gltf.bufferViews.push({
+              buffer: 0,
+              byteLength: vertexBuffer.length,
+              byteStride: 12, // 12 bytes per vertex
+              target: ARRAY_BUFFER
+            })
 
             // 3. create "normal" js Buffer + gltf bufferView + gltf accessor
             let normalAccessorIndex = -1
@@ -520,11 +611,15 @@ module.exports = class FF7GltfTranslator {
               })
             }
             function SRGBToLinear (c) {
-              return (c < 0.04045) ? c * 0.0773993808 : Math.pow(c * 0.9478672986 + 0.0521327014, 2.4)
+              return c < 0.04045
+                ? c * 0.0773993808
+                : Math.pow(c * 0.9478672986 + 0.0521327014, 2.4)
             }
 
             function LinearToSRGB (c) {
-              return (c < 0.0031308) ? c * 12.92 : 1.055 * (Math.pow(c, 0.41666)) - 0.055
+              return c < 0.0031308
+                ? c * 12.92
+                : 1.055 * Math.pow(c, 0.41666) - 0.055
             }
             // 4. create "vertex color" js Buffer + gltf bufferView + gltf accessor
             const numVertexColors = numVerticesInGroup
@@ -570,9 +665,12 @@ module.exports = class FF7GltfTranslator {
             if (includeTextures) {
               if (polygonGroup.isTextureUsed) {
                 const numTextureCoords = numVerticesInGroup
-                const textureCoordBuffer = Buffer.alloc(numTextureCoords * 2 * 4) // 2 floats per texture coord, 4 bytes per float
+                const textureCoordBuffer = Buffer.alloc(
+                  numTextureCoords * 2 * 4
+                ) // 2 floats per texture coord, 4 bytes per float
                 for (let i = 0; i < numTextureCoords; i++) {
-                  const textureCoord = model.textureCoordinates[offsetTextureCoordinateIndex + i]
+                  const textureCoord =
+                    model.textureCoordinates[offsetTextureCoordinateIndex + i]
 
                   let u = textureCoord.x
                   let v = isBattleModel ? -textureCoord.y : textureCoord.y // battle model textures are upside down
@@ -602,7 +700,8 @@ module.exports = class FF7GltfTranslator {
                   byteStride: 8, // 8 bytes per textureCoord
                   target: ARRAY_BUFFER
                 })
-                const textureIndex = gltfTextureIndexOffset + polygonGroup.textureIndex
+                const textureIndex =
+                  gltfTextureIndexOffset + polygonGroup.textureIndex
 
                 // console.log('gltfTextureIndexOffset + polygonGroup.textureIndex', gltfTextureIndexOffset, polygonGroup.textureIndex, textureIndex)
                 // material[0] = non-textured, material[1] = textured[0], material[2] = textured[1], ...
@@ -616,7 +715,7 @@ module.exports = class FF7GltfTranslator {
                 POSITION: vertexAccessorIndex,
                 // "NORMAL" will be set later below if appropriate
                 COLOR_0: vertexColorAccessorIndex
-              // "TEXCOORD_0" will be set later below if appropriate
+                // "TEXCOORD_0" will be set later below if appropriate
               },
               indices: polygonVertexIndexAccessorIndex,
               mode: 4, // triangles
@@ -624,10 +723,13 @@ module.exports = class FF7GltfTranslator {
               // 'extras': {pFileCount} // Unfortunately, the current GLTF loader doesn't add extras -> userData in primitives, add in parent instead
             }
             if (model.numNormals > 0) {
-              primitive.attributes.NORMAL = model.numNormals > 0 ? normalAccessorIndex : undefined
+              primitive.attributes.NORMAL =
+                model.numNormals > 0 ? normalAccessorIndex : undefined
             }
             if (includeTextures) {
-              primitive.attributes.TEXCOORD_0 = polygonGroup.isTextureUsed ? textureCoordAccessorIndex : undefined
+              primitive.attributes.TEXCOORD_0 = polygonGroup.isTextureUsed
+                ? textureCoordAccessorIndex
+                : undefined
             }
             if (includeTextures && polygonGroup.isTextureUsed) {
               delete primitive.attributes.COLOR_0
@@ -645,19 +747,25 @@ module.exports = class FF7GltfTranslator {
             const hundred = model.hundreds[hi]
             const mat = gltf.materials[mesh.primitives[hi].material]
             if (hundred.blendMode === 0) {
-              if (!mat.extras) { mat.extras = {} }
+              if (!mat.extras) {
+                mat.extras = {}
+              }
               // mat.extras.BlendType = 'MultiplyBlending'
               // console.log(hrcId, 'Blend - 0 - MultiplyBlending ?', hundred.srcBlend, hundred.dstBlend)
             } else if (hundred.blendMode === 1) {
-              if (!mat.extras) { mat.extras = {} }
+              if (!mat.extras) {
+                mat.extras = {}
+              }
               // mat.extras.BlendType = 'MultiplyBlending'
               // console.log(hrcId, 'Blend - 1 - MultiplyBlending ?', hundred.srcBlend, hundred.dstBlend)
             } else if (hundred.blendMode === 3) {
-              if (!mat.extras) { mat.extras = {} }
+              if (!mat.extras) {
+                mat.extras = {}
+              }
               // mat.extras.BlendType = 'AdditiveBlending'
               // console.log(hrcId, 'Blend - 3 - AdditiveBlending ✓', hundred.srcBlend, hundred.dstBlend)
             } else if (hundred.blendMode === 4) {
-            // console.log('Blend - 4 - NormalBlending')
+              // console.log('Blend - 4 - NormalBlending')
             } else {
               // console.log(hrcId, `Blend - ${hundred.blendMode} - ????`)
             }
@@ -680,7 +788,8 @@ module.exports = class FF7GltfTranslator {
       let boneRotation = null
       if (bone.name === 'WEAPON') {
         boneRotation = firstWeaponFrame.boneRotations[0]
-      } if (bone.name === 'LOCATION') {
+      }
+      if (bone.name === 'LOCATION') {
         // Do nothing
       } else if (firstFrame.boneRotations) {
         boneRotation = firstFrame.boneRotations[bone.boneIndex]
@@ -783,10 +892,16 @@ module.exports = class FF7GltfTranslator {
         target: ARRAY_BUFFER
       })
 
-      for (let boneIndex = 0; boneIndex <= animationData.numBones; boneIndex++) {
+      for (
+        let boneIndex = 0;
+        boneIndex <= animationData.numBones;
+        boneIndex++
+      ) {
         // create buffer for animation frame data for this bone
         const boneFrameDataBuffer = Buffer.alloc(numFrames * 2 * 4 * 4) // 2 rotations per frame (start and end), 4 floats per rotation, 4 bytes per float
-        const boneTranslationFrameDataBuffer = Buffer.alloc(numFrames * 2 * 3 * 4) // 2 translations per frame (start and end), 3 floats per translation, 4 bytes per float
+        const boneTranslationFrameDataBuffer = Buffer.alloc(
+          numFrames * 2 * 3 * 4
+        ) // 2 translations per frame (start and end), 3 floats per translation, 4 bytes per float
         let frameData = null
         let boneRotation = null
         let boneTranslation = {} // for weapons
@@ -805,30 +920,59 @@ module.exports = class FF7GltfTranslator {
             frameData = animationData.animationFrames[f]
             boneRotation = frameData.boneRotations[boneIndex]
             boneIsWeapon = false
-            boneTranslation = { x: frameData.rootTranslation.x, y: frameData.rootTranslation.y, z: frameData.rootTranslation.z }
-          } else if (skeleton.hasWeapon) { // it's a weapon
+            boneTranslation = {
+              x: frameData.rootTranslation.x,
+              y: frameData.rootTranslation.y,
+              z: frameData.rootTranslation.z
+            }
+          } else if (skeleton.hasWeapon) {
+            // it's a weapon
             const weaponFrameData = weaponAnimationData.animationFrames[f]
             const rootFrameData = animationData.animationFrames[f]
             boneRotation = weaponFrameData.boneRotations[0]
             boneIsWeapon = true
-            const rootTranslation = { x: rootFrameData.rootTranslation.x, y: rootFrameData.rootTranslation.y, z: rootFrameData.rootTranslation.z }
+            const rootTranslation = {
+              x: rootFrameData.rootTranslation.x,
+              y: rootFrameData.rootTranslation.y,
+              z: rootFrameData.rootTranslation.z
+            }
             // since we dont't move our model, we need to substract its root rotation from weapon root rotation
             // boneTranslation = { x: weaponFrameData.rootTranslation.x , y: weaponFrameData.rootTranslation.y, z: weaponFrameData.rootTranslation.z };
-            boneTranslation = { x: weaponFrameData.rootTranslation.x - rootTranslation.x, y: -1 * (weaponFrameData.rootTranslation.y - rootTranslation.y), z: weaponFrameData.rootTranslation.z - rootTranslation.z }
+            boneTranslation = {
+              x: weaponFrameData.rootTranslation.x - rootTranslation.x,
+              y: -1 * (weaponFrameData.rootTranslation.y - rootTranslation.y),
+              z: weaponFrameData.rootTranslation.z - rootTranslation.z
+            }
           }
 
           // Root translation : START
-          const rootTranslation = animationData.animationFrames[f].rootTranslation
+          const rootTranslation =
+            animationData.animationFrames[f].rootTranslation
           // console.log('rootTranslation', rootTranslation)
 
           zList.push(rootTranslation)
           frameRootTranslationBuffer.writeFloatLE(rootTranslation.x, f * 24 + 0)
-          frameRootTranslationBuffer.writeFloatLE(rootTranslation.y - 13.535284042358398, f * 24 + 4)
-          frameRootTranslationBuffer.writeFloatLE(-rootTranslation.z - 0.07706927508115768, f * 24 + 8)
+          frameRootTranslationBuffer.writeFloatLE(
+            rootTranslation.y - 13.535284042358398,
+            f * 24 + 4
+          )
+          frameRootTranslationBuffer.writeFloatLE(
+            -rootTranslation.z - 0.07706927508115768,
+            f * 24 + 8
+          )
 
-          frameRootTranslationBuffer.writeFloatLE(rootTranslation.x, f * 24 + 12)
-          frameRootTranslationBuffer.writeFloatLE(rootTranslation.y - 13.535284042358398, f * 24 + 16)
-          frameRootTranslationBuffer.writeFloatLE(-rootTranslation.z - 0.07706927508115768, f * 24 + 20)
+          frameRootTranslationBuffer.writeFloatLE(
+            rootTranslation.x,
+            f * 24 + 12
+          )
+          frameRootTranslationBuffer.writeFloatLE(
+            rootTranslation.y - 13.535284042358398,
+            f * 24 + 16
+          )
+          frameRootTranslationBuffer.writeFloatLE(
+            -rootTranslation.z - 0.07706927508115768,
+            f * 24 + 20
+          )
 
           allBuffers.push(frameRootTranslationBuffer)
           numBuffersCreated++
@@ -852,7 +996,8 @@ module.exports = class FF7GltfTranslator {
             output: rootTranslationFrameDataAccessorIndex
           })
           const nodeIndex = 0 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
-          const samplerIndexRootTranslation = gltf.animations[animationIndex].samplers.length - 1
+          const samplerIndexRootTranslation =
+            gltf.animations[animationIndex].samplers.length - 1
           gltf.animations[animationIndex].channels.push({
             sampler: samplerIndexRootTranslation,
             target: {
@@ -903,7 +1048,8 @@ module.exports = class FF7GltfTranslator {
             output: rootRotationFrameDataAccessorIndex
           })
           // nodeIndex = 0; // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
-          const samplerIndexRootRotation = gltf.animations[animationIndex].samplers.length - 1
+          const samplerIndexRootRotation =
+            gltf.animations[animationIndex].samplers.length - 1
           gltf.animations[animationIndex].channels.push({
             sampler: samplerIndexRootRotation,
             target: {
@@ -933,13 +1079,31 @@ module.exports = class FF7GltfTranslator {
 
           if (skeleton.hasWeapon) {
             // write translation value for "start of frame"
-            boneTranslationFrameDataBuffer.writeFloatLE(boneTranslation.x, f * 24 + 0)
-            boneTranslationFrameDataBuffer.writeFloatLE(boneTranslation.y, f * 24 + 4)
-            boneTranslationFrameDataBuffer.writeFloatLE(boneTranslation.z, f * 24 + 8)
+            boneTranslationFrameDataBuffer.writeFloatLE(
+              boneTranslation.x,
+              f * 24 + 0
+            )
+            boneTranslationFrameDataBuffer.writeFloatLE(
+              boneTranslation.y,
+              f * 24 + 4
+            )
+            boneTranslationFrameDataBuffer.writeFloatLE(
+              boneTranslation.z,
+              f * 24 + 8
+            )
             // write translation value for "end of frame"
-            boneTranslationFrameDataBuffer.writeFloatLE(boneTranslation.x, f * 24 + 12)
-            boneTranslationFrameDataBuffer.writeFloatLE(boneTranslation.y, f * 24 + 16)
-            boneTranslationFrameDataBuffer.writeFloatLE(boneTranslation.z, f * 24 + 20)
+            boneTranslationFrameDataBuffer.writeFloatLE(
+              boneTranslation.x,
+              f * 24 + 12
+            )
+            boneTranslationFrameDataBuffer.writeFloatLE(
+              boneTranslation.y,
+              f * 24 + 16
+            )
+            boneTranslationFrameDataBuffer.writeFloatLE(
+              boneTranslation.z,
+              f * 24 + 20
+            )
           }
         }
         allBuffers.push(boneFrameDataBuffer)
@@ -972,7 +1136,8 @@ module.exports = class FF7GltfTranslator {
               path: 'rotation'
             }
           })
-        } else { // we also need to add rotation and translation animation of weapon
+        } else {
+          // we also need to add rotation and translation animation of weapon
           gltf.animations[animationIndex].channels.push({
             sampler: samplerIndex,
             target: {
@@ -1021,7 +1186,9 @@ module.exports = class FF7GltfTranslator {
       const numBufferViews = gltf.bufferViews.length
       gltf.bufferViews[0].byteOffset = 0
       for (let i = 1; i < numBufferViews; i++) {
-        gltf.bufferViews[i].byteOffset = gltf.bufferViews[i - 1].byteOffset + gltf.bufferViews[i - 1].byteLength
+        gltf.bufferViews[i].byteOffset =
+          gltf.bufferViews[i - 1].byteOffset +
+          gltf.bufferViews[i - 1].byteLength
       }
 
       // TODO: set min and max for all accessors to help engines optimize
@@ -1046,13 +1213,21 @@ module.exports = class FF7GltfTranslator {
     const gltfFilenameFull = outputDirectory + '/' + gltfFilename
     fs.writeFileSync(gltfFilenameFull, JSON.stringify(gltf, null, 2))
     // console.log('Wrote: ' + gltfFilenameFull)
-  }; // end function translateFF7FieldHrcToGltf
+  } // end function translateFF7FieldHrcToGltf
 
-  ensureTextureExists (outputDirectory, texDirectory, textureFile, texturePath, textureFlip) {
+  ensureTextureExists (
+    outputDirectory,
+    texDirectory,
+    textureFile,
+    texturePath,
+    textureFlip
+  ) {
     const texPath = `${texDirectory}/${textureFile}` // Can be .TEX of .tex, fs sorts this out anyway
     const pngPath = `${outputDirectory}/${texturePath}`
 
     // It looks as though battle textures need to be flipped, we can't flip them back (easily) with the current GLTFLoader
-    return new TexFile().loadTexFileFromPath(texPath).saveAsPng(pngPath, textureFlip)
+    return new TexFile()
+      .loadTexFileFromPath(texPath)
+      .saveAsPng(pngPath, textureFlip)
   }
 }
