@@ -91,7 +91,9 @@ const problemMaps = [
 // console.log('Decode one', decodeOneMap('mds7st2'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
 // console.log('Decode one', decodeOneMap('ancnt3'))
-console.log('Decode one', decodeOneMap('elevtr1'))
-// console.log('Decode one', decodeOneMap('kuro_6'))
+// console.log('Decode one', decodeOneMap('ujunon1'))
+console.log('Decode one', decodeOneMap('ujunon2'))
+// console.log('Decode one', decodeOneMap('hill'))
+// console.log('Decode one', decodeOneMap('mds6_22'))
 
 // generateOpCodeUsages(config)

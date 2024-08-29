@@ -171,20 +171,47 @@ const saveTileGroupImage = (
   for (let i = 0; i < n; i++) {
     pixelData[i] = 0x00
   }
+
   for (let i = 0; i < tiles.length; i++) {
     // Loop through each tile
     const tile = tiles[i]
     const tileOverlayX = tile.destinationX - sizeMeta.minX // Get normalised coords for destination of top left of tile
     const tileOverlayY = tile.destinationY - sizeMeta.minY
-    // if (tile.id === 1)
+    // if (
+    //   !(
+    //     (
+    //       tile.destinationX === -2 * 16 &&
+    //       tile.destinationY === 4 * 16 &&
+    //       tile.param === 2 &&
+    //       tile.state === 3
+    //     )
+    //     // (tile.destinationX === 4 * 16 || tile.destinationX === 5 * 16) &&
+    //     // (tile.destinationY === 11 * 16 || tile.destinationY === 12 * 16) &&
+    //     // !(tile.destinationX === 5 * 16 && tile.destinationY === 12 * 16) // &&
+    //     //tile.state === 4
+    //   )
+    // )
+    //   continue
+    // if (tile.sourceXBig === 0) continue
+    // if (
+    //   tile.param === 16 &&
+    //   tile.id === 0 &&
+    //   tile.destinationX === 64 &&
+    //   tile.destinationY === 11 * 16 &&
+    //   (tile.state === 4 || tile.state === 5)
+    // ) {
     //   console.log(
+    //     name,
     //     'tile',
     //     tile.id,
+    //     tile.layerID,
     //     tile.destinationX,
-    //     tileOverlayX,
+    //     tile.destinationY,
     //     '-',
-    //     sizeMeta.minX
+    //     tile.state,
+    //     tile
     //   )
+    // }
     if (tile.destinationX < sizeMeta.minX) continue // Fix for elevtr1
     if (tile.destinationY < sizeMeta.minY) continue // Fix for elevtr1
     if (tile.destinationX > sizeMeta.maxX) continue // Fix for elevtr1
@@ -196,12 +223,14 @@ const saveTileGroupImage = (
     let sourceY = tile.sourceY
     let textureId = tile.textureId
 
-    if (tile.layerID > 0 && tile.textureId2 > 0 && tile.depth !== 0) {
-      // TODO - This needs to be looked at more... ujunon1, hill
+    let useTexture2 = false
+    // if blending > 0, textureID2 is used instead of textureID except for layer 0
+    if (tile.blending > 0) {
       sourceX = tile.sourceX2
       sourceY = tile.sourceY2
       textureId = tile.textureId2
       texture = flevel.background.textures[`texture${tile.textureId2}`]
+      useTexture2 = true
     }
     const textureBytes = texture.data // Get all bytes for texture
 
@@ -264,13 +293,32 @@ const saveTileGroupImage = (
       const usePalette =
         flevel.palette.pages.length > 0 &&
         flevel.palette.pages.length > tile.paletteId &&
-        tile.depth === 1
+        tile.depth !== 2
       const ignoreFirstPixel =
         flevel.background.palette.ignoreFirstPixel[tile.paletteId] === 1 &&
         textureByte === 0
 
       let paletteItem
 
+      // if (j === 7) {
+      //   const pc = Object.assign(
+      //     {},
+      //     flevel.palette.pages[tile.paletteId][textureByte]
+      //   )
+      //   pc.isBlack = isBlack(pc)
+      //   console.log(
+      //     'j',
+      //     tile.layerID,
+      //     tile.state,
+      //     tile.depth,
+      //     '-',
+      //     textureByte,
+      //     usePalette,
+      //     tile.paletteId,
+      //     useTexture2,
+      //     pc
+      //   )
+      // }
       if (usePalette) {
         const paletteColor = Object.assign(
           {},
@@ -307,7 +355,7 @@ const saveTileGroupImage = (
       }
 
       if (!usePalette && paletteItem.isBlack) {
-        paletteItem.noRender = 1
+        // paletteItem.noRender = 1
       }
 
       if (!fs.existsSync(folder)) {
