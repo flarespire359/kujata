@@ -7,7 +7,9 @@ const config = JSON.parse(fs.readFileSync('../config.json', 'utf-8'))
 // Pre-requisite: Must run test-map-list-loader.json first to generate maplist.json
 // TODO: Make flevel-loader smarter so that it can do this automatically.
 
-const mapList = JSON.parse(fs.readFileSync(config.outputFieldFLevelDirectory + '/maplist.json', 'utf-8'))
+const mapList = JSON.parse(
+  fs.readFileSync(config.outputFieldFLevelDirectory + '/maplist.json', 'utf-8')
+)
 const lzsDecompressor = new LzsDecompressor()
 const flevelLoader = new FLevelLoader(lzsDecompressor, mapList)
 
@@ -21,15 +23,16 @@ const replacer = function (k, v) {
 //   if (fieldName && !fieldName.startsWith("wm")) {
 //   }
 // }
-const decodeOneMap = (fieldName) => {
+const decodeOneMap = fieldName => {
   const flevel = flevelLoader.loadFLevel(config, fieldName)
-  const outputFilename = config.outputFieldFLevelDirectory + '/' + fieldName + '.json'
+  const outputFilename =
+    config.outputFieldFLevelDirectory + '/' + fieldName + '.json'
   fs.writeFileSync(outputFilename, JSON.stringify(flevel, replacer, 2))
   // console.log('Wrote: ' + outputFilename)
   return fieldName
 }
 
-const decodeAllMaps = async (maps) => {
+const decodeAllMaps = async maps => {
   await flevelLoader.ensureTexturesExist(config)
   const errors = []
   for (let i = 0; i < maps.length; i++) {
@@ -50,7 +53,8 @@ const decodeAllMaps = async (maps) => {
   return errors
 }
 
-const problemMaps = ['blin67_4',
+const problemMaps = [
+  'blin67_4',
   'nivgate2',
   'nivgate3',
   'nivl_e3',
@@ -70,11 +74,12 @@ const problemMaps = ['blin67_4',
   'lastmap',
   'junone22',
   'rckt32',
-  'jtemplc']
+  'jtemplc'
+]
 
 // flevelLoader.ensureTexturesExist(config)
 
-console.log('Decode all Maps -> All', decodeAllMaps(mapList))
+// console.log('Decode all Maps -> All', decodeAllMaps(mapList))
 // console.log('Decode all Maps -> Errors All', decodeAllMaps(problemMaps))
 // console.log('Decode one', decodeOneMap('nmkin_1'))
 // console.log('Decode one', decodeOneMap('md1stin'))
@@ -86,5 +91,7 @@ console.log('Decode all Maps -> All', decodeAllMaps(mapList))
 // console.log('Decode one', decodeOneMap('mds7st2'))
 // console.log('Decode one', decodeOneMap('nrthmk'))
 // console.log('Decode one', decodeOneMap('ancnt3'))
+console.log('Decode one', decodeOneMap('elevtr1'))
+// console.log('Decode one', decodeOneMap('kuro_6'))
 
 // generateOpCodeUsages(config)
