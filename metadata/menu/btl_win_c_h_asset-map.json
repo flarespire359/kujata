@@ -21,5 +21,8 @@
         {"id":1, "description":"spear", "x":224,"y":96,"w":26,"h":32, "palette": 2},
         {"id":1, "description":"armor", "x":192,"y":128,"w":26,"h":32, "palette": 2},
         {"id":1, "description":"accessory", "x":224,"y":128,"w":26,"h":32, "palette": 2}
+    ],
+    "labels": [
+        {"id":1, "description":"target", "x":0,"y":172,"w":64,"h":18, "palette": 8}
     ]
 }

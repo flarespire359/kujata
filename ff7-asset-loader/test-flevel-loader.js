@@ -18,11 +18,6 @@ const replacer = function (k, v) {
   return v
 }
 
-// translate just 1 map
-// for (let fieldName of mapList) {
-//   if (fieldName && !fieldName.startsWith("wm")) {
-//   }
-// }
 const decodeOneMap = fieldName => {
   const flevel = flevelLoader.loadFLevel(config, fieldName)
   const outputFilename =
@@ -31,19 +26,36 @@ const decodeOneMap = fieldName => {
   // console.log('Wrote: ' + outputFilename)
   return fieldName
 }
-
+const PROGRESS_FILE_NAME = 'test-flevel-loader-progress.json'
+const getCompletionProgress = () => {
+  if (!fs.existsSync(PROGRESS_FILE_NAME))
+    fs.writeJsonSync(PROGRESS_FILE_NAME, [])
+  return fs.readJsonSync(PROGRESS_FILE_NAME)
+}
+const updateCompletionProgress = file => {
+  const progress = getCompletionProgress()
+  progress.push(file)
+  fs.writeJsonSync(PROGRESS_FILE_NAME, progress)
+}
 const decodeAllMaps = async maps => {
   await flevelLoader.ensureTexturesExist(config)
   const errors = []
+  const progress = getCompletionProgress()
   for (let i = 0; i < maps.length; i++) {
     const fieldName = maps[i]
 
     const inputFile = config.inputFieldFLevelDirectory + '/' + fieldName
     const exists = fs.existsSync(inputFile)
-    console.log(`Map ${i + 1} of ${maps.length} -> ${fieldName}`, exists)
-    if (exists && fieldName !== '') {
+    const complete = progress.includes(fieldName)
+    console.log(
+      `Map ${i + 1} of ${maps.length} -> ${fieldName}`,
+      exists,
+      complete
+    )
+    if (exists && fieldName !== '' && !complete) {
       try {
         decodeOneMap(fieldName)
+        updateCompletionProgress(fieldName)
       } catch (error) {
         console.log('error', error)
         errors.push(fieldName)
@@ -77,23 +89,26 @@ const problemMaps = [
   'jtemplc'
 ]
 
-// flevelLoader.ensureTexturesExist(config)
+const init = async () => {
+  // flevelLoader.ensureTexturesExist(config)
 
-// console.log('Decode all Maps -> All', decodeAllMaps(mapList))
-// console.log('Decode all Maps -> Errors All', decodeAllMaps(problemMaps))
-// console.log('Decode one', decodeOneMap('nmkin_1'))
-// console.log('Decode one', decodeOneMap('md1stin'))
+  console.log('Decode all Maps -> All', await decodeAllMaps(mapList)) // Note: a test-flevel-loader-progress.json is created, delete if required
+  // console.log('Decode all Maps -> Errors All', decodeAllMaps(problemMaps))
+  // console.log('Decode one', decodeOneMap('nmkin_1'))
+  // console.log('Decode one', decodeOneMap('md1stin'))
 
-// console.log('Decode one', decodeOneMap('md1_1'))
-// console.log('Decode one', decodeOneMap('md1_2'))
-// console.log('Decode one', decodeOneMap('jail1'))
-// console.log('Decode one', decodeOneMap('yougan2'))
-// console.log('Decode one', decodeOneMap('mds7st2'))
-// console.log('Decode one', decodeOneMap('nrthmk'))
-// console.log('Decode one', decodeOneMap('ancnt3'))
-// console.log('Decode one', decodeOneMap('ujunon1'))
-console.log('Decode one', decodeOneMap('ujunon2'))
-// console.log('Decode one', decodeOneMap('hill'))
-// console.log('Decode one', decodeOneMap('mds6_22'))
+  // console.log('Decode one', decodeOneMap('md1_1'))
+  // console.log('Decode one', decodeOneMap('md1_2'))
+  // console.log('Decode one', decodeOneMap('jail1'))
+  // console.log('Decode one', decodeOneMap('yougan2'))
+  // console.log('Decode one', decodeOneMap('mds7st2'))
+  // console.log('Decode one', decodeOneMap('nrthmk'))
+  // console.log('Decode one', decodeOneMap('ancnt3'))
+  // console.log('Decode one', decodeOneMap('ujunon1'))
+  // console.log('Decode one', decodeOneMap('ujunon2'))
+  // console.log('Decode one', decodeOneMap('hill'))
+  // console.log('Decode one', decodeOneMap('mds6_22'))
 
-// generateOpCodeUsages(config)
+  // generateOpCodeUsages(config)
+}
+init()
