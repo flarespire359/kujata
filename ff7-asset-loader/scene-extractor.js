@@ -282,11 +282,12 @@ const getDataFile = (buffer, dataFilePointer) => {
         //   scriptObj
         // )
         scriptObj.script = []
+        const indexOffset = realOffset + scriptObj.offset
         if (scriptObj.offset !== 0xffff) {
           s.offset = realOffset + scriptObj.offset
           let isEnd = false
           while (!isEnd) {
-            const index = s.offset - realOffset - 32
+            const index = s.offset - indexOffset
             const indexHex = dec2hex(index, 4)
             // console.log('-----')
             // console.log('offset', s.offset - realOffset, dec2hex(s.peekUByte()))
@@ -384,7 +385,7 @@ const getBlocks = (r, buffer) => {
   const datas = []
   for (let i = 0; i < dataFilePointers.length - 1; i++) {
     const dataFilePointer = dataFilePointers[i]
-    // if (dataFilePointer.fileId !== 17) continue // Temp
+    // if (dataFilePointer.fileId !== 24) continue // Temp
     const data = getDataFile(buffer, dataFilePointer)
     if (data !== null) {
       datas.push(data)
