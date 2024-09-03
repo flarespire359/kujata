@@ -4,11 +4,15 @@ const { extractSceneBinData } = require('./scene-extractor.js')
 const { extractMiscBattleData } = require('./battle-misc-files-extractor.js')
 
 const init = async () => {
-  // await extractSceneBinData(
-  //   config.inputBattleSceneDirectory,
-  //   config.outputBattleSceneDirectory,
-  //   config.metadataDirectory
-  // )
-  await extractMiscBattleData(config.inputBattleDataDirectory, config.inputBattleSceneDirectory, config.outputBattleMiscDirectory)
+  await extractSceneBinData(
+    config.inputBattleSceneDirectory,
+    config.outputBattleSceneDirectory,
+    config.metadataDirectory
+  )
+  await extractMiscBattleData(
+    config.inputBattleDataDirectory,
+    config.inputBattleSceneDirectory,
+    config.outputBattleMiscDirectory
+  )
 }
 init()

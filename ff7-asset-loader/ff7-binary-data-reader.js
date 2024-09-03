@@ -21,14 +21,46 @@ class FF7BinaryDataReader {
     this.dialogStrings = dialogStrings
   }
 
-  readByte () { const b = this.buffer.readInt8(this.offset); this.offset += 1; return b };
-  readUByte () { const b = this.buffer.readUInt8(this.offset); this.offset += 1; return b };
-  readShort () { const s = this.buffer.readInt16LE(this.offset); this.offset += 2; return s };
-  readUShort () { const s = this.buffer.readUInt16LE(this.offset); this.offset += 2; return s };
-  read24bitInteger () { const b = this.buffer.readUIntBE(this.offset, 3); this.offset += 3; return b };
-  readInt () { const i = this.buffer.readInt32LE(this.offset); this.offset += 4; return i };
-  readUInt () { const i = this.buffer.readUInt32LE(this.offset); this.offset += 4; return i };
-  readFloat () { const f = this.buffer.readFloatLE(this.offset); this.offset += 4; return f };
+  readByte () {
+    const b = this.buffer.readInt8(this.offset)
+    this.offset += 1
+    return b
+  }
+  readUByte () {
+    const b = this.buffer.readUInt8(this.offset)
+    this.offset += 1
+    return b
+  }
+  readShort () {
+    const s = this.buffer.readInt16LE(this.offset)
+    this.offset += 2
+    return s
+  }
+  readUShort () {
+    const s = this.buffer.readUInt16LE(this.offset)
+    this.offset += 2
+    return s
+  }
+  read24bitInteger () {
+    const b = this.buffer.readUIntBE(this.offset, 3)
+    this.offset += 3
+    return b
+  }
+  readInt () {
+    const i = this.buffer.readInt32LE(this.offset)
+    this.offset += 4
+    return i
+  }
+  readUInt () {
+    const i = this.buffer.readUInt32LE(this.offset)
+    this.offset += 4
+    return i
+  }
+  readFloat () {
+    const f = this.buffer.readFloatLE(this.offset)
+    this.offset += 4
+    return f
+  }
 
   readUByteArray (length) {
     const array = []
@@ -36,7 +68,7 @@ class FF7BinaryDataReader {
       array.push(this.readUByte())
     }
     return array
-  };
+  }
 
   readByteArray (length) {
     const array = []
@@ -44,7 +76,7 @@ class FF7BinaryDataReader {
       array.push(this.readByte())
     }
     return array
-  };
+  }
 
   readUShortArray (length) {
     const array = []
@@ -52,29 +84,36 @@ class FF7BinaryDataReader {
       array.push(this.readUShort())
     }
     return array
-  };
+  }
 
-  peekUByte () { const b = this.buffer.readUInt8(this.offset); return b };
+  peekUByte () {
+    const b = this.buffer.readUInt8(this.offset)
+    return b
+  }
 
   readString (len) {
     let s = ''
+    let readCount = len
     for (let i = 0; i < len; i++) {
       const c = this.buffer.readUInt8(this.offset + i)
       if (c > 0) {
         s = s + String.fromCharCode(c)
       } else {
+        readCount = i
         break
       }
     }
-    this.offset += len
+    this.offset = this.offset + readCount + 1
     return s
   }
 
   readKernelString (maxLength) {
     let s = ''
+    let readCount = maxLength
     for (let i = 0; i < maxLength; i++) {
       const c = this.buffer.readUInt8(this.offset + i)
       if (c === 0xff) {
+        readCount = i
         break
       } else if (c < 0xe7) {
         s = s + this.charMap[c]
@@ -91,8 +130,8 @@ class FF7BinaryDataReader {
       } else if (c === 0xf9) {
         const v = this.buffer.readUInt8(this.offset + i + 1)
         i += 1
-        const v1 = ((v & 0b11000000) >> 6)
-        const v2 = (v & 0b00111111)
+        const v1 = (v & 0b11000000) >> 6
+        const v2 = v & 0b00111111
         const numBytes = v1 * 2 + 4
         const newOffset = this.offset + (i - 1) - 1 - v2
         const oldOffset = this.offset
@@ -104,6 +143,7 @@ class FF7BinaryDataReader {
         s = s + '<0x' + c.toString(16) + '>'
       }
     }
+    this.offset = this.offset + readCount + 1
     return s
   }
 
@@ -113,19 +153,34 @@ class FF7BinaryDataReader {
       const c = this.buffer.readUInt8(this.offset + i)
 
       switch (c) {
-        case 0xFE:
+        case 0xfe:
           i++
           const feCode = this.buffer.readUInt8(this.offset + i)
           // console.log('\nfeCode', feCode, stringUtil.toHex2(feCode), this.charMap[feCode], zero, zero === 0)
-          if (feCode === 0xe2 && this.buffer.readUInt8(this.offset + i + 4) === 0x0) {
+          if (
+            feCode === 0xe2 &&
+            this.buffer.readUInt8(this.offset + i + 4) === 0x0
+          ) {
             let bank
             switch (this.buffer.readUInt8(this.offset + i + 2)) {
-              case 0: bank = 1; break // 1 & 2
-              case 1: bank = 3;	break // 3 & 4
-              case 2: bank = 11;	break // 11 & 12
-              case 3: bank = 13;	break // 13 & 14
-              case 4: bank = 15;	break // 7 & 15
-              default: bank = 0;	break // Error
+              case 0:
+                bank = 1
+                break // 1 & 2
+              case 1:
+                bank = 3
+                break // 3 & 4
+              case 2:
+                bank = 11
+                break // 11 & 12
+              case 3:
+                bank = 13
+                break // 13 & 14
+              case 4:
+                bank = 15
+                break // 7 & 15
+              default:
+                bank = 0
+                break // Error
             }
             const index = this.buffer.readUInt8(this.offset + i + 1)
             const size = this.buffer.readUInt8(this.offset + i + 3)
@@ -140,7 +195,7 @@ class FF7BinaryDataReader {
             s = s + this.charMap[feCode]
           }
           break
-        case 0xFF:
+        case 0xff:
           return s
 
         default:
@@ -218,7 +273,9 @@ class FF7BinaryDataReader {
       if (a === undefined) {
         return stringUtil.dec2hex(o, 2, true)
       } else {
-        return (stringUtil.dec2hex(o, 2, true) + stringUtil.dec2hex(a, 4, true)).match(/.{1,2}/g).join(' ')
+        return (stringUtil.dec2hex(o, 2, true) + stringUtil.dec2hex(a, 4, true))
+          .match(/.{1,2}/g)
+          .join(' ')
       }
     }
     if (op === 0x00) {
@@ -309,25 +366,59 @@ class FF7BinaryDataReader {
         raw: getRaw(op, arg)
       }
     }
-    if (op === 0x30) { return { op: 'ADD', js: 'add();', raw: getRaw(op) } }
-    if (op === 0x31) { return { op: 'SUB', js: 'subtract();', raw: getRaw(op) } }
-    if (op === 0x32) { return { op: 'MUL', js: 'multiply();', raw: getRaw(op) } }
-    if (op === 0x33) { return { op: 'DIV', js: 'divide();', raw: getRaw(op) } }
-    if (op === 0x34) { return { op: 'MOD', js: 'modulo();', raw: getRaw(op) } }
-    if (op === 0x35) { return { op: 'BAND', js: 'binaryAnd();', raw: getRaw(op) } }
-    if (op === 0x36) { return { op: 'BOR', js: 'binaryOr();', raw: getRaw(op) } }
-    if (op === 0x37) { return { op: 'BNOT', js: 'binaryNot();', raw: getRaw(op) } }
+    if (op === 0x30) {
+      return { op: 'ADD', js: 'add();', raw: getRaw(op) }
+    }
+    if (op === 0x31) {
+      return { op: 'SUB', js: 'subtract();', raw: getRaw(op) }
+    }
+    if (op === 0x32) {
+      return { op: 'MUL', js: 'multiply();', raw: getRaw(op) }
+    }
+    if (op === 0x33) {
+      return { op: 'DIV', js: 'divide();', raw: getRaw(op) }
+    }
+    if (op === 0x34) {
+      return { op: 'MOD', js: 'modulo();', raw: getRaw(op) }
+    }
+    if (op === 0x35) {
+      return { op: 'BAND', js: 'binaryAnd();', raw: getRaw(op) }
+    }
+    if (op === 0x36) {
+      return { op: 'BOR', js: 'binaryOr();', raw: getRaw(op) }
+    }
+    if (op === 0x37) {
+      return { op: 'BNOT', js: 'binaryNot();', raw: getRaw(op) }
+    }
 
-    if (op === 0x40) { return { op: 'EQU', js: 'equals();', raw: getRaw(op) } }
-    if (op === 0x41) { return { op: 'NEQU', js: 'notEquals();', raw: getRaw(op) } }
-    if (op === 0x42) { return { op: 'GEQU', js: 'greaterThanEquals();', raw: getRaw(op) } }
-    if (op === 0x43) { return { op: 'LEQU', js: 'lessThanEquals();', raw: getRaw(op) } }
-    if (op === 0x44) { return { op: 'GRTN', js: 'greaterThan();', raw: getRaw(op) } }
-    if (op === 0x45) { return { op: 'LSTN', js: 'lessThan();', raw: getRaw(op) } }
+    if (op === 0x40) {
+      return { op: 'EQU', js: 'equals();', raw: getRaw(op) }
+    }
+    if (op === 0x41) {
+      return { op: 'NEQU', js: 'notEquals();', raw: getRaw(op) }
+    }
+    if (op === 0x42) {
+      return { op: 'GEQU', js: 'greaterThanEquals();', raw: getRaw(op) }
+    }
+    if (op === 0x43) {
+      return { op: 'LEQU', js: 'lessThanEquals();', raw: getRaw(op) }
+    }
+    if (op === 0x44) {
+      return { op: 'GRTN', js: 'greaterThan();', raw: getRaw(op) }
+    }
+    if (op === 0x45) {
+      return { op: 'LSTN', js: 'lessThan();', raw: getRaw(op) }
+    }
 
-    if (op === 0x50) { return { op: 'AND', js: 'bothPopsNonZero();', raw: getRaw(op) } }
-    if (op === 0x51) { return { op: 'OR', js: 'eitherPopsNonZero();', raw: getRaw(op) } }
-    if (op === 0x52) { return { op: 'NOT', js: 'isZero();', raw: getRaw(op) } }
+    if (op === 0x50) {
+      return { op: 'AND', js: 'bothPopsNonZero();', raw: getRaw(op) }
+    }
+    if (op === 0x51) {
+      return { op: 'OR', js: 'eitherPopsNonZero();', raw: getRaw(op) }
+    }
+    if (op === 0x52) {
+      return { op: 'NOT', js: 'isZero();', raw: getRaw(op) }
+    }
 
     if (op === 0x60) {
       const arg = $r.readUByte()
@@ -394,22 +485,50 @@ class FF7BinaryDataReader {
         raw: getRaw(op, arg)
       }
     }
-    if (op === 0x73) { return { op: 'END', js: 'end();', raw: getRaw(op) } }
-    if (op === 0x74) { return { op: 'POP', js: 'pop();', raw: getRaw(op) } }
-    if (op === 0x75) { return { op: 'LINK', js: 'link();', raw: getRaw(op) } }
+    if (op === 0x73) {
+      return { op: 'END', js: 'end();', raw: getRaw(op) }
+    }
+    if (op === 0x74) {
+      return { op: 'POP', js: 'pop();', raw: getRaw(op) }
+    }
+    if (op === 0x75) {
+      return { op: 'LINK', js: 'link();', raw: getRaw(op) }
+    }
 
-    if (op === 0x80) { return { op: 'MASK', js: 'maskSet();', raw: getRaw(op) } }
-    if (op === 0x81) { return { op: 'RWRD', js: 'random();', raw: getRaw(op) } }
-    if (op === 0x82) { return { op: 'RBYT', js: 'pickRandomBit();', raw: getRaw(op) } }
-    if (op === 0x83) { return { op: 'CNTB', js: 'countBits();', raw: getRaw(op) } }
-    if (op === 0x84) { return { op: 'HMSK', js: 'highMask();', raw: getRaw(op) } }
-    if (op === 0x85) { return { op: 'LMSK', js: 'lowMask();', raw: getRaw(op) } }
-    if (op === 0x86) { return { op: 'MPCT', js: 'getMPCost();', raw: getRaw(op) } }
-    if (op === 0x87) { return { op: 'TBIT', js: 'toBit();', raw: getRaw(op) } }
+    if (op === 0x80) {
+      return { op: 'MASK', js: 'maskSet();', raw: getRaw(op) }
+    }
+    if (op === 0x81) {
+      return { op: 'RWRD', js: 'random();', raw: getRaw(op) }
+    }
+    if (op === 0x82) {
+      return { op: 'RBYT', js: 'pickRandomBit();', raw: getRaw(op) }
+    }
+    if (op === 0x83) {
+      return { op: 'CNTB', js: 'countBits();', raw: getRaw(op) }
+    }
+    if (op === 0x84) {
+      return { op: 'HMSK', js: 'highMask();', raw: getRaw(op) }
+    }
+    if (op === 0x85) {
+      return { op: 'LMSK', js: 'lowMask();', raw: getRaw(op) }
+    }
+    if (op === 0x86) {
+      return { op: 'MPCT', js: 'getMPCost();', raw: getRaw(op) }
+    }
+    if (op === 0x87) {
+      return { op: 'TBIT', js: 'toBit();', raw: getRaw(op) }
+    }
 
-    if (op === 0x90) { return { op: 'STRA', js: 'saveToAddress();', raw: getRaw(op) } }
-    if (op === 0x91) { return { op: 'POPX', js: 'popX();', raw: getRaw(op) } }
-    if (op === 0x92) { return { op: 'ATTK', js: 'attack();', raw: getRaw(op) } }
+    if (op === 0x90) {
+      return { op: 'STRA', js: 'saveToAddress();', raw: getRaw(op) }
+    }
+    if (op === 0x91) {
+      return { op: 'POPX', js: 'popX();', raw: getRaw(op) }
+    }
+    if (op === 0x92) {
+      return { op: 'ATTK', js: 'attack();', raw: getRaw(op) }
+    }
     if (op === 0x93) {
       const text = this.readKernelString(255)
       return {
@@ -419,13 +538,19 @@ class FF7BinaryDataReader {
         raw: getRaw(op) // TODO - Add text to this if required
       }
     }
-    if (op === 0x94) { return { op: 'COPY', js: 'copyMiscData();', raw: getRaw(op) } }
-    if (op === 0x95) { return { op: 'GLOB', js: 'copyToMemoryBank();', raw: getRaw(op) } }
-    if (op === 0x96) { return { op: 'EDEF', js: 'elementalDefense();', raw: getRaw(op) } }
+    if (op === 0x94) {
+      return { op: 'COPY', js: 'copyMiscData();', raw: getRaw(op) }
+    }
+    if (op === 0x95) {
+      return { op: 'GLOB', js: 'copyToMemoryBank();', raw: getRaw(op) }
+    }
+    if (op === 0x96) {
+      return { op: 'EDEF', js: 'elementalDefense();', raw: getRaw(op) }
+    }
 
-    if (op === 0xA0) {
+    if (op === 0xa0) {
       const arg = $r.readUByte()
-      const text = this.readKernelString(255)
+      const text = this.readString(255)
       return {
         op: 'DEBG',
         arg,
@@ -435,7 +560,9 @@ class FF7BinaryDataReader {
         raw: getRaw(op) // TODO - Add text to this if required
       }
     }
-    if (op === 0xA1) { return { op: 'POP2', js: 'POP2();', raw: getRaw(op) } }
+    if (op === 0xa1) {
+      return { op: 'POP2', js: 'POP2();', raw: getRaw(op) }
+    }
 
     console.error('unsupported opCode: 0x' + stringUtil.toHex2(op))
     throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
@@ -460,81 +587,143 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x01) {
-      const e = $r.readUByte(); const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const e = $r.readUByte()
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'REQ',
         e,
         p,
         f,
         mr: 'Execute script #%3 in extern group %1 (priority %2/6) - Only if the script is not already running|_script(groupID)|priority|scriptID',
-        js: 'entityExecuteAsync({entity:' + e + ', priority:' + p + ', function:' + f + '});',
+        js:
+          'entityExecuteAsync({entity:' +
+          e +
+          ', priority:' +
+          p +
+          ', function:' +
+          f +
+          '});',
         pres: 'Tells <entityName> to <scriptName>'
       }
     }
 
     if (op === 0x02) {
-      const e = $r.readUByte(); const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const e = $r.readUByte()
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'REQSW',
         e,
         p,
         f,
         mr: 'Execute script #%3 in extern group %1 (priority %2/6) - Only if the script is not already running|_script(groupID)|priority|scriptID',
-        js: 'entityExecuteAsyncGuaranteed({entity:' + e + ', priority:' + p + ', function:' + f + '});',
+        js:
+          'entityExecuteAsyncGuaranteed({entity:' +
+          e +
+          ', priority:' +
+          p +
+          ', function:' +
+          f +
+          '});',
         pres: 'Tells <entityName> to <scriptName>'
       }
     }
 
     if (op === 0x03) {
-      const e = $r.readUByte(); const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const e = $r.readUByte()
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'REQEW',
         e,
         p,
         f,
-        js: 'entityExecuteSync({entity:' + e + ', priority:' + p + ', function:' + f + '});',
+        js:
+          'entityExecuteSync({entity:' +
+          e +
+          ', priority:' +
+          p +
+          ', function:' +
+          f +
+          '});',
         pres: 'Tells <entityName> to <scriptName>'
       }
     }
 
     if (op === 0x04) {
-      const e = $r.readUByte(); const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const e = $r.readUByte()
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'PREQ',
         e,
         p,
         f,
-        js: 'partyMemberExecuteAsync({entity:' + e + ', priority:' + p + ', function:' + f + '});',
+        js:
+          'partyMemberExecuteAsync({entity:' +
+          e +
+          ', priority:' +
+          p +
+          ', function:' +
+          f +
+          '});',
         pres: 'Tells <partyMemberName> to <scriptName>'
       }
     }
 
     if (op === 0x05) {
-      const e = $r.readUByte(); const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const e = $r.readUByte()
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'PRQSW',
         e,
         p,
         f,
-        js: 'partyMemberExecuteAsyncGuaranteed({partyMemberId:' + e + ', priority:' + p + ', function:' + f + '});',
+        js:
+          'partyMemberExecuteAsyncGuaranteed({partyMemberId:' +
+          e +
+          ', priority:' +
+          p +
+          ', function:' +
+          f +
+          '});',
         pres: 'Tells <partyMemberName> to <scriptName>'
       }
     }
 
     if (op === 0x06) {
-      const e = $r.readUByte(); const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const e = $r.readUByte()
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'PRQEW',
         e,
         p,
         f,
-        js: 'partyMemberExecuteSync({partyMemberId:' + e + ', priority:' + p + ', function:' + f + '});',
+        js:
+          'partyMemberExecuteSync({partyMemberId:' +
+          e +
+          ', priority:' +
+          p +
+          ', function:' +
+          f +
+          '});',
         pres: 'Tells <partyMemberName> to <scriptName>'
       }
     }
 
     if (op === 0x07) {
-      const bpbf = $r.readUByte(); const p = (bpbf & 0b11100000) >> 5; const f = (bpbf & 0b00011111)
+      const bpbf = $r.readUByte()
+      const p = (bpbf & 0b11100000) >> 5
+      const f = bpbf & 0b00011111
       return {
         op: 'RETTO',
         p,
@@ -554,11 +743,21 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x09) {
-      const bx1by1 = $r.readUByte(); const bx1 = (bx1by1 & 0xF0) >> 4; const by1 = (bx1by1 & 0x0F)
-      const bd1bx2 = $r.readUByte(); const bd1 = (bd1bx2 & 0xF0) >> 4; const bx2 = (bd1bx2 & 0x0F)
-      const by2bd2 = $r.readUByte(); const by2 = (by2bd2 & 0xF0) >> 4; const bd2 = (by2bd2 & 0x0F)
-      const x1 = $r.readShort(); const y1 = $r.readShort(); const d1 = $r.readUByte()
-      const x2 = $r.readShort(); const y2 = $r.readShort(); const d2 = $r.readUByte()
+      const bx1by1 = $r.readUByte()
+      const bx1 = (bx1by1 & 0xf0) >> 4
+      const by1 = bx1by1 & 0x0f
+      const bd1bx2 = $r.readUByte()
+      const bd1 = (bd1bx2 & 0xf0) >> 4
+      const bx2 = bd1bx2 & 0x0f
+      const by2bd2 = $r.readUByte()
+      const by2 = (by2bd2 & 0xf0) >> 4
+      const bd2 = by2bd2 & 0x0f
+      const x1 = $r.readShort()
+      const y1 = $r.readShort()
+      const d1 = $r.readUByte()
+      const x2 = $r.readShort()
+      const y2 = $r.readShort()
+      const d2 = $r.readUByte()
       const s = $r.readUByte()
       const x1Desc = bx1 === 0 ? x1 : 'Bank[' + bx1 + '][' + x1 + ']'
       const y1Desc = by1 === 0 ? y1 : 'Bank[' + by1 + '][' + y1 + ']'
@@ -581,15 +780,36 @@ class FF7BinaryDataReader {
         y2,
         d2,
         s,
-        js: 'splitParty({c1: {x:' + x1Desc + ', y:' + y1Desc + ', d:' + d1Desc + '}, c2: {x:' + x2Desc + ', y:' + y2Desc + ', d:' + d2Desc + '}, slowness:' + s + '});',
+        js:
+          'splitParty({c1: {x:' +
+          x1Desc +
+          ', y:' +
+          y1Desc +
+          ', d:' +
+          d1Desc +
+          '}, c2: {x:' +
+          x2Desc +
+          ', y:' +
+          y2Desc +
+          ', d:' +
+          d2Desc +
+          '}, slowness:' +
+          s +
+          '});',
         pres: 'The party spreads out.'
       }
     }
 
     if (op === 0x0a) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const a1 = $r.readUByte(); const a2 = $r.readUByte(); const a3 = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const a1 = $r.readUByte()
+      const a2 = $r.readUByte()
+      const a3 = $r.readUByte()
       const a1Desc = b1 === 0 ? a1 : 'Bank[' + b1 + '][' + a1 + ']'
       const a2Desc = b2 === 0 ? a2 : 'Bank[' + b2 + '][' + a2 + ']'
       const a3Desc = b3 === 0 ? a3 : 'Bank[' + b3 + '][' + a3 + ']'
@@ -601,15 +821,28 @@ class FF7BinaryDataReader {
         a1,
         a2,
         a3,
-        js: 'setParty({characterId1:' + a1Desc + ', characterId2:' + a2Desc + ', characterId3:' + a3Desc + '});',
+        js:
+          'setParty({characterId1:' +
+          a1Desc +
+          ', characterId2:' +
+          a2Desc +
+          ', characterId3:' +
+          a3Desc +
+          '});',
         pres: 'The party changes to <A1,A2,A3>'
       }
     }
 
     if (op === 0x0b) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const a1 = $r.readUByte(); const a2 = $r.readUByte(); const a3 = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const a1 = $r.readUByte()
+      const a2 = $r.readUByte()
+      const a3 = $r.readUByte()
       const a1Desc = b1 === 0 ? a1 : 'Bank[' + b1 + '][' + a1 + ']'
       const a2Desc = b2 === 0 ? a2 : 'Bank[' + b2 + '][' + a2 + ']'
       const a3Desc = b3 === 0 ? a3 : 'Bank[' + b3 + '][' + a3 + ']'
@@ -621,7 +854,13 @@ class FF7BinaryDataReader {
         a1,
         a2,
         a3,
-        js: a1Desc + ' = getParty({partyId:0}); ' + a2Desc + ' = getParty({partyId:1}); ' + a3Desc + ' = getParty({partyId:2});',
+        js:
+          a1Desc +
+          ' = getParty({partyId:0}); ' +
+          a2Desc +
+          ' = getParty({partyId:1}); ' +
+          a3Desc +
+          ' = getParty({partyId:2});',
         pres: 'The party prepares to switch up...'
       }
     }
@@ -644,17 +883,46 @@ class FF7BinaryDataReader {
     if (op === 0x0f) {
       const subOp = $r.readUByte()
       const params = []
-      const numBytes = { 0xf5: 1, 0xf6: 1, 0xf7: 1, 0xf8: 2, 0xf9: 0, 0xfa: 0, 0xfb: 1, 0xfc: 1, 0xfd: 2, 0xfe: 0, 0xff: 0 }[subOp]
+      const numBytes = {
+        0xf5: 1,
+        0xf6: 1,
+        0xf7: 1,
+        0xf8: 2,
+        0xf9: 0,
+        0xfa: 0,
+        0xfb: 1,
+        0xfc: 1,
+        0xfd: 2,
+        0xfe: 0,
+        0xff: 0
+      }[subOp]
       for (let i = 0; i < numBytes; i++) {
         const byte = $r.readUByte()
         params.push(byte)
       }
-      const subOpName = { 0xf5: 'ARROW', 0xf6: 'PNAME', 0xf7: 'GMSPD', 0xf8: 'SMSPD', 0xf9: 'FLMAT', 0xfa: 'FLITM', 0xfb: 'BTLCK', 0xfc: 'MVLCK', 0xfd: 'SPCNM', 0xfe: 'RSGLB', 0xff: 'CLITM' }[subOp]
+      const subOpName = {
+        0xf5: 'ARROW',
+        0xf6: 'PNAME',
+        0xf7: 'GMSPD',
+        0xf8: 'SMSPD',
+        0xf9: 'FLMAT',
+        0xfa: 'FLITM',
+        0xfb: 'BTLCK',
+        0xfc: 'MVLCK',
+        0xfd: 'SPCNM',
+        0xfe: 'RSGLB',
+        0xff: 'CLITM'
+      }[subOp]
       return {
         op: 'SPECIAL',
         subOp,
         params,
-        js: "specialOp({subOpName:'" + subOpName + "', params:" + JSON.stringify(params, null, 0) + '});'
+        js:
+          "specialOp({subOpName:'" +
+          subOpName +
+          "', params:" +
+          JSON.stringify(params, null, 0) +
+          '});'
       }
     }
 
@@ -703,8 +971,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x14) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUByte(); const v = $r.readUByte(); const c = $r.readUByte(); const e = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUByte()
+      const v = $r.readUByte()
+      const c = $r.readUByte()
+      const e = $r.readUByte()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const vDesc = b2 === 0 ? v : 'Bank[' + b2 + '][' + v + ']'
       const cDesc = this.getCmpDesc(aDesc, c, vDesc)
@@ -723,8 +996,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x15) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUByte(); const v = $r.readUByte(); const c = $r.readUByte(); const e = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUByte()
+      const v = $r.readUByte()
+      const c = $r.readUByte()
+      const e = $r.readUShort()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const vDesc = b2 === 0 ? v : 'Bank[' + b2 + '][' + v + ']'
       const cDesc = this.getCmpDesc(aDesc, c, vDesc)
@@ -743,8 +1021,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x16) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUShort(); const v = $r.readShort(); const c = $r.readUByte(); const e = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUShort()
+      const v = $r.readShort()
+      const c = $r.readUByte()
+      const e = $r.readUByte()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const vDesc = b2 === 0 ? v : 'Bank[' + b2 + '][' + v + ']'
       const cDesc = this.getCmpDesc(aDesc, c, vDesc)
@@ -763,8 +1046,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x17) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUShort(); const v = $r.readShort(); const c = $r.readUByte(); const e = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUShort()
+      const v = $r.readShort()
+      const c = $r.readUByte()
+      const e = $r.readUShort()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const vDesc = b2 === 0 ? v : 'Bank[' + b2 + '][' + v + ']'
       const cDesc = this.getCmpDesc(aDesc, c, vDesc)
@@ -783,8 +1071,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x18) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUShort(); const v = $r.readUShort(); const c = $r.readUByte(); const e = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUShort()
+      const v = $r.readUShort()
+      const c = $r.readUByte()
+      const e = $r.readUByte()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const vDesc = b2 === 0 ? v : 'Bank[' + b2 + '][' + v + ']'
       const cDesc = this.getCmpDesc(aDesc, c, vDesc)
@@ -803,8 +1096,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x19) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUShort(); const v = $r.readUShort(); const c = $r.readUByte(); const e = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUShort()
+      const v = $r.readUShort()
+      const c = $r.readUByte()
+      const e = $r.readUShort()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const vDesc = b2 === 0 ? v : 'Bank[' + b2 + '][' + v + ']'
       const cDesc = this.getCmpDesc(aDesc, c, vDesc)
@@ -830,7 +1128,12 @@ class FF7BinaryDataReader {
 
     // TODO: Minigame types
     if (op === 0x20) {
-      const m = $r.readUShort(); const x = $r.readShort(); const y = $r.readShort(); const z = $r.readShort(); const g = $r.readUByte(); const t = $r.readUByte()
+      const m = $r.readUShort()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const g = $r.readUByte()
+      const t = $r.readUByte()
       return {
         op: 'MINIGAME',
         m,
@@ -839,7 +1142,20 @@ class FF7BinaryDataReader {
         z,
         g,
         t,
-        js: 'runMinigame({mapId:' + m + ', x:' + x + ', y:' + y + ', z:' + z + ', value:' + g + ', gameType:' + t + '});'
+        js:
+          'runMinigame({mapId:' +
+          m +
+          ', x:' +
+          x +
+          ', y:' +
+          y +
+          ', z:' +
+          z +
+          ', value:' +
+          g +
+          ', gameType:' +
+          t +
+          '});'
       }
     }
 
@@ -853,19 +1169,44 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x22) {
-      const bits1 = $r.readUByte(); const bits2 = $r.readUByte(); const bits3 = $r.readUByte(); const bits4 = $r.readUByte()
+      const bits1 = $r.readUByte()
+      const bits2 = $r.readUByte()
+      const bits3 = $r.readUByte()
+      const bits4 = $r.readUByte()
       const descriptions = []
-      if (bits1 & 0b10000000) { descriptions.push('DisableRewardScreens') }
-      if (bits1 & 0b01000000) { descriptions.push('ActivateArenaMode') }
-      if (bits1 & 0b00100000) { descriptions.push('DisableVictoryMusic') }
-      if (bits1 & 0b00010000) { descriptions.push('Unknown0b00010000') }
-      if (bits1 & 0b00001000) { descriptions.push('CanNotEscape') }
-      if (bits1 & 0b00000100) { descriptions.push('PreEmptiveAttack') }
-      if (bits1 & 0b00000010) { descriptions.push('TimedBattleWithoutRewardScreen') }
-      if (bits1 & 0b00000001) { descriptions.push('Unknown0b00000001') }
-      if (bits2 & 0b00000001) { descriptions.push('NoCelebrations') }
-      if (bits3 & 0b10000000) { descriptions.push('DisableGameOver') }
-      if (bits3 & 0b00000001) { descriptions.push('DisableGameOver') }
+      if (bits1 & 0b10000000) {
+        descriptions.push('DisableRewardScreens')
+      }
+      if (bits1 & 0b01000000) {
+        descriptions.push('ActivateArenaMode')
+      }
+      if (bits1 & 0b00100000) {
+        descriptions.push('DisableVictoryMusic')
+      }
+      if (bits1 & 0b00010000) {
+        descriptions.push('Unknown0b00010000')
+      }
+      if (bits1 & 0b00001000) {
+        descriptions.push('CanNotEscape')
+      }
+      if (bits1 & 0b00000100) {
+        descriptions.push('PreEmptiveAttack')
+      }
+      if (bits1 & 0b00000010) {
+        descriptions.push('TimedBattleWithoutRewardScreen')
+      }
+      if (bits1 & 0b00000001) {
+        descriptions.push('Unknown0b00000001')
+      }
+      if (bits2 & 0b00000001) {
+        descriptions.push('NoCelebrations')
+      }
+      if (bits3 & 0b10000000) {
+        descriptions.push('DisableGameOver')
+      }
+      if (bits3 & 0b00000001) {
+        descriptions.push('DisableGameOver')
+      }
       return {
         op: 'BTMD2',
         bits1,
@@ -879,7 +1220,8 @@ class FF7BinaryDataReader {
 
     if (op === 0x23) {
       // TODO: battle result bits
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'BTRLD',
@@ -899,10 +1241,17 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x25) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const bxb3 = $r.readUByte(); const b3 = (bxb3 & 0x0F)
-      const t = $r.readUByte(); const r = $r.readUByte(); const g = $r.readUByte()
-      const b = $r.readUByte(); const s = $r.readUByte(); const unused = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const bxb3 = $r.readUByte()
+      const b3 = bxb3 & 0x0f
+      const t = $r.readUByte()
+      const r = $r.readUByte()
+      const g = $r.readUByte()
+      const b = $r.readUByte()
+      const s = $r.readUByte()
+      const unused = $r.readUByte()
       const rDesc = b1 === 0 ? r : 'Bank[' + b1 + '][' + r + ']'
       const gDesc = b2 === 0 ? g : 'Bank[' + b2 + '][' + g + ']'
       const bDesc = b3 === 0 ? b : 'Bank[' + b3 + '][' + b + ']'
@@ -917,7 +1266,19 @@ class FF7BinaryDataReader {
         s,
         t,
         unused,
-        js: 'fadeScreenN({r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', speed:' + s + ', type:' + t + '}); // unused=' + unused,
+        js:
+          'fadeScreenN({r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          ', speed:' +
+          s +
+          ', type:' +
+          t +
+          '}); // unused=' +
+          unused,
         pres: 'The screen fades...'
       }
     }
@@ -943,7 +1304,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x28) {
-      const l = $r.readUByte(); const s = $r.readUByte()
+      const l = $r.readUByte()
+      const s = $r.readUByte()
       const vars = []
       for (let i = 0; i < l - 3; i++) {
         vars.push($r.readUByte())
@@ -957,11 +1319,11 @@ class FF7BinaryDataReader {
         0x07: '07',
         0x08: '08',
         0x09: '09',
-        0x0A: 'SBOBJ',
-        0x0B: '11',
-        0x0C: '12',
-        0x0D: 'SHINE',
-        0xFF: 'RESET'
+        0x0a: 'SBOBJ',
+        0x0b: '11',
+        0x0c: '12',
+        0x0d: 'SHINE',
+        0xff: 'RESET'
       }[s]
 
       return {
@@ -999,8 +1361,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x2c) {
-      const b1bx = $r.readUByte(); const b1 = (b1bx & 0xF0) >> 4; const bx = (b1bx & 0x0F)
-      const l = $r.readUByte(); const z = $r.readShort()
+      const b1bx = $r.readUByte()
+      const b1 = (b1bx & 0xf0) >> 4
+      const bx = b1bx & 0x0f
+      const l = $r.readUByte()
+      const z = $r.readShort()
       const zDesc = b1 === 0 ? z : 'Bank[' + b1 + '][' + z + ']'
       return {
         op: 'BGPDH',
@@ -1012,8 +1377,12 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x2d) {
-      const bxby = $r.readUByte(); const bx = (bxby & 0xF0) >> 4; const by = (bxby & 0x0F)
-      const l = $r.readUByte(); const x = $r.readShort(); const y = $r.readShort()
+      const bxby = $r.readUByte()
+      const bx = (bxby & 0xf0) >> 4
+      const by = bxby & 0x0f
+      const l = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
       const xDesc = bx === 0 ? x : 'Bank[' + bx + '][' + x + ']'
       const yDesc = by === 0 ? y : 'Bank[' + by + '][' + y + ']'
       return {
@@ -1023,7 +1392,14 @@ class FF7BinaryDataReader {
         l,
         x,
         y,
-        js: 'scrollBackgroundLayer({layerId:' + l + ', xSpeed:' + x + ', ySpeed:' + y + '});',
+        js:
+          'scrollBackgroundLayer({layerId:' +
+          l +
+          ', xSpeed:' +
+          x +
+          ', ySpeed:' +
+          y +
+          '});',
         pres: 'The background scrolls...'
       }
     }
@@ -1038,7 +1414,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x2f) {
-      const i = $r.readUByte(); const x = $r.readUShort(); const y = $r.readUShort(); const w = $r.readUShort(); const h = $r.readUShort()
+      const i = $r.readUByte()
+      const x = $r.readUShort()
+      const y = $r.readUShort()
+      const w = $r.readUShort()
+      const h = $r.readUShort()
       return {
         op: 'WSIZW',
         i,
@@ -1046,7 +1426,18 @@ class FF7BinaryDataReader {
         y,
         w,
         h,
-        js: 'resizeWindow({windowId:' + i + ', x:' + x + ', y:' + y + ', width:' + w + ', height:' + h + '});'
+        js:
+          'resizeWindow({windowId:' +
+          i +
+          ', x:' +
+          x +
+          ', y:' +
+          y +
+          ', width:' +
+          w +
+          ', height:' +
+          h +
+          '});'
       }
     }
 
@@ -1060,7 +1451,12 @@ class FF7BinaryDataReader {
         op: 'IFKEY',
         b,
         a,
-        js: 'if keyPressed({inputKeyBitField:' + b + ') (else goto ' + (baseOffset + a) + ');',
+        js:
+          'if keyPressed({inputKeyBitField:' +
+          b +
+          ') (else goto ' +
+          (baseOffset + a) +
+          ');',
         goto: baseOffset + a
       }
     }
@@ -1073,7 +1469,12 @@ class FF7BinaryDataReader {
         op: 'IFKEYON',
         b,
         a,
-        js: 'if keyPressedJustPressed({inputKeyBitField:' + b + ') (else goto ' + (baseOffset + a) + ');',
+        js:
+          'if keyPressedJustPressed({inputKeyBitField:' +
+          b +
+          ') (else goto ' +
+          (baseOffset + a) +
+          ');',
         goto: baseOffset + a
       }
     }
@@ -1086,7 +1487,12 @@ class FF7BinaryDataReader {
         op: 'IFKEYOFF',
         b,
         a,
-        js: 'if keyPressedJustReleased({inputKeyBitField:' + b + ') (else goto ' + (baseOffset + a) + ');',
+        js:
+          'if keyPressedJustReleased({inputKeyBitField:' +
+          b +
+          ') (else goto ' +
+          (baseOffset + a) +
+          ');',
         goto: baseOffset + a
       }
     }
@@ -1112,31 +1518,57 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x35) {
-      const p = $r.readUByte(); const s = $r.readUByte(); const a = $r.readUByte()
+      const p = $r.readUByte()
+      const s = $r.readUByte()
+      const a = $r.readUByte()
       return {
         op: 'PTURA',
         p,
         s,
         a,
-        js: 'turnToPartyMember({partyId:' + p + ', slowness:' + s + ', directionA:' + a + '});'
+        js:
+          'turnToPartyMember({partyId:' +
+          p +
+          ', slowness:' +
+          s +
+          ', directionA:' +
+          a +
+          '});'
       }
     }
 
     if (op === 0x36) {
-      const w = $r.readUByte(); const t = $r.readUByte(); const x = $r.readUByte(); const y = $r.readUByte()
+      const w = $r.readUByte()
+      const t = $r.readUByte()
+      const x = $r.readUByte()
+      const y = $r.readUByte()
       return {
         op: 'WSPCL',
         w,
         t,
         x,
         y,
-        js: 'createNumericWindow({windowId:' + w + ', type:' + t + ', x:' + x + ', y:' + y + '});'
+        js:
+          'createNumericWindow({windowId:' +
+          w +
+          ', type:' +
+          t +
+          ', x:' +
+          x +
+          ', y:' +
+          y +
+          '});'
       }
     }
 
     if (op === 0x37) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const w = $r.readUByte(); const nLow = $r.readUShort(); const nHigh = $r.readUShort(); const c = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const w = $r.readUByte()
+      const nLow = $r.readUShort()
+      const nHigh = $r.readUShort()
+      const c = $r.readUByte()
       const nLowDesc = b1 === 0 ? nLow : 'Bank[' + b1 + '][' + nLow + ']'
       const nHighDesc = b2 === 0 ? nHigh : 'Bank[' + b2 + '][' + nHigh + ']'
       return {
@@ -1147,14 +1579,28 @@ class FF7BinaryDataReader {
         nLow,
         nHigh,
         c,
-        js: 'setNumericWindowDisplayValue({windowId:' + w + ', low:' + nLowDesc + ', high:' + nHighDesc + ', maxDigits:' + c + '});'
+        js:
+          'setNumericWindowDisplayValue({windowId:' +
+          w +
+          ', low:' +
+          nLowDesc +
+          ', high:' +
+          nHighDesc +
+          ', maxDigits:' +
+          c +
+          '});'
       }
     }
 
     if (op === 0x38) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const bxb3 = $r.readUByte(); const b3 = (bxb3 & 0x0F)
-      const h = $r.readUByte(); const m = $r.readUByte(); const s = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const bxb3 = $r.readUByte()
+      const b3 = bxb3 & 0x0f
+      const h = $r.readUByte()
+      const m = $r.readUByte()
+      const s = $r.readUByte()
       const hDesc = b1 === 0 ? h : 'Bank[' + b1 + '][' + h + ']'
       const mDesc = b2 === 0 ? m : 'Bank[' + b2 + '][' + m + ']'
       const sDesc = b3 === 0 ? s : 'Bank[' + b3 + '][' + s + ']'
@@ -1166,12 +1612,21 @@ class FF7BinaryDataReader {
         h,
         m,
         s,
-        js: 'setNumericWindowTimeValue({h:' + hDesc + ', m:' + mDesc + ', s:' + sDesc + '});'
+        js:
+          'setNumericWindowTimeValue({h:' +
+          hDesc +
+          ', m:' +
+          mDesc +
+          ', s:' +
+          sDesc +
+          '});'
       }
     }
 
     if (op === 0x39) {
-      const b1bx = $r.readUByte(); const b1 = (b1bx & 0xF0) >> 4; const bx = (b1bx & 0x0F)
+      const b1bx = $r.readUByte()
+      const b1 = (b1bx & 0xf0) >> 4
+      const bx = b1bx & 0x0f
       const a = $r.readUInt()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       return {
@@ -1183,7 +1638,9 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x3a) {
-      const b1bx = $r.readUByte(); const b1 = (b1bx & 0xF0) >> 4; const bx = (b1bx & 0x0F)
+      const b1bx = $r.readUByte()
+      const b1 = (b1bx & 0xf0) >> 4
+      const bx = b1bx & 0x0f
       const a = $r.readUInt()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       return {
@@ -1195,8 +1652,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x3b) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const nLow = $r.readUByte(); const nHigh = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const nLow = $r.readUByte()
+      const nHigh = $r.readUByte()
       const nLowDesc = b1 === 0 ? nLow : 'Bank[' + b1 + '][' + nLow + ']'
       const nHighDesc = b2 === 0 ? nHigh : 'Bank[' + b2 + '][' + nHigh + ']'
       return {
@@ -1238,17 +1698,27 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x40) {
-      const n = $r.readUByte(); const d = $r.readUByte()
+      const n = $r.readUByte()
+      const d = $r.readUByte()
       return {
         op: 'MESSAGE',
         n,
         d,
-        js: 'showWindowWithDialog({window:' + n + ', dialog:' + d + '}); // ' + this.dialogStrings[d]
+        js:
+          'showWindowWithDialog({window:' +
+          n +
+          ', dialog:' +
+          d +
+          '}); // ' +
+          this.dialogStrings[d]
       }
     }
 
     if (op === 0x41) {
-      const b = $r.readUByte(); const w = $r.readUByte(); const i = $r.readUByte(); const v = $r.readUByte()
+      const b = $r.readUByte()
+      const w = $r.readUByte()
+      const i = $r.readUByte()
+      const v = $r.readUByte()
       const vDesc = b === 0 ? v : 'Bank[' + b + '][' + v + ']'
       return {
         op: 'MPARA',
@@ -1256,12 +1726,22 @@ class FF7BinaryDataReader {
         w,
         i,
         v,
-        js: 'setMessageParam({windowId:' + w + ', varId:' + i + ', value:' + vDesc + '});'
+        js:
+          'setMessageParam({windowId:' +
+          w +
+          ', varId:' +
+          i +
+          ', value:' +
+          vDesc +
+          '});'
       }
     }
 
     if (op === 0x42) {
-      const b = $r.readUByte(); const w = $r.readUByte(); const i = $r.readUByte(); const v = $r.readUShort()
+      const b = $r.readUByte()
+      const w = $r.readUByte()
+      const i = $r.readUByte()
+      const v = $r.readUShort()
       const vDesc = b === 0 ? v : 'Bank[' + b + '][' + v + ']'
       return {
         op: 'MPRA2',
@@ -1269,7 +1749,14 @@ class FF7BinaryDataReader {
         w,
         i,
         v,
-        js: 'setMessageParam({windowId:' + w + ', varId:' + i + ', value:' + vDesc + '});'
+        js:
+          'setMessageParam({windowId:' +
+          w +
+          ', varId:' +
+          i +
+          ', value:' +
+          vDesc +
+          '});'
       }
     }
 
@@ -1285,7 +1772,9 @@ class FF7BinaryDataReader {
     // 0x44 is unused
 
     if (op === 0x45) {
-      const b = $r.readUByte(); const p = $r.readUByte(); const v = $r.readUShort()
+      const b = $r.readUByte()
+      const p = $r.readUByte()
+      const v = $r.readUShort()
       const vDesc = b === 0 ? v : 'Bank[' + b + '][' + v + ']'
       return {
         op: 'MPUP',
@@ -1299,7 +1788,9 @@ class FF7BinaryDataReader {
     // 0x46 is unused
 
     if (op === 0x47) {
-      const b = $r.readUByte(); const p = $r.readUByte(); const v = $r.readUShort()
+      const b = $r.readUByte()
+      const p = $r.readUByte()
+      const v = $r.readUShort()
       const vDesc = b === 0 ? v : 'Bank[' + b + '][' + v + ']'
       return {
         op: 'MPDWN',
@@ -1312,7 +1803,12 @@ class FF7BinaryDataReader {
 
     if (op === 0x48) {
       // TODO: Menu Types and Event Types
-      const ba = $r.readUByte(); const w = $r.readUByte(); const d = $r.readUByte(); const f = $r.readUByte(); const l = $r.readUByte(); const a = $r.readUByte()
+      const ba = $r.readUByte()
+      const w = $r.readUByte()
+      const d = $r.readUByte()
+      const f = $r.readUByte()
+      const l = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = ba === 0 ? a : 'Bank[' + ba + '][' + a + ']'
       return {
         op: 'ASK',
@@ -1322,13 +1818,25 @@ class FF7BinaryDataReader {
         f,
         l,
         a,
-        js: aDesc + ' = askQuestion({window:' + w + ', dialog:' + d + ', firstChoice:' + f + ', lastChoice:' + l + '});'
+        js:
+          aDesc +
+          ' = askQuestion({window:' +
+          w +
+          ', dialog:' +
+          d +
+          ', firstChoice:' +
+          f +
+          ', lastChoice:' +
+          l +
+          '});'
       }
     }
 
     if (op === 0x49) {
       // TODO: Menu Types and Event Types
-      const b = $r.readUByte(); const t = $r.readUByte(); const p = $r.readUByte()
+      const b = $r.readUByte()
+      const t = $r.readUByte()
+      const p = $r.readUByte()
       const pDesc = b === 0 ? p : 'Bank[' + b + '][' + p + ']'
       return {
         op: 'MENU',
@@ -1361,7 +1869,9 @@ class FF7BinaryDataReader {
     // 0x4c is unused
 
     if (op === 0x4d) {
-      const b = $r.readUByte(); const p = $r.readUByte(); const v = $r.readUShort()
+      const b = $r.readUByte()
+      const p = $r.readUByte()
+      const v = $r.readUShort()
       const vDesc = b === 0 ? v : 'Bank[' + b + '][' + v + ']'
       return {
         op: 'HPUP',
@@ -1375,7 +1885,9 @@ class FF7BinaryDataReader {
     // 0x4e is unused
 
     if (op === 0x4f) {
-      const b = $r.readUByte(); const p = $r.readUByte(); const v = $r.readUShort()
+      const b = $r.readUByte()
+      const p = $r.readUByte()
+      const v = $r.readUShort()
       const vDesc = b === 0 ? v : 'Bank[' + b + '][' + v + ']'
       return {
         op: 'HPDWN',
@@ -1387,7 +1899,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x50) {
-      const n = $r.readUByte(); const x = $r.readUShort(); const y = $r.readUShort(); const w = $r.readUShort(); const h = $r.readUShort()
+      const n = $r.readUByte()
+      const x = $r.readUShort()
+      const y = $r.readUShort()
+      const w = $r.readUShort()
+      const h = $r.readUShort()
       return {
         op: 'WINDOW',
         n,
@@ -1395,12 +1911,25 @@ class FF7BinaryDataReader {
         y,
         w,
         h,
-        js: 'createWindow({window:' + n + ', x:' + x + ', y:' + y + ', width:' + w + ', height:' + h + '});'
+        js:
+          'createWindow({window:' +
+          n +
+          ', x:' +
+          x +
+          ', y:' +
+          y +
+          ', width:' +
+          w +
+          ', height:' +
+          h +
+          '});'
       }
     }
 
     if (op === 0x51) {
-      const w = $r.readUByte(); const x = $r.readShort(); const y = $r.readShort()
+      const w = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
       return {
         op: 'WMOVE',
         w,
@@ -1411,15 +1940,36 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x52) {
-      const w = $r.readUByte(); const m = $r.readUByte(); const p = $r.readUByte()
-      const mDesc = m === 0 ? 'WindowMode.Normal' : m === 1 ? 'WindowMode.NoBackgroundNoBorder' : m === 2 ? 'WindowMode.TransparentBackground' : 'WindowMode.UNKNOWN_' + m
-      const pDesc = p === 0 ? 'Closability.Closable' : p === 1 ? 'Closability.NotClosable' : 'Closability.UNKNOWN_' + p
+      const w = $r.readUByte()
+      const m = $r.readUByte()
+      const p = $r.readUByte()
+      const mDesc =
+        m === 0
+          ? 'WindowMode.Normal'
+          : m === 1
+          ? 'WindowMode.NoBackgroundNoBorder'
+          : m === 2
+          ? 'WindowMode.TransparentBackground'
+          : 'WindowMode.UNKNOWN_' + m
+      const pDesc =
+        p === 0
+          ? 'Closability.Closable'
+          : p === 1
+          ? 'Closability.NotClosable'
+          : 'Closability.UNKNOWN_' + p
       return {
         op: 'WMODE',
         w,
         m,
         p,
-        js: 'setWindowModes({windowId:' + w + ', mode:' + m + ', closability:' + p + '});'
+        js:
+          'setWindowModes({windowId:' +
+          w +
+          ', mode:' +
+          m +
+          ', closability:' +
+          p +
+          '});'
       }
     }
 
@@ -1442,7 +1992,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x55) {
-      const w = $r.readUByte(); const r = $r.readUByte()
+      const w = $r.readUByte()
+      const r = $r.readUByte()
       return {
         op: 'WROW',
         w,
@@ -1452,9 +2003,16 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x56) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const c = $r.readUByte(); const r = $r.readUByte(); const g = $r.readUByte(); const b = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const c = $r.readUByte()
+      const r = $r.readUByte()
+      const g = $r.readUByte()
+      const b = $r.readUByte()
       const cDesc = b1 === 0 ? c : 'Bank[' + b1 + '][' + c + ']'
       const rDesc = b2 === 0 ? r : 'Bank[' + b2 + '][' + r + ']'
       const gDesc = b3 === 0 ? g : 'Bank[' + b3 + '][' + g + ']'
@@ -1469,14 +2027,30 @@ class FF7BinaryDataReader {
         r,
         g,
         b,
-        js: '{ let color = getWindowColor({cornerId:' + cDesc + '}); ' + rDesc + ' = color.r; ' + gDesc + ' = color.g; ' + bDesc + ' = color.b; }'
+        js:
+          '{ let color = getWindowColor({cornerId:' +
+          cDesc +
+          '}); ' +
+          rDesc +
+          ' = color.r; ' +
+          gDesc +
+          ' = color.g; ' +
+          bDesc +
+          ' = color.b; }'
       }
     }
 
     if (op === 0x57) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const c = $r.readUByte(); const r = $r.readUByte(); const g = $r.readUByte(); const b = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const c = $r.readUByte()
+      const r = $r.readUByte()
+      const g = $r.readUByte()
+      const b = $r.readUByte()
       const cDesc = b1 === 0 ? c : 'Bank[' + b1 + '][' + c + ']'
       const rDesc = b2 === 0 ? r : 'Bank[' + b2 + '][' + r + ']'
       const gDesc = b3 === 0 ? g : 'Bank[' + b3 + '][' + g + ']'
@@ -1491,13 +2065,25 @@ class FF7BinaryDataReader {
         r,
         g,
         b,
-        js: 'setWindowColor({cornerId:' + cDesc + ', color:{r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + '}});'
+        js:
+          'setWindowColor({cornerId:' +
+          cDesc +
+          ', color:{r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          '}});'
       }
     }
 
     if (op === 0x58) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const t = $r.readUShort(); const a = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const t = $r.readUShort()
+      const a = $r.readUByte()
       const tDesc = b1 === 0 ? t : 'Bank[' + b1 + '][' + t + ']'
       const aDesc = b2 === 0 ? a : 'Bank[' + b2 + '][' + a + ']'
       return {
@@ -1511,8 +2097,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x59) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const t = $r.readUShort(); const a = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const t = $r.readUShort()
+      const a = $r.readUByte()
       const tDesc = b1 === 0 ? t : 'Bank[' + b1 + '][' + t + ']'
       const aDesc = b2 === 0 ? a : 'Bank[' + b2 + '][' + a + ']'
       return {
@@ -1526,7 +2115,9 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x5a) {
-      const b = $r.readUByte(); const i = $r.readUShort(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const i = $r.readUShort()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'CKITM',
@@ -1538,14 +2129,31 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x5b) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const t = $r.readUByte(); const apByte1 = $r.readUByte(); const apByte2 = $r.readUByte(); const apByte3 = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const t = $r.readUByte()
+      const apByte1 = $r.readUByte()
+      const apByte2 = $r.readUByte()
+      const apByte3 = $r.readUByte()
       const tDesc = b1 === 0 ? t : 'Bank[' + b1 + '][' + t + ']'
-      const apByte1Desc = b2 === 0 ? apByte1 : 'Bank[' + b2 + '][' + apByte1 + ']'
-      const apByte2Desc = b3 === 0 ? apByte2 : 'Bank[' + b3 + '][' + apByte2 + ']'
-      const apByte3Desc = b4 === 0 ? apByte3 : 'Bank[' + b4 + '][' + apByte3 + ']'
-      let apDesc = '(' + apByte1Desc + ' + 256 * ' + apByte2Desc + ' + 65536 * ' + apByte3Desc + ')'
+      const apByte1Desc =
+        b2 === 0 ? apByte1 : 'Bank[' + b2 + '][' + apByte1 + ']'
+      const apByte2Desc =
+        b3 === 0 ? apByte2 : 'Bank[' + b3 + '][' + apByte2 + ']'
+      const apByte3Desc =
+        b4 === 0 ? apByte3 : 'Bank[' + b4 + '][' + apByte3 + ']'
+      let apDesc =
+        '(' +
+        apByte1Desc +
+        ' + 256 * ' +
+        apByte2Desc +
+        ' + 65536 * ' +
+        apByte3Desc +
+        ')'
       if (b2 === 0 && b3 === 0 && b4 === 0) {
         apDesc = apByte1 + 256 * apByte2 + 65536 * apByte3
       }
@@ -1564,14 +2172,32 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x5c) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const t = $r.readUByte(); const apByte1 = $r.readUByte(); const apByte2 = $r.readUByte(); const apByte3 = $r.readUByte(); const a = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const t = $r.readUByte()
+      const apByte1 = $r.readUByte()
+      const apByte2 = $r.readUByte()
+      const apByte3 = $r.readUByte()
+      const a = $r.readUByte()
       const tDesc = b1 === 0 ? t : 'Bank[' + b1 + '][' + t + ']'
-      const apByte1Desc = b2 === 0 ? apByte1 : 'Bank[' + b2 + '][' + apByte1 + ']'
-      const apByte2Desc = b3 === 0 ? apByte2 : 'Bank[' + b3 + '][' + apByte2 + ']'
-      const apByte3Desc = b4 === 0 ? apByte3 : 'Bank[' + b4 + '][' + apByte3 + ']'
-      let apDesc = '(' + apByte1Desc + ' + 256 * ' + apByte2Desc + ' + 65536 * ' + apByte3Desc + ')'
+      const apByte1Desc =
+        b2 === 0 ? apByte1 : 'Bank[' + b2 + '][' + apByte1 + ']'
+      const apByte2Desc =
+        b3 === 0 ? apByte2 : 'Bank[' + b3 + '][' + apByte2 + ']'
+      const apByte3Desc =
+        b4 === 0 ? apByte3 : 'Bank[' + b4 + '][' + apByte3 + ']'
+      let apDesc =
+        '(' +
+        apByte1Desc +
+        ' + 256 * ' +
+        apByte2Desc +
+        ' + 65536 * ' +
+        apByte3Desc +
+        ')'
       if (b2 === 0 && b3 === 0 && b4 === 0) {
         apDesc = apByte1 + 256 * apByte2 + 65536 * apByte3
       }
@@ -1585,7 +2211,14 @@ class FF7BinaryDataReader {
         apByte1,
         apByte2,
         apByte3,
-        js: 'deleteMateriaFromInventory({materiaId:' + t + ', ap:' + apDesc + ', amount:' + a + '});'
+        js:
+          'deleteMateriaFromInventory({materiaId:' +
+          t +
+          ', ap:' +
+          apDesc +
+          ', amount:' +
+          a +
+          '});'
       }
     }
 
@@ -1599,7 +2232,12 @@ class FF7BinaryDataReader {
       const xF = $r.readUByte()
       const yA = $r.readUByte()
       const yF = $r.readUByte()
-      const typeStrings = ['"Reset"', '"Horizontal"', '"Vertical"', '"BothAxes"']
+      const typeStrings = [
+        '"Reset"',
+        '"Horizontal"',
+        '"Vertical"',
+        '"BothAxes"'
+      ]
       return {
         op: 'SHAKE',
         u1,
@@ -1621,7 +2259,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x60) {
-      const f = $r.readUShort(); const x = $r.readShort(); const y = $r.readShort(); const i = $r.readShort(); const d = $r.readUByte()
+      const f = $r.readUShort()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const i = $r.readShort()
+      const d = $r.readUByte()
       return {
         op: 'MAPJUMP',
         f,
@@ -1629,7 +2271,18 @@ class FF7BinaryDataReader {
         y,
         i,
         d,
-        js: 'mapJump({fieldId:' + f + ', x:' + x + ', y:' + y + ', triangleId:' + i + ', direction:' + d + '});'
+        js:
+          'mapJump({fieldId:' +
+          f +
+          ', x:' +
+          x +
+          ', y:' +
+          y +
+          ', triangleId:' +
+          i +
+          ', direction:' +
+          d +
+          '});'
       }
     }
 
@@ -1644,20 +2297,35 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x62) {
-      const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUByte()
+      const p3 = $r.readUByte()
+      const p4 = $r.readUByte()
       return {
         op: 'SCRLC',
         p1,
         p2,
         p3,
         p4,
-        js: 'scrollOp0x62({param1:' + p1 + ', param2:' + p2 + ', param3:' + p3 + ', param4:' + p4 + '});',
+        js:
+          'scrollOp0x62({param1:' +
+          p1 +
+          ', param2:' +
+          p2 +
+          ', param3:' +
+          p3 +
+          ', param4:' +
+          p4 +
+          '});',
         pres: 'The camera scrolls...'
       }
     }
 
     if (op === 0x63) {
-      const b = $r.readUByte(); const s = $r.readUShort(); const e = $r.readUByte(); const t = $r.readUByte()
+      const b = $r.readUByte()
+      const s = $r.readUShort()
+      const e = $r.readUByte()
+      const t = $r.readUByte()
       const sDesc = b === 0 ? s : 'Bank[' + b + '][' + s + ']'
       return {
         op: 'SCRLA',
@@ -1665,14 +2333,24 @@ class FF7BinaryDataReader {
         s,
         e,
         t,
-        js: 'scrollToEntity({speedInFrame:' + sDesc + ', entityId:' + e + ', scrollType:' + t + '});',
+        js:
+          'scrollToEntity({speedInFrame:' +
+          sDesc +
+          ', entityId:' +
+          e +
+          ', scrollType:' +
+          t +
+          '});',
         pres: 'The camera pans to <E' + e + '>.'
       }
     }
 
     if (op === 0x64) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const targetX = $r.readShort(); const targetY = $r.readShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const targetX = $r.readShort()
+      const targetY = $r.readShort()
       const xDesc = b1 === 0 ? targetX : 'Bank[' + b1 + '][' + targetX + ']'
       const yDesc = b2 === 0 ? targetY : 'Bank[' + b2 + '][' + targetY + ']'
       return {
@@ -1693,9 +2371,14 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x66) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const bxb3 = $r.readUByte(); const b3 = (bxb3 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const s = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const bxb3 = $r.readUByte()
+      const b3 = bxb3 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const s = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const sDesc = b3 === 0 ? s : 'Bank[' + b3 + '][' + s + ']'
@@ -1707,7 +2390,14 @@ class FF7BinaryDataReader {
         x,
         y,
         s,
-        js: 'scrollSmooth({x:' + xDesc + ', y:' + yDesc + ', speed:' + sDesc + '});'
+        js:
+          'scrollSmooth({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', speed:' +
+          sDesc +
+          '});'
       }
     }
 
@@ -1719,9 +2409,14 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x68) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const bxb3 = $r.readUByte(); const b3 = (bxb3 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const s = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const bxb3 = $r.readUByte()
+      const b3 = bxb3 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const s = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const sDesc = b3 === 0 ? s : 'Bank[' + b3 + '][' + s + ']'
@@ -1733,7 +2428,16 @@ class FF7BinaryDataReader {
         x,
         y,
         s,
-        js: 'scrollToCoordsLinear({x:' + xDesc + ', y:' + yDesc + ', s:' + sDesc + ', speed:' + s + '});'
+        js:
+          'scrollToCoordsLinear({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', s:' +
+          sDesc +
+          ', speed:' +
+          s +
+          '});'
       }
     }
 
@@ -1747,8 +2451,12 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x6a) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const s = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const s = $r.readUByte()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       return {
@@ -1763,10 +2471,17 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x6b) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const bxb3 = $r.readUByte(); const b3 = (bxb3 & 0x0F)
-      const r = $r.readUByte(); const g = $r.readUByte(); const b = $r.readUByte()
-      const s = $r.readUByte(); const t = $r.readUByte(); const a = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const bxb3 = $r.readUByte()
+      const b3 = bxb3 & 0x0f
+      const r = $r.readUByte()
+      const g = $r.readUByte()
+      const b = $r.readUByte()
+      const s = $r.readUByte()
+      const t = $r.readUByte()
+      const a = $r.readUByte()
       const rDesc = b1 === 0 ? r : 'Bank[' + b1 + '][' + r + ']'
       const gDesc = b2 === 0 ? g : 'Bank[' + b2 + '][' + g + ']'
       const bDesc = b3 === 0 ? b : 'Bank[' + b3 + '][' + b + ']'
@@ -1781,7 +2496,20 @@ class FF7BinaryDataReader {
         s,
         t,
         a,
-        js: 'fade({r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', speed:' + s + ', type:' + t + ', adjust:' + a + '});',
+        js:
+          'fade({r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          ', speed:' +
+          s +
+          ', type:' +
+          t +
+          ', adjust:' +
+          a +
+          '});',
         pres: 'The screen fades...'
       }
     }
@@ -1795,8 +2523,10 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x6d) {
-      const i = $r.readUShort(); const s = $r.readUByte()
-      const sFuncDesc = s === 0 ? 'disableCollisionDetection' : 'enableCollisionDetection'
+      const i = $r.readUShort()
+      const s = $r.readUByte()
+      const sFuncDesc =
+        s === 0 ? 'disableCollisionDetection' : 'enableCollisionDetection'
       return {
         op: 'IDLCK',
         i,
@@ -1807,7 +2537,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x6e) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'LSTMP',
@@ -1818,7 +2549,10 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x6f) {
-      const b = $r.readUByte(); const s = $r.readUShort(); const e = $r.readUByte(); const t = $r.readUByte()
+      const b = $r.readUByte()
+      const s = $r.readUShort()
+      const e = $r.readUByte()
+      const t = $r.readUByte()
       const sDesc = b === 0 ? s : 'Bank[' + b + '][' + s + ']'
       return {
         op: 'SCRLP',
@@ -1826,13 +2560,21 @@ class FF7BinaryDataReader {
         s,
         e,
         t,
-        js: 'scrollToPartyMember({speedInFrame:' + sDesc + ', partyId:' + e + ', scrollType:' + t + '});',
+        js:
+          'scrollToPartyMember({speedInFrame:' +
+          sDesc +
+          ', partyId:' +
+          e +
+          ', scrollType:' +
+          t +
+          '});',
         pres: 'The camera focuses on <P' + e + '>.'
       }
     }
 
     if (op === 0x70) {
-      const b = $r.readUByte(); const n = $r.readUShort()
+      const b = $r.readUByte()
+      const n = $r.readUShort()
       const nDesc = b === 0 ? n : 'Bank[' + b + '][' + n + ']'
       return {
         op: 'BATTLE',
@@ -1844,28 +2586,53 @@ class FF7BinaryDataReader {
 
     if (op === 0x71) {
       const s = $r.readUByte()
-      const func = s === 0 ? 'enableRandomEncounters' : 'disableRandomEncounters'
+      const func =
+        s === 0 ? 'enableRandomEncounters' : 'disableRandomEncounters'
       return {
         op: 'BTLON',
         s,
         js: func + '();',
-        pres: s === 0 ? 'Random monsters start showing up.' : 'Random monsters stop showing up.'
+        pres:
+          s === 0
+            ? 'Random monsters start showing up.'
+            : 'Random monsters stop showing up.'
       }
     }
 
     if (op === 0x72) {
-      const bits1 = $r.readUByte(); const bits2 = $r.readUByte()
+      const bits1 = $r.readUByte()
+      const bits2 = $r.readUByte()
       const descriptions = []
-      if (bits1 & 0b10000000) { descriptions.push('DisableRewardScreens') }
-      if (bits1 & 0b01000000) { descriptions.push('ActivateArenaMode') }
-      if (bits1 & 0b00100000) { descriptions.push('DisableVictoryMusic') }
-      if (bits1 & 0b00010000) { descriptions.push('Unknown0b00010000') }
-      if (bits1 & 0b00001000) { descriptions.push('CanNotEscape') }
-      if (bits1 & 0b00000100) { descriptions.push('PreEmptiveAttack') }
-      if (bits1 & 0b00000010) { descriptions.push('TimedBattleWithoutRewardScreen') }
-      if (bits1 & 0b00000001) { descriptions.push('Unknown0b00000001') }
-      if (bits2 & 0b11111110) { descriptions.push('UnknownLSB') }
-      if (bits2 & 0b00000001) { descriptions.push('DisableGameOver') }
+      if (bits1 & 0b10000000) {
+        descriptions.push('DisableRewardScreens')
+      }
+      if (bits1 & 0b01000000) {
+        descriptions.push('ActivateArenaMode')
+      }
+      if (bits1 & 0b00100000) {
+        descriptions.push('DisableVictoryMusic')
+      }
+      if (bits1 & 0b00010000) {
+        descriptions.push('Unknown0b00010000')
+      }
+      if (bits1 & 0b00001000) {
+        descriptions.push('CanNotEscape')
+      }
+      if (bits1 & 0b00000100) {
+        descriptions.push('PreEmptiveAttack')
+      }
+      if (bits1 & 0b00000010) {
+        descriptions.push('TimedBattleWithoutRewardScreen')
+      }
+      if (bits1 & 0b00000001) {
+        descriptions.push('Unknown0b00000001')
+      }
+      if (bits2 & 0b11111110) {
+        descriptions.push('UnknownLSB')
+      }
+      if (bits2 & 0b00000001) {
+        descriptions.push('DisableGameOver')
+      }
       return {
         op: 'BTLMD',
         bits1,
@@ -1876,7 +2643,9 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x73) {
-      const b = $r.readUByte(); const p = $r.readUByte(); const d = $r.readUByte()
+      const b = $r.readUByte()
+      const p = $r.readUByte()
+      const d = $r.readUByte()
       const dDesc = b === 0 ? d : 'Bank[' + b + '][' + d + ']'
       return {
         op: 'PGTDR',
@@ -1888,7 +2657,9 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x74) {
-      const b = $r.readUByte(); const p = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const p = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'GETPC',
@@ -1900,9 +2671,17 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x75) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const p = $r.readUByte(); const x = $r.readUByte(); const y = $r.readUByte(); const z = $r.readUByte(); const i = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const p = $r.readUByte()
+      const x = $r.readUByte()
+      const y = $r.readUByte()
+      const z = $r.readUByte()
+      const i = $r.readUByte()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const zDesc = b3 === 0 ? z : 'Bank[' + b3 + '][' + z + ']'
@@ -1918,14 +2697,27 @@ class FF7BinaryDataReader {
         y,
         z,
         i,
-        js: '{ let pos = getPartyMemberPosition({partyId:' + p + '}); ' +
-          xDesc + ' = pos.x; ' + yDesc + ' = pos.y; ' + zDesc + ' = pos.z; ' + iDesc + ' = pos.triangleId; }'
+        js:
+          '{ let pos = getPartyMemberPosition({partyId:' +
+          p +
+          '}); ' +
+          xDesc +
+          ' = pos.x; ' +
+          yDesc +
+          ' = pos.y; ' +
+          zDesc +
+          ' = pos.z; ' +
+          iDesc +
+          ' = pos.triangleId; }'
       }
     }
 
     if (op === 0x76) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -1939,8 +2731,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x77) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -1954,8 +2749,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x78) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -1969,8 +2767,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x79) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -1984,7 +2785,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x7a) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'INC!',
@@ -1995,7 +2797,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x7b) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'INC2!',
@@ -2006,7 +2809,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x7c) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'DEC!',
@@ -2017,7 +2821,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x7d) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'DEC2!',
@@ -2038,7 +2843,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x7f) {
-      const b = $r.readUByte(); const s = $r.readUByte()
+      const b = $r.readUByte()
+      const s = $r.readUByte()
       const sDesc = b === 0 ? s : 'Bank[' + b + '][' + s + ']'
       return {
         op: 'RDMSD',
@@ -2049,8 +2855,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x80) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const a = $r.readUByte(); const v = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const a = $r.readUByte()
+      const v = $r.readUByte()
       const aDesc = bd === 0 ? a : 'Bank[' + bd + '][' + a + ']'
       const vDesc = bs === 0 ? v : 'Bank[' + bs + '][' + v + ']'
       return {
@@ -2064,8 +2873,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x81) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const a = $r.readUByte(); const v = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const a = $r.readUByte()
+      const v = $r.readShort()
       let aDesc = bd === 0 ? a : 'Bank[' + bd + '][' + a + ']'
       const vDesc = bs === 0 ? v : 'Bank[' + bs + '][' + v + ']'
       if (bd === 2 && a === 0) {
@@ -2083,8 +2895,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x82) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const bit = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const bit = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       return {
         op: 'BITON', // SETBIT seems better?
@@ -2097,8 +2912,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x83) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const bit = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const bit = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       return {
         op: 'BITOFF', // UNSETBIT seems better?
@@ -2111,8 +2929,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x84) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const bit = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const bit = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       return {
         op: 'BITXOR',
@@ -2125,8 +2946,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x85) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2140,8 +2964,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x86) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2155,8 +2982,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x87) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2170,8 +3000,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x88) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2185,8 +3018,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x89) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2200,8 +3036,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x8a) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2215,8 +3054,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x8b) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2230,8 +3072,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x8c) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2245,8 +3090,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x8d) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2260,8 +3108,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x8e) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2275,8 +3126,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x8f) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2290,8 +3144,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x90) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2305,8 +3162,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x91) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2320,8 +3180,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x92) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2335,8 +3198,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x93) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2350,8 +3216,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x94) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2365,7 +3234,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x95) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'INC',
@@ -2376,7 +3246,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x96) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'INC2',
@@ -2387,7 +3258,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x97) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'DEC',
@@ -2398,7 +3270,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x98) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'DEC2',
@@ -2409,7 +3282,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x99) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'RANDOM',
@@ -2420,8 +3294,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x9a) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUByte()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2435,8 +3312,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x9b) {
-      const bdbs = $r.readUByte(); const bd = (bdbs & 0xF0) >> 4; const bs = (bdbs & 0x0F)
-      const d = $r.readUByte(); const s = $r.readUShort()
+      const bdbs = $r.readUByte()
+      const bd = (bdbs & 0xf0) >> 4
+      const bs = bdbs & 0x0f
+      const d = $r.readUByte()
+      const s = $r.readUShort()
       const dDesc = bd === 0 ? d : 'Bank[' + bd + '][' + d + ']'
       const sDesc = bs === 0 ? s : 'Bank[' + bs + '][' + s + ']'
       return {
@@ -2450,9 +3330,14 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x9c) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const bxb3 = $r.readUByte(); const b3 = (bxb3 & 0x0F)
-      const d = $r.readUByte(); const l = $r.readUByte(); const h = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const bxb3 = $r.readUByte()
+      const b3 = bxb3 & 0x0f
+      const d = $r.readUByte()
+      const l = $r.readUByte()
+      const h = $r.readUByte()
       const dDesc = b1 === 0 ? d : 'Bank[' + b1 + '][' + d + ']'
       const lDesc = b2 === 0 ? l : 'Bank[' + b2 + '][' + l + ']'
       const hDesc = b3 === 0 ? h : 'Bank[' + b3 + '][' + h + ']'
@@ -2469,7 +3354,12 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0x9d) {
-      const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte(); const p5 = $r.readUByte(); const p6 = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUByte()
+      const p3 = $r.readUByte()
+      const p4 = $r.readUByte()
+      const p5 = $r.readUByte()
+      const p6 = $r.readUByte()
       return {
         op: 'SETX',
         p1,
@@ -2478,12 +3368,30 @@ class FF7BinaryDataReader {
         p4,
         p5,
         p6,
-        js: 'setX(' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ', ' + p5 + ', ' + p6 + ');'
+        js:
+          'setX(' +
+          p1 +
+          ', ' +
+          p2 +
+          ', ' +
+          p3 +
+          ', ' +
+          p4 +
+          ', ' +
+          p5 +
+          ', ' +
+          p6 +
+          ');'
       }
     }
 
     if (op === 0x9e) {
-      const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte(); const p5 = $r.readUByte(); const p6 = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUByte()
+      const p3 = $r.readUByte()
+      const p4 = $r.readUByte()
+      const p5 = $r.readUByte()
+      const p6 = $r.readUByte()
       return {
         op: 'GETX',
         p1,
@@ -2492,15 +3400,38 @@ class FF7BinaryDataReader {
         p4,
         p5,
         p6,
-        js: 'getX(' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ', ' + p5 + ', ' + p6 + ');'
+        js:
+          'getX(' +
+          p1 +
+          ', ' +
+          p2 +
+          ', ' +
+          p3 +
+          ', ' +
+          p4 +
+          ', ' +
+          p5 +
+          ', ' +
+          p6 +
+          ');'
       }
     }
 
     if (op === 0x9f) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const b5b6 = $r.readUByte(); const b5 = (b5b6 & 0xF0) >> 4; const b6 = (b5b6 & 0x0F)
-      const i = $r.readUByte(); const s = $r.readUShort(); const e = $r.readUShort(); const v = $r.readUByte(); const r = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const b5b6 = $r.readUByte()
+      const b5 = (b5b6 & 0xf0) >> 4
+      const b6 = b5b6 & 0x0f
+      const i = $r.readUByte()
+      const s = $r.readUShort()
+      const e = $r.readUShort()
+      const v = $r.readUByte()
+      const r = $r.readUByte()
       const sDesc = b2 === 0 ? s : 'Bank[' + b2 + '][' + s + ']'
       const eDesc = b3 === 0 ? e : 'Bank[' + b3 + '][' + e + ']'
       const vDesc = b4 === 0 ? v : 'Bank[' + b4 + '][' + v + ']'
@@ -2517,7 +3448,19 @@ class FF7BinaryDataReader {
         e,
         v,
         r,
-        js: rDesc + ' = searchAndGetIndexOfValueInBank({bank: Bank[' + b1 + '], offset:' + i + ', startOffset:' + sDesc + ', endOffset:' + eDesc + ', value:' + vDesc + '});'
+        js:
+          rDesc +
+          ' = searchAndGetIndexOfValueInBank({bank: Bank[' +
+          b1 +
+          '], offset:' +
+          i +
+          ', startOffset:' +
+          sDesc +
+          ', endOffset:' +
+          eDesc +
+          ', value:' +
+          vDesc +
+          '});'
       }
     }
 
@@ -2541,7 +3484,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xa2) {
-      const a = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'DFANM',
         a,
@@ -2551,7 +3495,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xa3) {
-      const a = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'ANIME1',
         a,
@@ -2571,9 +3516,16 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xa5) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const z = $r.readShort(); const i = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const i = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const zDesc = b3 === 0 ? z : 'Bank[' + b3 + '][' + z + ']'
@@ -2588,14 +3540,29 @@ class FF7BinaryDataReader {
         y,
         z,
         i,
-        js: 'placeObject({x:' + xDesc + ', y:' + yDesc + ', z:' + zDesc + ', walkmeshTriangle:' + iDesc + '});'
+        js:
+          'placeObject({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', z:' +
+          zDesc +
+          ', walkmeshTriangle:' +
+          iDesc +
+          '});'
       }
     }
 
     if (op === 0xa6) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const i = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const i = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const iDesc = b3 === 0 ? i : 'Bank[' + b3 + '][' + i + ']'
@@ -2607,14 +3574,27 @@ class FF7BinaryDataReader {
         x,
         y,
         i,
-        js: 'placeObject({x:' + xDesc + ', y:' + yDesc + ', walkmeshTriangle:' + iDesc + '});'
+        js:
+          'placeObject({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', walkmeshTriangle:' +
+          iDesc +
+          '});'
       }
     }
 
     if (op === 0xa7) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const z = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const zDesc = b3 === 0 ? z : 'Bank[' + b3 + '][' + z + ']'
@@ -2631,8 +3611,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xa8) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       return {
@@ -2646,8 +3629,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xa9) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       return {
@@ -2670,13 +3656,22 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xab) {
-      const g = $r.readUByte(); const d = $r.readUByte(); const s = $r.readUByte()
+      const g = $r.readUByte()
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'TURA',
         g,
         d,
         s,
-        js: 'turnToEntity({groupId:' + g + ', direction:' + d + ', speed:' + s + '});'
+        js:
+          'turnToEntity({groupId:' +
+          g +
+          ', direction:' +
+          d +
+          ', speed:' +
+          s +
+          '});'
       }
     }
 
@@ -2688,8 +3683,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xad) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       return {
@@ -2703,7 +3701,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xae) {
-      const a = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'ANIME1',
         a,
@@ -2713,7 +3712,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xaf) {
-      const a = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'ANIM!1',
         a,
@@ -2723,31 +3723,56 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xb0) {
-      const a = $r.readUByte(); const f = $r.readUByte(); const l = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const f = $r.readUByte()
+      const l = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'CANIM1',
         a,
         f,
         l,
         s,
-        js: 'playPartialAnimation({animation:' + a + ', firstFrame:' + f + ', lastFrame:' + l + ', slowness:' + s + '});'
+        js:
+          'playPartialAnimation({animation:' +
+          a +
+          ', firstFrame:' +
+          f +
+          ', lastFrame:' +
+          l +
+          ', slowness:' +
+          s +
+          '});'
       }
     }
 
     if (op === 0xb1) {
-      const a = $r.readUByte(); const f = $r.readUByte(); const l = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const f = $r.readUByte()
+      const l = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'CANM!1',
         a,
         f,
         l,
         s,
-        js: 'playPartialAnimation({animation:' + a + ', firstFrame:' + f + ', lastFrame:' + l + ', slowness:' + s + '});'
+        js:
+          'playPartialAnimation({animation:' +
+          a +
+          ', firstFrame:' +
+          f +
+          ', lastFrame:' +
+          l +
+          ', slowness:' +
+          s +
+          '});'
       }
     }
 
     if (op === 0xb2) {
-      const b = $r.readUByte(); const s = $r.readUShort()
+      const b = $r.readUByte()
+      const s = $r.readUShort()
       const sDesc = b === 0 ? s : 'Bank[' + b + '][' + s + ']'
       return {
         op: 'MSPED',
@@ -2758,7 +3783,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xb3) {
-      const b = $r.readUByte(); const d = $r.readUByte()
+      const b = $r.readUByte()
+      const d = $r.readUByte()
       const dDesc = b === 0 ? d : 'Bank[' + b + '][' + d + ']'
       return {
         op: 'DIR',
@@ -2769,7 +3795,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xb4) {
-      const b = $r.readUByte(); const r = $r.readUByte(); const d = $r.readUByte(); const s = $r.readUByte(); const t = $r.readUByte()
+      const b = $r.readUByte()
+      const r = $r.readUByte()
+      const d = $r.readUByte()
+      const s = $r.readUByte()
+      const t = $r.readUByte()
       const rDesc = b === 0 ? r : 'Bank[' + b + '][' + r + ']'
       return {
         op: 'TURNGEN',
@@ -2778,12 +3808,25 @@ class FF7BinaryDataReader {
         d,
         s,
         t,
-        js: 'rotateModel({rotation:' + rDesc + ', direction:' + d + ', steps:' + s + ', stepType:' + t + '});'
+        js:
+          'rotateModel({rotation:' +
+          rDesc +
+          ', direction:' +
+          d +
+          ', steps:' +
+          s +
+          ', stepType:' +
+          t +
+          '});'
       }
     }
 
     if (op === 0xb5) {
-      const b = $r.readUByte(); const r = $r.readUByte(); const d = $r.readUByte(); const s = $r.readUByte(); const t = $r.readUByte()
+      const b = $r.readUByte()
+      const r = $r.readUByte()
+      const d = $r.readUByte()
+      const s = $r.readUByte()
+      const t = $r.readUByte()
       const rDesc = b === 0 ? r : 'Bank[' + b + '][' + r + ']'
       return {
         op: 'TURN',
@@ -2792,7 +3835,16 @@ class FF7BinaryDataReader {
         d,
         s,
         t,
-        js: 'rotateModelDeprecatedSync({rotation:' + rDesc + ', direction:' + d + ', steps:' + s + ', stepType:' + t + '});'
+        js:
+          'rotateModelDeprecatedSync({rotation:' +
+          rDesc +
+          ', direction:' +
+          d +
+          ', steps:' +
+          s +
+          ', stepType:' +
+          t +
+          '});'
       }
     }
 
@@ -2806,7 +3858,9 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xb7) {
-      const b = $r.readUByte(); const e = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const e = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'GETDIR',
@@ -2818,8 +3872,12 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xb8) {
-      const bxby = $r.readUByte(); const bx = (bxby & 0xF0) >> 4; const by = (bxby & 0x0F)
-      const e = $r.readUByte(); const x = $r.readUByte(); const y = $r.readUByte()
+      const bxby = $r.readUByte()
+      const bx = (bxby & 0xf0) >> 4
+      const by = bxby & 0x0f
+      const e = $r.readUByte()
+      const x = $r.readUByte()
+      const y = $r.readUByte()
       const xDesc = bx === 0 ? x : 'Bank[' + bx + '][' + x + ']'
       const yDesc = by === 0 ? y : 'Bank[' + by + '][' + y + ']'
       return {
@@ -2829,57 +3887,105 @@ class FF7BinaryDataReader {
         e,
         x,
         y,
-        js: xDesc + ' = getEntityX({entityIndex:' + e + '}); ' + yDesc + ' = getEntityY({entityIndex:' + e + '})'
+        js:
+          xDesc +
+          ' = getEntityX({entityIndex:' +
+          e +
+          '}); ' +
+          yDesc +
+          ' = getEntityY({entityIndex:' +
+          e +
+          '})'
       }
     }
 
     if (op === 0xb9) {
-      const b = $r.readUByte(); const e = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const e = $r.readUByte()
+      const a = $r.readUByte()
       return {
         op: 'GETAI',
         b,
         e,
         a,
-        js: 'Bank[' + b + '][' + a + '] = getTriangleIdUnderEntity({entity:' + e + '});'
+        js:
+          'Bank[' +
+          b +
+          '][' +
+          a +
+          '] = getTriangleIdUnderEntity({entity:' +
+          e +
+          '});'
       }
     }
 
     if (op === 0xba) {
-      const a = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'ANIM!2',
         a,
         s,
-        js: 'playAnimationHoldLastFrameSync({animation:' + a + ', slowness:' + s + '});'
+        js:
+          'playAnimationHoldLastFrameSync({animation:' +
+          a +
+          ', slowness:' +
+          s +
+          '});'
       }
     }
 
     if (op === 0xbb) {
-      const a = $r.readUByte(); const f = $r.readUByte(); const l = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const f = $r.readUByte()
+      const l = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'CANIM2',
         a,
         f,
         l,
         s,
-        js: 'playPartialAnimation({animation:' + a + ', firstFrame:' + f + ', lastFrame:' + l + ', slowness:' + s + '});'
+        js:
+          'playPartialAnimation({animation:' +
+          a +
+          ', firstFrame:' +
+          f +
+          ', lastFrame:' +
+          l +
+          ', slowness:' +
+          s +
+          '});'
       }
     }
 
     if (op === 0xbc) {
-      const a = $r.readUByte(); const f = $r.readUByte(); const l = $r.readUByte(); const s = $r.readUByte()
+      const a = $r.readUByte()
+      const f = $r.readUByte()
+      const l = $r.readUByte()
+      const s = $r.readUByte()
       return {
         op: 'CANM!2',
         a,
         f,
         l,
         s,
-        js: 'playPartialAnimation({animation:' + a + ', firstFrame:' + f + ', lastFrame:' + l + ', slowness:' + s + '});'
+        js:
+          'playPartialAnimation({animation:' +
+          a +
+          ', firstFrame:' +
+          f +
+          ', lastFrame:' +
+          l +
+          ', slowness:' +
+          s +
+          '});'
       }
     }
 
     if (op === 0xbd) {
-      const b = $r.readUByte(); const s = $r.readUShort()
+      const b = $r.readUByte()
+      const s = $r.readUShort()
       const sDesc = b === 0 ? s : 'Bank[' + b + '][' + s + ']'
       return {
         op: 'ASPED',
@@ -2901,9 +4007,16 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xc0) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const i = $r.readShort(); const h = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const i = $r.readShort()
+      const h = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const iDesc = b3 === 0 ? i : 'Bank[' + b3 + '][' + i + ']'
@@ -2918,14 +4031,31 @@ class FF7BinaryDataReader {
         y,
         i,
         h,
-        js: 'makeObjectJump({x:' + xDesc + ', y:' + yDesc + ', triangleId:' + iDesc + ', height:' + hDesc + '});'
+        js:
+          'makeObjectJump({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', triangleId:' +
+          iDesc +
+          ', height:' +
+          hDesc +
+          '});'
       }
     }
 
     if (op === 0xc1) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const a = $r.readUByte(); const x = $r.readUByte(); const y = $r.readUByte(); const z = $r.readUByte(); const i = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const a = $r.readUByte()
+      const x = $r.readUByte()
+      const y = $r.readUByte()
+      const z = $r.readUByte()
+      const i = $r.readUByte()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const zDesc = b3 === 0 ? z : 'Bank[' + b3 + '][' + z + ']'
@@ -2941,17 +4071,37 @@ class FF7BinaryDataReader {
         y,
         z,
         i,
-        js: '{ let pos = getEntityPosition({entityId:' + a + '}); ' +
-          xDesc + ' = pos.x; ' + yDesc + ' = pos.y; ' + zDesc + ' = pos.z; ' + iDesc + ' = pos.triangleId; }'
+        js:
+          '{ let pos = getEntityPosition({entityId:' +
+          a +
+          '}); ' +
+          xDesc +
+          ' = pos.x; ' +
+          yDesc +
+          ' = pos.y; ' +
+          zDesc +
+          ' = pos.z; ' +
+          iDesc +
+          ' = pos.triangleId; }'
       }
     }
 
     if (op === 0xc2) {
       const advanceKeys = ['Key.Down', 'Key.Up', 'Key.Right', 'Key.Left']
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const x = $r.readShort(); const y = $r.readShort(); const z = $r.readShort(); const i = $r.readUShort()
-      const k = $r.readUByte(); const a = $r.readUByte(); const d = $r.readUByte(); const s = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const i = $r.readUShort()
+      const k = $r.readUByte()
+      const a = $r.readUByte()
+      const d = $r.readUByte()
+      const s = $r.readUByte()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const zDesc = b3 === 0 ? z : 'Bank[' + b3 + '][' + z + ']'
@@ -2971,15 +4121,39 @@ class FF7BinaryDataReader {
         a,
         d,
         s,
-        js: 'climbLadder({x:' + xDesc + ', y:' + yDesc + ', z:' + zDesc + ', triangleId:' + iDesc +
-          ', advanceKey:' + kDesc + ', animationId:' + a + ', facingDirection:' + d + ', speed:' + s + '});'
+        js:
+          'climbLadder({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', z:' +
+          zDesc +
+          ', triangleId:' +
+          iDesc +
+          ', advanceKey:' +
+          kDesc +
+          ', animationId:' +
+          a +
+          ', facingDirection:' +
+          d +
+          ', speed:' +
+          s +
+          '});'
       }
     }
 
     if (op === 0xc3) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const t = $r.readUByte(); const x = $r.readShort(); const y = $r.readShort(); const z = $r.readShort(); const s = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const t = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const s = $r.readUShort()
       const xDesc = b1 === 0 ? x : 'Bank[' + b1 + '][' + x + ']'
       const yDesc = b2 === 0 ? y : 'Bank[' + b2 + '][' + y + ']'
       const zDesc = b3 === 0 ? z : 'Bank[' + b3 + '][' + z + ']'
@@ -2995,7 +4169,16 @@ class FF7BinaryDataReader {
         z,
         s,
         t,
-        js: 'transposeObjectDisplayOnly({x:' + xDesc + ', y:' + yDesc + ', z:' + zDesc + ', speed:' + sDesc + '});'
+        js:
+          'transposeObjectDisplayOnly({x:' +
+          xDesc +
+          ', y:' +
+          yDesc +
+          ', z:' +
+          zDesc +
+          ', speed:' +
+          sDesc +
+          '});'
       }
     }
 
@@ -3007,7 +4190,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xc5) {
-      const b = $r.readUByte(); const r = $r.readUByte()
+      const b = $r.readUByte()
+      const r = $r.readUByte()
       const rDesc = b === 0 ? r : 'Bank[' + b + '][' + r + ']'
       return {
         op: 'TALKR',
@@ -3018,7 +4202,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xc6) {
-      const b = $r.readUByte(); const r = $r.readUByte()
+      const b = $r.readUByte()
+      const r = $r.readUByte()
       const rDesc = b === 0 ? r : 'Bank[' + b + '][' + r + ']'
       return {
         op: 'SLIDR',
@@ -3059,7 +4244,9 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xca) {
-      const c1 = $r.readUByte(); const c2 = $r.readUByte(); const c3 = $r.readUByte()
+      const c1 = $r.readUByte()
+      const c2 = $r.readUByte()
+      const c3 = $r.readUByte()
       const c1Desc = this.getCharacterDesc(c1)
       const c2Desc = this.getCharacterDesc(c2)
       const c3Desc = this.getCharacterDesc(c3)
@@ -3073,34 +4260,48 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xcb) {
-      const c = $r.readUByte(); const a = $r.readUByte()
+      const c = $r.readUByte()
+      const a = $r.readUByte()
       const cDesc = this.getCharacterDesc(c)
       const baseOffset = this.offset - 1 - this.startOffset
       return {
         op: 'IFPRTYQ',
         c,
         a,
-        js: 'if (isCharacterInParty(' + cDesc + ') (else goto ' + (baseOffset + a) + ');',
+        js:
+          'if (isCharacterInParty(' +
+          cDesc +
+          ') (else goto ' +
+          (baseOffset + a) +
+          ');',
         goto: baseOffset + a
       }
     }
 
     if (op === 0xcc) {
-      const c = $r.readUByte(); const a = $r.readUByte()
+      const c = $r.readUByte()
+      const a = $r.readUByte()
       const cDesc = this.getCharacterDesc(c)
       const baseOffset = this.offset - 1 - this.startOffset
       return {
         op: 'IFMEMBQ',
         c,
         a,
-        js: 'if (isCharacterAvailable(' + cDesc + ') (else goto ' + (baseOffset + a) + ');',
+        js:
+          'if (isCharacterAvailable(' +
+          cDesc +
+          ') (else goto ' +
+          (baseOffset + a) +
+          ');',
         goto: baseOffset + a
       }
     }
 
     if (op === 0xcd) {
-      const s = $r.readUByte(); const c = $r.readUByte()
-      const sFuncDesc = s === 0 ? 'makeCharacterUnavailable' : 'makeCharacterAvailable'
+      const s = $r.readUByte()
+      const c = $r.readUByte()
+      const sFuncDesc =
+        s === 0 ? 'makeCharacterUnavailable' : 'makeCharacterAvailable'
       const cDesc = this.getCharacterDesc(c)
       return {
         op: 'MMBud',
@@ -3131,8 +4332,12 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xd0) {
-      const x1 = $r.readShort(); const y1 = $r.readShort(); const z1 = $r.readShort()
-      const x2 = $r.readShort(); const y2 = $r.readShort(); const z2 = $r.readShort()
+      const x1 = $r.readShort()
+      const y1 = $r.readShort()
+      const z1 = $r.readShort()
+      const x2 = $r.readShort()
+      const y2 = $r.readShort()
+      const z2 = $r.readShort()
       return {
         op: 'LINE',
         x1,
@@ -3141,13 +4346,27 @@ class FF7BinaryDataReader {
         x2,
         y2,
         z2,
-        js: 'createLineTrigger({x1:' + x1 + ', y1:' + y1 + ', z1:' + z1 + ', x2:' + x2 + ', y2:' + y2 + ', z2:' + z2 + '});'
+        js:
+          'createLineTrigger({x1:' +
+          x1 +
+          ', y1:' +
+          y1 +
+          ', z1:' +
+          z1 +
+          ', x2:' +
+          x2 +
+          ', y2:' +
+          y2 +
+          ', z2:' +
+          z2 +
+          '});'
       }
     }
 
     if (op === 0xd1) {
       const s = $r.readUByte()
-      const funcDesc = s === 0 ? 'disableThisLineTrigger' : 'enableThisLineTrigger'
+      const funcDesc =
+        s === 0 ? 'disableThisLineTrigger' : 'enableThisLineTrigger'
       return {
         op: 'LINON',
         s,
@@ -3157,7 +4376,8 @@ class FF7BinaryDataReader {
 
     if (op === 0xd2) {
       const s = $r.readUByte()
-      const funcDesc = s === 0 ? 'enableAllGatewayTriggers' : 'disableAllGatewayTriggers'
+      const funcDesc =
+        s === 0 ? 'enableAllGatewayTriggers' : 'disableAllGatewayTriggers'
       return {
         op: 'MPJPO',
         s,
@@ -3166,11 +4386,21 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xd3) {
-      const bx1by1 = $r.readUByte(); const bx1 = (bx1by1 & 0xF0) >> 4; const by1 = (bx1by1 & 0x0F)
-      const bz1bx2 = $r.readUByte(); const bz1 = (bz1bx2 & 0xF0) >> 4; const bx2 = (bz1bx2 & 0x0F)
-      const by2bz2 = $r.readUByte(); const by2 = (by2bz2 & 0xF0) >> 4; const bz2 = (by2bz2 & 0x0F)
-      const x1 = $r.readShort(); const y1 = $r.readShort(); const z1 = $r.readShort()
-      const x2 = $r.readShort(); const y2 = $r.readShort(); const z2 = $r.readShort()
+      const bx1by1 = $r.readUByte()
+      const bx1 = (bx1by1 & 0xf0) >> 4
+      const by1 = bx1by1 & 0x0f
+      const bz1bx2 = $r.readUByte()
+      const bz1 = (bz1bx2 & 0xf0) >> 4
+      const bx2 = bz1bx2 & 0x0f
+      const by2bz2 = $r.readUByte()
+      const by2 = (by2bz2 & 0xf0) >> 4
+      const bz2 = by2bz2 & 0x0f
+      const x1 = $r.readShort()
+      const y1 = $r.readShort()
+      const z1 = $r.readShort()
+      const x2 = $r.readShort()
+      const y2 = $r.readShort()
+      const z2 = $r.readShort()
       const x1Desc = bx1 === 0 ? x1 : 'Bank[' + bx1 + '][' + x1 + ']'
       const y1Desc = by1 === 0 ? y1 : 'Bank[' + by1 + '][' + y1 + ']'
       const z1Desc = bz1 === 0 ? z1 : 'Bank[' + bz1 + '][' + z1 + ']'
@@ -3191,14 +4421,34 @@ class FF7BinaryDataReader {
         x2,
         y2,
         z2,
-        js: 'setLine({v1: {x:' + x1Desc + ', y:' + y1Desc + ', z:' + z1Desc + '}, v2: {x:' + x2Desc + ', y:' + y2Desc + ', z:' + z2Desc + '}});'
+        js:
+          'setLine({v1: {x:' +
+          x1Desc +
+          ', y:' +
+          y1Desc +
+          ', z:' +
+          z1Desc +
+          '}, v2: {x:' +
+          x2Desc +
+          ', y:' +
+          y2Desc +
+          ', z:' +
+          z2Desc +
+          '}});'
       }
     }
 
     if (op === 0xd4) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const d = $r.readUShort(); const m = $r.readUShort(); const a = $r.readUShort(); const s = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const d = $r.readUShort()
+      const m = $r.readUShort()
+      const a = $r.readUShort()
+      const s = $r.readUByte()
       const dDesc = b1 === 0 ? d : 'Bank[' + b1 + '][' + d + ']'
       const mDesc = b2 === 0 ? m : 'Bank[' + b2 + '][' + m + ']'
       const aDesc = b3 === 0 ? a : 'Bank[' + b3 + '][' + a + ']'
@@ -3218,9 +4468,16 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xd5) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const d = $r.readUShort(); const m = $r.readUShort(); const a = $r.readUShort(); const s = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const d = $r.readUShort()
+      const m = $r.readUShort()
+      const a = $r.readUShort()
+      const s = $r.readUByte()
       const dDesc = b1 === 0 ? d : 'Bank[' + b1 + '][' + d + ']'
       const mDesc = b2 === 0 ? m : 'Bank[' + b2 + '][' + m + ']'
       const aDesc = b3 === 0 ? a : 'Bank[' + b3 + '][' + a + ']'
@@ -3240,7 +4497,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xd6) {
-      const b = $r.readUByte(); const r = $r.readUShort()
+      const b = $r.readUByte()
+      const r = $r.readUShort()
       const rDesc = b === 0 ? r : 'Bank[' + b + '][' + r + ']'
       return {
         op: 'TLKR2',
@@ -3251,7 +4509,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xd7) {
-      const b = $r.readUByte(); const r = $r.readUShort()
+      const b = $r.readUByte()
+      const r = $r.readUShort()
       const rDesc = b === 0 ? r : 'Bank[' + b + '][' + r + ']'
       return {
         op: 'SLDR2',
@@ -3278,11 +4537,20 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xda) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0x0F)
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const bxb5 = $r.readUByte()
+      const b5 = bxb5 & 0x0f
       const akaoOp = $r.readUByte()
-      const p1 = $r.readUShort(); const p2 = $r.readUShort(); const p3 = $r.readUShort(); const p4 = $r.readUShort(); const p5 = $r.readUShort()
+      const p1 = $r.readUShort()
+      const p2 = $r.readUShort()
+      const p3 = $r.readUShort()
+      const p4 = $r.readUShort()
+      const p5 = $r.readUShort()
       const p1Desc = b1 === 0 ? p1 : 'Bank[' + b1 + '][' + p1 + ']'
       const p2Desc = b2 === 0 ? p2 : 'Bank[' + b2 + '][' + p2 + ']'
       const p3Desc = b3 === 0 ? p3 : 'Bank[' + b3 + '][' + p3 + ']'
@@ -3301,7 +4569,20 @@ class FF7BinaryDataReader {
         p3,
         p4,
         p5,
-        js: 'musicOp_da_' + stringUtil.toHex2(akaoOp) + '({p1:' + p1Desc + ', p2:' + p2Desc + ', p3:' + p3Desc + ', p4:' + p4Desc + ', p5:' + p5Desc + '});',
+        js:
+          'musicOp_da_' +
+          stringUtil.toHex2(akaoOp) +
+          '({p1:' +
+          p1Desc +
+          ', p2:' +
+          p2Desc +
+          ', p3:' +
+          p3Desc +
+          ', p4:' +
+          p4Desc +
+          ', p5:' +
+          p5Desc +
+          '});',
         pres: 'Musical event...'
       }
     }
@@ -3319,14 +4600,23 @@ class FF7BinaryDataReader {
 
     if (op === 0xdc) {
       const actionNames = ['Action.Stand', 'Action.Walk', 'Action.Run']
-      const a = $r.readUByte(); const s = $r.readUByte(); const i = $r.readUByte()
+      const a = $r.readUByte()
+      const s = $r.readUByte()
+      const i = $r.readUByte()
       const iDesc = actionNames[i]
       return {
         op: 'CCANM',
         a,
         s,
         i,
-        js: 'setAnimationId({animationId:' + a + ', speed:' + s + ', actionId:' + iDesc + '});',
+        js:
+          'setAnimationId({animationId:' +
+          a +
+          ', speed:' +
+          s +
+          ', actionId:' +
+          iDesc +
+          '});',
         pres: '<This> <Animation>.'
       }
     }
@@ -3349,10 +4639,21 @@ class FF7BinaryDataReader {
 
     // quint8 banks[3], posSrc, posDst, start, b, g, r, colorCount;
     if (op === 0xdf) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0x0F)
-      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const bxb5 = $r.readUByte()
+      const b5 = bxb5 & 0x0f
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const start = $r.readUByte()
+      const b = $r.readUByte()
+      const g = $r.readUByte()
+      const r = $r.readUByte()
+      const size = $r.readUByte()
       const startDesc = b1 === 0 ? start : 'Bank[' + b1 + '][' + start + ']'
       const bDesc = b2 === 0 ? b : 'Bank[' + b2 + '][' + b + ']'
       const gDesc = b3 === 0 ? g : 'Bank[' + b3 + '][' + g + ']'
@@ -3372,15 +4673,32 @@ class FF7BinaryDataReader {
         g,
         r,
         size,
-        js: 'multiplyPaletteColors({sourcePaletteId:' + s + ', targetPaletteId:' + d + ', startColor:' + startDesc +
-          ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', size:' + sizeDesc + '});',
+        js:
+          'multiplyPaletteColors({sourcePaletteId:' +
+          s +
+          ', targetPaletteId:' +
+          d +
+          ', startColor:' +
+          startDesc +
+          ', r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          ', size:' +
+          sizeDesc +
+          '});',
         pres: 'The colors change.'
       }
     }
 
     if (op === 0xe0) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUByte(); const l = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUByte()
+      const l = $r.readUByte()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const lDesc = b2 === 0 ? l : 'Bank[' + b2 + '][' + l + ']'
       return {
@@ -3395,8 +4713,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xe1) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const a = $r.readUByte(); const l = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const a = $r.readUByte()
+      const l = $r.readUByte()
       const aDesc = b1 === 0 ? a : 'Bank[' + b1 + '][' + a + ']'
       const lDesc = b2 === 0 ? l : 'Bank[' + b2 + '][' + l + ']'
       return {
@@ -3411,7 +4732,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xe2) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'BGROL',
@@ -3423,7 +4745,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xe3) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'BGROL2',
@@ -3435,7 +4758,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xe4) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       const aDesc = b === 0 ? a : 'Bank[' + b + '][' + a + ']'
       return {
         op: 'BGCLR',
@@ -3446,8 +4770,12 @@ class FF7BinaryDataReader {
       }
     }
     if (op === 0xe5) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const s = $r.readUByte(); const d = $r.readUByte(); const size = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       return {
@@ -3457,12 +4785,23 @@ class FF7BinaryDataReader {
         s,
         d,
         size,
-        js: 'storePalette({sourcePaletteId:' + sDesc + ', destinationTempPaletteId:' + dDesc + ', size:' + size + '});'
+        js:
+          'storePalette({sourcePaletteId:' +
+          sDesc +
+          ', destinationTempPaletteId:' +
+          dDesc +
+          ', size:' +
+          size +
+          '});'
       }
     }
     if (op === 0xe6) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const s = $r.readUByte(); const d = $r.readUByte(); const size = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       return {
@@ -3472,13 +4811,24 @@ class FF7BinaryDataReader {
         s,
         d,
         size,
-        js: 'loadPalette({sourceTempPaletteId:' + sDesc + ', destinationPaletteId:' + dDesc + ', size:' + size + '});'
+        js:
+          'loadPalette({sourceTempPaletteId:' +
+          sDesc +
+          ', destinationPaletteId:' +
+          dDesc +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
     if (op === 0xe7) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const s = $r.readUByte(); const d = $r.readUByte(); const size = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       return {
@@ -3488,15 +4838,29 @@ class FF7BinaryDataReader {
         s,
         d,
         size,
-        js: 'copyPalette({sourceArrayId:' + sDesc + ', targetArrayId:' + dDesc + ', size:' + size + '});'
+        js:
+          'copyPalette({sourceArrayId:' +
+          sDesc +
+          ', targetArrayId:' +
+          dDesc +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
     // quint8 banks[2], posSrc, posDst, start, end;
     if (op === 0xe8) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const posSrc = $r.readUByte(); const posDst = $r.readUByte(); const start = $r.readUByte(); const end = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const posSrc = $r.readUByte()
+      const posDst = $r.readUByte()
+      const start = $r.readUByte()
+      const end = $r.readUByte()
       return {
         op: 'RTPAL',
         b1,
@@ -3507,15 +4871,34 @@ class FF7BinaryDataReader {
         posDst,
         start,
         end,
-        js: 'copyPalettePartial({posSrc:' + posSrc + ', posDst:' + posDst + ', start:' + start + ', end:' + end + '});'
+        js:
+          'copyPalettePartial({posSrc:' +
+          posSrc +
+          ', posDst:' +
+          posDst +
+          ', start:' +
+          start +
+          ', end:' +
+          end +
+          '});'
       }
     }
 
     if (op === 0xe9) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0) >> 4
-      const s = $r.readUByte(); const d = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const bxb5 = $r.readUByte()
+      const b5 = (bxb5 & 0xf0) >> 4
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const b = $r.readUByte()
+      const g = $r.readUByte()
+      const r = $r.readUByte()
+      const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       const bDesc = b3 === 0 ? b : 'Bank[' + b3 + '][' + b + ']'
@@ -3534,16 +4917,38 @@ class FF7BinaryDataReader {
         g,
         r,
         size,
-        js: 'addPaletteColors({sourceTempPaletteId:' + sDesc + ', destinationTempPaletteId:' + dDesc +
-          ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', size:' + size + '});'
+        js:
+          'addPaletteColors({sourceTempPaletteId:' +
+          sDesc +
+          ', destinationTempPaletteId:' +
+          dDesc +
+          ', r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
     if (op === 0xea) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0) >> 4
-      const s = $r.readUByte(); const d = $r.readUByte(); const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte(); const size = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const bxb5 = $r.readUByte()
+      const b5 = (bxb5 & 0xf0) >> 4
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const b = $r.readUByte()
+      const g = $r.readUByte()
+      const r = $r.readUByte()
+      const size = $r.readUByte()
       const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       const bDesc = b3 === 0 ? b : 'Bank[' + b3 + '][' + b + ']'
@@ -3562,37 +4967,79 @@ class FF7BinaryDataReader {
         g,
         r,
         size,
-        js: 'multiplyPaletteColors2({sourcePaletteId:' + s + ', destinationTempPaletteId:' + d +
-          ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', size:' + size + '});'
+        js:
+          'multiplyPaletteColors2({sourcePaletteId:' +
+          s +
+          ', destinationTempPaletteId:' +
+          d +
+          ', r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
     if (op === 0xeb) {
-      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte(); const size = $r.readUByte()
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const start = $r.readUByte()
+      const size = $r.readUByte()
       return {
         op: 'STPLS',
         s,
         d,
         start,
         size,
-        js: 'storePaletteOffset({paletteId:' + s + ', tempPaletteId:' + d + ', start:' + start + ', size:' + size + '});'
+        js:
+          'storePaletteOffset({paletteId:' +
+          s +
+          ', tempPaletteId:' +
+          d +
+          ', start:' +
+          start +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
     if (op === 0xec) {
-      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte(); const size = $r.readUByte()
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const start = $r.readUByte()
+      const size = $r.readUByte()
       return {
         op: 'LDPLS',
         s,
         d,
         start,
         size,
-        js: 'loadPaletteOffset({sourceTempPaletteId:' + s + ', destinationPaletteId:' + d + ', start:' + start + ', size:' + size + '});'
+        js:
+          'loadPaletteOffset({sourceTempPaletteId:' +
+          s +
+          ', destinationPaletteId:' +
+          d +
+          ', start:' +
+          start +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
     if (op === 0xed) {
-      const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte(); const p5 = $r.readUByte(); const p6 = $r.readUByte(); const p7 = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUByte()
+      const p3 = $r.readUByte()
+      const p4 = $r.readUByte()
+      const p5 = $r.readUByte()
+      const p6 = $r.readUByte()
+      const p7 = $r.readUByte()
       return {
         op: 'CPPAL2',
         p1,
@@ -3602,12 +5049,33 @@ class FF7BinaryDataReader {
         p5,
         p6,
         p7,
-        js: 'op0xed_CPPAL2(' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ', ' + p5 + ', ' + p6 + ', ' + p7 + ');'
+        js:
+          'op0xed_CPPAL2(' +
+          p1 +
+          ', ' +
+          p2 +
+          ', ' +
+          p3 +
+          ', ' +
+          p4 +
+          ', ' +
+          p5 +
+          ', ' +
+          p6 +
+          ', ' +
+          p7 +
+          ');'
       }
     }
 
     if (op === 0xee) {
-      const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte(); const p5 = $r.readUByte(); const p6 = $r.readUByte(); const p7 = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUByte()
+      const p3 = $r.readUByte()
+      const p4 = $r.readUByte()
+      const p5 = $r.readUByte()
+      const p6 = $r.readUByte()
+      const p7 = $r.readUByte()
       return {
         op: 'RTPAL2',
         p1,
@@ -3617,16 +5085,41 @@ class FF7BinaryDataReader {
         p5,
         p6,
         p7,
-        js: 'op0xee_RTPAL2(' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ', ' + p5 + ', ' + p6 + ', ' + p7 + ');'
+        js:
+          'op0xee_RTPAL2(' +
+          p1 +
+          ', ' +
+          p2 +
+          ', ' +
+          p3 +
+          ', ' +
+          p4 +
+          ', ' +
+          p5 +
+          ', ' +
+          p6 +
+          ', ' +
+          p7 +
+          ');'
       }
     }
 
     if (op === 0xef) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0xF0) >> 4; const b6 = (bxb5 & 0x0F)
-      const s = $r.readUByte(); const d = $r.readUByte(); const start = $r.readUByte()
-      const b = $r.readUByte(); const g = $r.readUByte(); const r = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const bxb5 = $r.readUByte()
+      const b5 = (bxb5 & 0xf0) >> 4
+      const b6 = bxb5 & 0x0f
+      const s = $r.readUByte()
+      const d = $r.readUByte()
+      const start = $r.readUByte()
+      const b = $r.readUByte()
+      const g = $r.readUByte()
+      const r = $r.readUByte()
       const size = $r.readUByte()
       // const sDesc = b1 === 0 ? s : 'Bank[' + b1 + '][' + s + ']'
       // const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
@@ -3648,8 +5141,22 @@ class FF7BinaryDataReader {
         r,
         size,
         start,
-        js: 'addPaletteColors2({sourceTempPaletteId:' + s + ', destinationTempPaletteId:' + d +
-          ', r:' + rDesc + ', g:' + gDesc + ', b:' + bDesc + ', start:' + start + ', size:' + size + '});'
+        js:
+          'addPaletteColors2({sourceTempPaletteId:' +
+          s +
+          ', destinationTempPaletteId:' +
+          d +
+          ', r:' +
+          rDesc +
+          ', g:' +
+          gDesc +
+          ', b:' +
+          bDesc +
+          ', start:' +
+          start +
+          ', size:' +
+          size +
+          '});'
       }
     }
 
@@ -3664,8 +5171,11 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xf1) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const i = $r.readUShort(); const d = $r.readUByte()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const i = $r.readUShort()
+      const d = $r.readUByte()
       const iDesc = b1 === 0 ? i : 'Bank[' + b1 + '][' + i + ']'
       const dDesc = b2 === 0 ? d : 'Bank[' + b2 + '][' + d + ']'
       return {
@@ -3679,11 +5189,20 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xf2) {
-      const b1b2 = $r.readUByte(); const b1 = (b1b2 & 0xF0) >> 4; const b2 = (b1b2 & 0x0F)
-      const b3b4 = $r.readUByte(); const b3 = (b3b4 & 0xF0) >> 4; const b4 = (b3b4 & 0x0F)
-      const bxb5 = $r.readUByte(); const b5 = (bxb5 & 0x0F)
-      const akaoOp = $r.readUByte(); const p1 = $r.readUByte()
-      const p2 = $r.readUShort(); const p3 = $r.readUShort(); const p4 = $r.readUShort(); const p5 = $r.readUShort()
+      const b1b2 = $r.readUByte()
+      const b1 = (b1b2 & 0xf0) >> 4
+      const b2 = b1b2 & 0x0f
+      const b3b4 = $r.readUByte()
+      const b3 = (b3b4 & 0xf0) >> 4
+      const b4 = b3b4 & 0x0f
+      const bxb5 = $r.readUByte()
+      const b5 = bxb5 & 0x0f
+      const akaoOp = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUShort()
+      const p3 = $r.readUShort()
+      const p4 = $r.readUShort()
+      const p5 = $r.readUShort()
       const p1Desc = b1 === 0 ? p1 : 'Bank[' + b1 + '][' + p1 + ']'
       const p2Desc = b2 === 0 ? p2 : 'Bank[' + b2 + '][' + p2 + ']'
       const p3Desc = b3 === 0 ? p3 : 'Bank[' + b3 + '][' + p3 + ']'
@@ -3702,7 +5221,20 @@ class FF7BinaryDataReader {
         p3,
         p4,
         p5,
-        js: 'musicOp_F2_' + stringUtil.toHex2(akaoOp) + '({p1:' + p1Desc + ', p2:' + p2Desc + ', p3:' + p3Desc + ', p4:' + p4Desc + ', p5:' + p5Desc + '});',
+        js:
+          'musicOp_F2_' +
+          stringUtil.toHex2(akaoOp) +
+          '({p1:' +
+          p1Desc +
+          ', p2:' +
+          p2Desc +
+          ', p3:' +
+          p3Desc +
+          ', p4:' +
+          p4Desc +
+          ', p5:' +
+          p5Desc +
+          '});',
         pres: 'Music event.'
       }
     }
@@ -3761,7 +5293,8 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xfa) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       return {
         op: 'MVIEF',
         b,
@@ -3790,7 +5323,13 @@ class FF7BinaryDataReader {
     }
 
     if (op === 0xfd) {
-      const i = $r.readUByte(); const p1 = $r.readUByte(); const p2 = $r.readUByte(); const p3 = $r.readUByte(); const p4 = $r.readUByte(); const p5 = $r.readUByte(); const p6 = $r.readUByte()
+      const i = $r.readUByte()
+      const p1 = $r.readUByte()
+      const p2 = $r.readUByte()
+      const p3 = $r.readUByte()
+      const p4 = $r.readUByte()
+      const p5 = $r.readUByte()
+      const p6 = $r.readUByte()
       return {
         op: 'CMUSC',
         i,
@@ -3800,12 +5339,28 @@ class FF7BinaryDataReader {
         p4,
         p5,
         p6,
-        js: 'musicC(' + i + ', ' + p1 + ', ' + p2 + ', ' + p3 + ', ' + p4 + ', ' + p5 + ', ' + p6 + ');'
+        js:
+          'musicC(' +
+          i +
+          ', ' +
+          p1 +
+          ', ' +
+          p2 +
+          ', ' +
+          p3 +
+          ', ' +
+          p4 +
+          ', ' +
+          p5 +
+          ', ' +
+          p6 +
+          ');'
       }
     }
 
     if (op === 0xfe) {
-      const b = $r.readUByte(); const a = $r.readUByte()
+      const b = $r.readUByte()
+      const a = $r.readUByte()
       return {
         op: 'CHMST',
         b,
@@ -3824,14 +5379,22 @@ class FF7BinaryDataReader {
     // definitely want to throw Error here to prevent attempts to translate subsequent opcodes, which will be invalid/out-of-sync
     console.error('unsupported opCode: 0x' + stringUtil.toHex2(op))
     throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
-  }; // end of readOp()
+  } // end of readOp()
 
   printNextBufferDataAsHex (numRows = 30, numCols = 8) {
     console.log()
-    const pad5 = stringUtil.pad5; const toHex2 = stringUtil.toHex2; const toHex5 = stringUtil.toHex5
+    const pad5 = stringUtil.pad5
+    const toHex2 = stringUtil.toHex2
+    const toHex5 = stringUtil.toHex5
     let hex = ''
     for (let i = 0; i < numRows; i++) {
-      hex = toHex5(this.offset) + ' + ' + toHex5(i * numCols) + ' = ' + toHex5(this.offset + i * numCols) + ' : '
+      hex =
+        toHex5(this.offset) +
+        ' + ' +
+        toHex5(i * numCols) +
+        ' = ' +
+        toHex5(this.offset + i * numCols) +
+        ' : '
       for (let j = 0; j < numCols; j++) {
         const pos = this.offset + i * numCols + j
         if (pos >= this.buffer.length) {
@@ -3855,7 +5418,7 @@ class FF7BinaryDataReader {
       console.log(hex)
       hex = ''
     }
-  };
+  }
 } // end of class FF7BinaryDataReader
 
 module.exports = {

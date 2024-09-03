@@ -8,7 +8,7 @@ const { parseAttackData } = require('./kernel-sections.js')
 
 // https://wiki.ffrtt.ru/index.php?title=FF7/Battle/Battle_Scenes
 
-const getAttackData = (r) => {
+const getAttackData = r => {
   const datas = []
   for (let i = 0; i < 32; i++) {
     const data = parseAttackData(r)
@@ -17,7 +17,7 @@ const getAttackData = (r) => {
 
   return datas
 }
-const getEnemyData = (r) => {
+const getEnemyData = r => {
   const intialOffset = r.offset
   const rawName = r.readKernelString(32).trim()
   r.offset = intialOffset + 32
@@ -31,14 +31,30 @@ const getEnemyData = (r) => {
     defense: r.readUByte(),
     magicAttack: r.readUByte(),
     magicDefense: r.readUByte(),
-    elementTypes: Array(8).fill().map(a => parseKernelEnums(Enums.Elements, r.readUByte())), // Not right yet
-    elementRates: Array(8).fill().map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())), // Not right yet
-    actionAnimationIndex: Array(16).fill().map(a => r.readUByte()),
-    attackIds: Array(16).fill().map(a => r.readUShort()),
-    attackCameraMovementIds: Array(16).fill().map(a => r.readUShort()),
-    itemDropRates: Array(4).fill().map(a => r.readUByte()), // TODO - If the rate is lower than 80h, for e.g. 08h - then this is a drop item and has 8/63 [63 is max] chance for drop. But if rate is higher than 80h, let's say... A0h, then this is an item for steal, and chances for successful steal is A0h - 80h = 20h = 32/63.
-    itemDropIDs: Array(4).fill().map(a => r.readUShort()),
-    beserkManipulatedAttackIds: Array(3).fill().map(a => r.readUShort()),
+    elementTypes: Array(8)
+      .fill()
+      .map(a => parseKernelEnums(Enums.Elements, r.readUByte())), // Not right yet
+    elementRates: Array(8)
+      .fill()
+      .map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())), // Not right yet
+    actionAnimationIndex: Array(16)
+      .fill()
+      .map(a => r.readUByte()),
+    attackIds: Array(16)
+      .fill()
+      .map(a => r.readUShort()),
+    attackCameraMovementIds: Array(16)
+      .fill()
+      .map(a => r.readUShort()),
+    itemDropRates: Array(4)
+      .fill()
+      .map(a => r.readUByte()), // TODO - If the rate is lower than 80h, for e.g. 08h - then this is a drop item and has 8/63 [63 is max] chance for drop. But if rate is higher than 80h, let's say... A0h, then this is an item for steal, and chances for successful steal is A0h - 80h = 20h = 32/63.
+    itemDropIDs: Array(4)
+      .fill()
+      .map(a => r.readUShort()),
+    beserkManipulatedAttackIds: Array(3)
+      .fill()
+      .map(a => r.readUShort()),
     unknown: r.readUShort(),
     mp: r.readUShort(),
     ap: r.readUShort(),
@@ -49,35 +65,39 @@ const getEnemyData = (r) => {
     exp: r.readUInt(),
     gil: r.readUInt(),
     statusImmunities: parseKernelEnums(Enums.Statuses, r.readUInt()), // TODO: Not sure that this gives the right data
-    unknown2: Array(4).fill().map(a => r.readUByte())
+    unknown2: Array(4)
+      .fill()
+      .map(a => r.readUByte())
   }
   r.offset = intialOffset + 184
   return data
-//   return r.readUByteArray(184)
+  //   return r.readUByteArray(184)
 }
-const getBattleFormations = (r) => {
+const getBattleFormations = r => {
   const datas = []
   for (let i = 0; i < 4; i++) {
     const enemies = []
     for (let e = 0; e < 6; e++) {
-    //   const tempOffset = r.offset
-    //   const raw = JSON.stringify(r.readUByteArray(16))
-    //   r.offset = tempOffset
+      //   const tempOffset = r.offset
+      //   const raw = JSON.stringify(r.readUByteArray(16))
+      //   r.offset = tempOffset
       const data = {
         // raw,
         enemyId: r.readUShort(),
         position: readCameraVector(r),
         row: r.readUShort(),
         coverFlags: r.readUShort(), // TODO
-        initialConditionFlags: parseKernelEnums(Enums.Battle.InitialConditionFlags, r.readUInt() & 0b11111) // ??
-
+        initialConditionFlags: parseKernelEnums(
+          Enums.Battle.InitialConditionFlags,
+          r.readUInt() & 0b11111
+        ) // ??
       }
       enemies.push(data)
     }
 
     datas.push(enemies)
   }
-
+  // console.log('formations', datas)
   return datas
 }
 const readCameraVector = function (r) {
@@ -87,7 +107,7 @@ const readCameraVector = function (r) {
     z: r.readShort()
   }
 }
-const getCameraPlacement = (r) => {
+const getCameraPlacement = r => {
   const datas = []
   for (let i = 0; i < 4; i++) {
     // const tempOffset = r.offset
@@ -106,19 +126,24 @@ const getCameraPlacement = (r) => {
 
   return datas
 }
-const getBattleSetup = (r) => {
+const getBattleSetup = r => {
   const datas = []
   for (let i = 0; i < 4; i++) {
     // const tempOffset = r.offset
     // const raw = JSON.stringify(r.readUByteArray(20))
     // r.offset = tempOffset
     const data = {
-    //   raw,
+      //   raw,
       locationId: r.readUShort(),
       defeatNextBattleFormationId: r.readUShort(),
       escapeCounter: r.readUShort(),
       unused: r.readUShort(),
-      battleArenaNextBattleFormationId: [r.readUShort(), r.readUShort(), r.readUShort(), r.readUShort()],
+      battleArenaNextBattleFormationId: [
+        r.readUShort(),
+        r.readUShort(),
+        r.readUShort(),
+        r.readUShort()
+      ],
       escapableFlag: r.readUShort(),
       battleLayoutType: parseKernelEnums(Enums.Battle.Layout, r.readUByte()),
       initialCameraPosition: r.readUByte()
@@ -132,32 +157,51 @@ const getBattleSetup = (r) => {
 }
 const unzipBuffer = (buffer, from, to) => {
   let offset = 0
-  while (offset < 5) {
+  let success = false
+
+  while (to - from > offset) {
     // Note: Sometimes it may finish by 0xFF bytes, because its size must be multiple of 4.
     // I didn't figure out a quick way of checking this effectivly, hence this method that will be improved
 
     try {
       const sectionBuffer = buffer.slice(from, to - offset)
-      //   console.log('unzipBuffer attempt', i, from, to, offset)
+      // console.log(
+      //   'unzipBuffer attempt',
+      //   from,
+      //   to,
+      //   to - from > offset,
+      //   offset,
+      //   buffer.slice(to - offset - 2, to),
+      //   buffer.slice(from, to - offset).length
+      // )
       const unzippedBuffer = zlib.unzipSync(sectionBuffer)
       const s = new FF7BinaryDataReader(unzippedBuffer)
-      //   console.log('unzipBuffer success', from, to, offset, s.length, s.offset, s.readUShort())
+      // console.log(
+      //   'unzipBuffer success',
+      //   from,
+      //   to,
+      //   offset,
+      //   s.length,
+      //   s.offset,
+      //   s.readUShort()
+      // )
       s.offset = 0
       return s
     } catch (error) {
-    //   console.log('unzipBuffer error', i, from, to, offset, error)
+      // console.log('unzipBuffer error', from, to, offset, error)
       offset++
     }
   }
+  console.error('ERROR UNZIPPING BUFFER')
 }
 const getDataFile = (buffer, dataFilePointer) => {
-//   const from = 16
-//   const to = 193
-  const from = dataFilePointer.from + (0x2000 * dataFilePointer.blockId)
-  const to = dataFilePointer.to + (0x2000 * dataFilePointer.blockId)
+  //   const from = 16
+  //   const to = 193
+  const from = dataFilePointer.from + 0x2000 * dataFilePointer.blockId
+  const to = dataFilePointer.to + 0x2000 * dataFilePointer.blockId
 
   const s = unzipBuffer(buffer, from, to)
-  // console.log('getDataFile', dataFilePointer)
+  // console.log('getDataFile', dataFilePointer, s === undefined)
 
   try {
     const data = {
@@ -174,18 +218,30 @@ const getDataFile = (buffer, dataFilePointer) => {
       enemyData2: getEnemyData(s),
       enemyData3: getEnemyData(s),
       attackData: getAttackData(s),
-      attackIds: Array(32).fill().map(a => s.readUShort()),
-      attackNames: Array(32).fill().map(a => {
-        const intialOffset = s.offset
-        const rawName = s.readKernelString(32)
-        s.offset = intialOffset + 32
-        return rawName
-      }),
-      formationAIOffsets: Array(4).fill().map(a => s.readUShort()),
+      attackIds: Array(32)
+        .fill()
+        .map(a => s.readUShort()),
+      attackNames: Array(32)
+        .fill()
+        .map(a => {
+          const intialOffset = s.offset
+          const rawName = s.readKernelString(32)
+          s.offset = intialOffset + 32
+          return rawName
+        }),
+      formationAIOffsets: Array(4)
+        .fill()
+        .map(a => s.readUShort()),
       formationAIData: s.readUByteArray(504), // TODO
-      enemyAIOffsets: Array(3).fill().map(a => s.readUShort())
+      enemyAIOffsets: Array(3)
+        .fill()
+        .map(a => s.readUShort())
       // enemyAIData: s.readUByteArray(4090) // TODO
     }
+    // if (data.sceneId === 29) {
+    // console.log('data', data)
+    // }
+    // console.log('sceneId', data.sceneId)
     for (const i in data.attackData) {
       data.attackData[i].id = data.attackIds[i]
       data.attackData[i].name = data.attackNames[i]
@@ -196,11 +252,11 @@ const getDataFile = (buffer, dataFilePointer) => {
     for (const i in data.enemyAIOffsets) {
       const enemyAIOffset = data.enemyAIOffsets[i]
       // const script = data[`enemyScript${parseInt(i) + 1}`] = { }
-      if (enemyAIOffset === 0xFFFF) break
+      if (enemyAIOffset === 0xffff) break
       const realOffset = scriptOffsetBegin + enemyAIOffset - 6
       s.offset = realOffset
 
-      const script = data[`enemyScript${parseInt(i) + 1}`] = {
+      const script = (data[`enemyScript${parseInt(i) + 1}`] = {
         init: { id: 0, offset: s.readUShort() },
         main: { id: 1, offset: s.readUShort() },
         counterGeneral: { id: 2, offset: s.readUShort() },
@@ -217,19 +273,35 @@ const getDataFile = (buffer, dataFilePointer) => {
         customEvent6: { id: 13, offset: s.readUShort() },
         customEvent7: { id: 14, offset: s.readUShort() },
         customEvent8: { id: 15, offset: s.readUShort() }
-      }
+      })
       for (const scriptObj of Object.values(script)) {
-        // console.log('Processing script:', script)
+        // console.log(
+        //   'Processing script:',
+        //   `enemy${i}`,
+        //   dataFilePointer.fileId,
+        //   scriptObj
+        // )
         scriptObj.script = []
-        if (scriptObj.offset !== 0xFFFF) {
+        if (scriptObj.offset !== 0xffff) {
           s.offset = realOffset + scriptObj.offset
           let isEnd = false
           while (!isEnd) {
             const index = s.offset - realOffset - 32
             const indexHex = dec2hex(index, 4)
+            // console.log('-----')
+            // console.log('offset', s.offset - realOffset, dec2hex(s.peekUByte()))
+            // if (s.offset - realOffset === 213) {
+            //   const sTemp = s.offset
+            //   console.log(
+            //     'DEBG',
+            //     s.readUByteArray(32).map(v => dec2hex(v))
+            //   )
+            //   s.offset = sTemp
+            // }
             const op = s.readBattleOp()
             op.index = index
             op.indexHex = indexHex
+            // console.log('op', s.offset - realOffset, op.op)
             scriptObj.script.push(op)
             if (op.op === 'END') {
               isEnd = true
@@ -261,7 +333,10 @@ const getDataFile = (buffer, dataFilePointer) => {
     return data
   } catch (error) {
     // For some strange reason any accessing of the s buffer on the last i causes an error. It's empty anyway, so ignore it for now..
-    // console.error('error', error)
+    console.error('error', error, dataFilePointer.fileId)
+    // if (dataFilePointer.fileId === 29) {
+    //   console.error('error', error)
+    // }
     return null
   }
 }
@@ -273,27 +348,43 @@ const getBlocks = (r, buffer) => {
   while (r.offset < r.length) {
     let pointerA = r.readUInt()
     let pointerB = r.readUInt()
-    dataFilePointers.push({ blockId, fileId, from: pointerA * 4, to: pointerB * 4 })
+    dataFilePointers.push({
+      blockId,
+      fileId,
+      from: pointerA * 4,
+      to: pointerB * 4
+    })
 
-    while (pointerB !== 0xFFFFFFFF) {
+    while (pointerB !== 0xffffffff) {
       pointerA = pointerB
       pointerB = r.readUInt()
       fileId++
-      if (pointerB !== 0xFFFFFFFF) {
-        dataFilePointers.push({ blockId, fileId, from: pointerA * 4, to: pointerB * 4 })
+      if (pointerB !== 0xffffffff) {
+        dataFilePointers.push({
+          blockId,
+          fileId,
+          from: pointerA * 4,
+          to: pointerB * 4
+        })
       } else {
-        dataFilePointers.push({ blockId, fileId, from: pointerA * 4, to: 0x2000 }) // TODO - ????
+        dataFilePointers.push({
+          blockId,
+          fileId,
+          from: pointerA * 4,
+          to: 0x2000
+        }) // TODO - ????
       }
     }
     fileId++
     blockId++
     r.offset = 0x2000 * blockId
   }
-  //   console.log('dataFilePointers', r.offset, r.length, dataFilePointers)
+  // console.log('dataFilePointers', r.offset, r.length, dataFilePointers)
 
   const datas = []
   for (let i = 0; i < dataFilePointers.length - 1; i++) {
     const dataFilePointer = dataFilePointers[i]
+    // if (dataFilePointer.fileId !== 17) continue // Temp
     const data = getDataFile(buffer, dataFilePointer)
     if (data !== null) {
       datas.push(data)
@@ -304,17 +395,26 @@ const getBlocks = (r, buffer) => {
 }
 
 const saveData = async (data, outputFile) => {
-//   console.log('saveData', data, outputFile)
+  //   console.log('saveData', data, outputFile)
 
   await fs.outputFile(outputFile, JSON.stringify(data))
 }
-const extractSceneBinData = async (inputBattleSceneDirectory, outputBattleSceneDirectory) => {
+const extractSceneBinData = async (
+  inputBattleSceneDirectory,
+  outputBattleSceneDirectory
+) => {
   console.log('Extract scene.bin Data: START')
-  const buffer = fs.readFileSync(path.join(inputBattleSceneDirectory, 'scene.bin'))
+  const buffer = fs.readFileSync(
+    path.join(inputBattleSceneDirectory, 'scene.bin')
+  )
   const r = new FF7BinaryDataReader(buffer)
   const datas = getBlocks(r, buffer)
-  // .filter(d => d.sceneId === 27)
-  // .map(d => d.enemyScript1 ? { i: d.sceneId, m: d.enemyData1.name, l: d.enemyScript1.main.length } : { i: d.sceneId, m: d.enemyData1.name, l: 999999 })
+  //.filter(d => d.sceneId === 29)
+  // .map(d =>
+  //   d.enemyScript1
+  //     ? { i: d.sceneId, m: d.enemyData1.name, l: d.enemyScript1.main.length }
+  //     : { i: d.sceneId, m: d.enemyData1.name, l: 999999 }
+  // )
   // .sort((a, b) => a.l - b.l)
   await saveData(datas, path.join(outputBattleSceneDirectory, 'scene.bin.json'))
 
