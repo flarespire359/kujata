@@ -68,6 +68,7 @@ module.exports = class FF7GltfTranslator {
     }
 
     const hrcId = hrcFileId.toLowerCase()
+    console.log(`Translating: ${hrcId}`)
     let skeleton = {}
 
     if (isBattleModel) {
@@ -77,7 +78,6 @@ module.exports = class FF7GltfTranslator {
       skeleton = HrcLoader.loadHrc(config, hrcFileId)
     }
 
-    console.log(`Translating: ${hrcId} (${skeleton.name})`)
     const numBones = skeleton.bones.length
 
     // create list of animation files to translate (field only)
@@ -292,7 +292,7 @@ module.exports = class FF7GltfTranslator {
 
     quat = rotationToQuaternion(
       toRadians(firstFrame.rootRotation.x + ROOT_X_ROTATION_DEGREES),
-      toRadians(firstFrame.rootRotation.y),
+      toRadians(-firstFrame.rootRotation.y),
       toRadians(firstFrame.rootRotation.z),
       rotationOrder
     )
@@ -1012,7 +1012,7 @@ module.exports = class FF7GltfTranslator {
           // console.log('rootRotation', rootRotation)
           const quatRoot = rotationToQuaternion(
             toRadians(rootRotation.x),
-            toRadians(rootRotation.y),
+            toRadians(-rootRotation.y),
             toRadians(rootRotation.z),
             rotationOrder
           )

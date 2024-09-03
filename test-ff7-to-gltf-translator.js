@@ -77,12 +77,17 @@ const translateAllFieldFiles = async () => {
 
 const init = async () => {
   // await translateBattleFile('pbaa')
-  // await translateBattleFile('aqaa')
+  // await translateBattleFile('aqaa') // MP
   // await translateBattleFile('avaa')
-  await translateBattleFile('opaa')
-  // await translateBattleFile('rtaa')
+  // await translateBattleFile('opaa')
+  await translateBattleFile('rtaa')
   // await translateBattleFile('nbaa')
-  await translateBattleFile('oqaa')
+  // await translateBattleFile('oqaa')
+  // await translateBattleFile('foaa') // Battery Cap
+  // await translateBattleFile('fnaa')
+  // await translateBattleFile('luaa')
+  // await translateBattleFile('bxaa') // Pyramid
+  await translateBattleFile('epaa') // Touch Me
 
   // await translateAllBattleFiles()
 

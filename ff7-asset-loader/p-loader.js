@@ -1,20 +1,39 @@
 const fs = require('fs')
 
 module.exports = {
-
   loadP: function (config, pBaseFilename, isBattleModel) {
     let buffer = {}
     if (isBattleModel) {
-      buffer = fs.readFileSync(config.inputBattleBattleDirectory + '/' + pBaseFilename) // e.g. "rtam"
+      buffer = fs.readFileSync(
+        config.inputBattleBattleDirectory + '/' + pBaseFilename
+      ) // e.g. "rtam"
     } else {
-      buffer = fs.readFileSync(config.inputFieldCharDirectory + '/' + pBaseFilename + '.P')
+      buffer = fs.readFileSync(
+        config.inputFieldCharDirectory + '/' + pBaseFilename + '.P'
+      )
     }
     let offset = 0
 
-    let readInt = function () { let i = buffer.readInt32LE(offset); offset += 4; return i }
-    let readFloat = function () { let f = buffer.readFloatLE(offset); offset += 4; return f }
-    let readByte = function () { let b = buffer.readUInt8(offset); offset += 1; return b }
-    let readShort = function () { let s = buffer.readInt16LE(offset); offset += 2; return s }
+    let readInt = function () {
+      let i = buffer.readInt32LE(offset)
+      offset += 4
+      return i
+    }
+    let readFloat = function () {
+      let f = buffer.readFloatLE(offset)
+      offset += 4
+      return f
+    }
+    let readByte = function () {
+      let b = buffer.readUInt8(offset)
+      offset += 1
+      return b
+    }
+    let readShort = function () {
+      let s = buffer.readInt16LE(offset)
+      offset += 2
+      return s
+    }
     let fileSizeBytes = buffer.length
 
     let model = {
@@ -59,10 +78,20 @@ module.exports = {
       model.textureCoordinates.push({ x: readFloat(), y: readFloat() })
     }
     for (let i = 0; i < model.numVertices; i++) {
-      model.vertexColors.push({ b: readByte(), g: readByte(), r: readByte(), a: readByte() })
+      model.vertexColors.push({
+        b: readByte(),
+        g: readByte(),
+        r: readByte(),
+        a: readByte()
+      })
     }
     for (let i = 0; i < model.numPolygons; i++) {
-      model.polygonColors.push({ b: readByte(), g: readByte(), r: readByte(), a: readByte() })
+      model.polygonColors.push({
+        b: readByte(),
+        g: readByte(),
+        r: readByte(),
+        a: readByte()
+      })
     }
     for (let i = 0; i < model.numEdges; i++) {
       model.edges.push({ vertexIndex1: readShort(), vertexIndex2: readShort() })
@@ -125,15 +154,18 @@ module.exports = {
         textureIndex: readInt()
       })
     }
-    readInt() // unknown
+    const unknown = readInt() // unknown
+    if (unknown > 0x00) console.log('p unknown', unknown)
     model.boundingBox = {
       max: { x: readFloat(), y: readFloat(), z: readFloat() },
       min: { x: readFloat(), y: readFloat(), z: readFloat() }
     }
+    // console.log('boundingBox', model.boundingBox)
     // Normal Index Table
     for (let i = 0; i < model.numNormalIndices; i++) {
       // console.log('model.numNormalIndices', model.numNormalIndices, i, offset)
-      if (offset + 4 <= buffer.length) { // Issue with cvba, runs out of buffer
+      if (offset + 4 <= buffer.length) {
+        // Issue with cvba, runs out of buffer
         readInt() // vertex v uses normal n
       }
     }
@@ -143,5 +175,4 @@ module.exports = {
     // console.log('p model', pBaseFilename)// model)
     return model
   }
-
 }
