@@ -149,6 +149,11 @@ const getBattleSetup = r => {
       initialCameraPosition: r.readUByte()
     }
     data.locationName = parseKernelEnums(Enums.Battle.Location, data.locationId)
+    data.battleFlags = parseKernelEnums(
+      Enums.Battle.BattleFlags,
+      data.escapableFlag
+    )
+    delete data.escapableFlag
     // console.log('data', data)
     datas.push(data)
   }
@@ -385,7 +390,7 @@ const getBlocks = (r, buffer) => {
   const datas = []
   for (let i = 0; i < dataFilePointers.length - 1; i++) {
     const dataFilePointer = dataFilePointers[i]
-    // if (dataFilePointer.fileId !== 24) continue // Temp
+    // if (dataFilePointer.fileId !== 243) continue // Temp
     const data = getDataFile(buffer, dataFilePointer)
     if (data !== null) {
       datas.push(data)

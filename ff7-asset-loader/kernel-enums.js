@@ -43,12 +43,12 @@ const Enums = {
     Wind: 0x07,
     Holy: 0x08,
     Restorative: 0x09,
-    Cut: 0x0A,
-    Hit: 0x0B,
-    Punch: 0x0C,
-    Shoot: 0x0D,
-    Shout: 0x0E,
-    Hidden: 0x0F
+    Cut: 0x0a,
+    Hit: 0x0b,
+    Punch: 0x0c,
+    Shoot: 0x0d,
+    Shout: 0x0e,
+    Hidden: 0x0f
   },
   Statuses: {
     Death: 0x00000001,
@@ -96,12 +96,12 @@ const Enums = {
     Silence: 0x07,
     Haste: 0x08,
     Slow: 0x09,
-    Stop: 0x0A,
-    Frog: 0x0B,
-    Small: 0x0C,
-    SlowNumb: 0x0D,
-    Petrify: 0x0E,
-    Regen: 0x0F,
+    Stop: 0x0a,
+    Frog: 0x0b,
+    Small: 0x0c,
+    SlowNumb: 0x0d,
+    Petrify: 0x0e,
+    Regen: 0x0f,
     Barrier: 0x10,
     MBarrier: 0x11,
     Reflect: 0x12,
@@ -112,12 +112,12 @@ const Enums = {
     Berserk: 0x17,
     Peerless: 0x18,
     Paralysis: 0x19,
-    Darkness: 0x1A,
-    DualDrain: 0x1B,
-    DeathForce: 0x1C,
-    Resist: 0x1D,
-    LuckyGirl: 0x1E,
-    Imprisoned: 0x1F
+    Darkness: 0x1a,
+    DualDrain: 0x1b,
+    DeathForce: 0x1c,
+    Resist: 0x1d,
+    LuckyGirl: 0x1e,
+    Imprisoned: 0x1f
   },
   InitialCursorAction: {
     PerformCommandUsingTargetData: 0x00,
@@ -130,8 +130,8 @@ const Enums = {
     EnableTargetSelectionUsingCursor: 0x07,
     WMagicMenu: 0x08,
     WSummonMenu: 0x09,
-    WItemMenu: 0x0A,
-    CoinMenu: 0x0B
+    WItemMenu: 0x0a,
+    CoinMenu: 0x0b
   },
   TargetData: {
     EnableSelection: 0x01, // Cursor will move to the battle field and a target can be selected from valid targets as per additional constraints
@@ -141,20 +141,20 @@ const Enums = {
     SingleRowOnly: 0x10, // Cursor will only target allies or enemies as defined in <see cref="StartCursorOnEnemyRow"/> and cannot be moved from the row.
     ShortRange: 0x20, // If the target or the caster is not in the front of their row, the target will take half damage. For every attack this is enabled, they are constrained by the Binary "Cover Flags"
     AllRows: 0x40, // Cursor will select all viable targets
-    RandomTarget: 0x80// When multiple targets are selected, one will be selected at random to be the receiving target. Cursor will cycle among all viable targets.
+    RandomTarget: 0x80 // When multiple targets are selected, one will be selected at random to be the receiving target. Cursor will cycle among all viable targets.
   },
   ConditionSubMenu: {
     PartyHP: 0x00,
     PartyMP: 0x01,
     PartyStatus: 0x02,
-    None: 0xFF
+    None: 0xff
   },
   StatusEffect: {
     ToggleStatus: 0x40,
     RemoveStatus: 0x80
   },
   AccessoryEffect: {
-    None: 0xFF,
+    None: 0xff,
     Haste: 0x0,
     Berserk: 0x1,
     CurseRing: 0x2,
@@ -164,7 +164,7 @@ const Enums = {
     Wall: 0x6
   },
   CharacterStat: {
-    None: 0xFF,
+    None: 0xff,
     Strength: 0,
     Vitality: 1,
     Magic: 2,
@@ -178,7 +178,7 @@ const Enums = {
     Absorb: 0x0,
     Nullify: 0x1,
     Halve: 0x2,
-    Normal: 0xFF
+    Normal: 0xff
   },
   EquipableBy: {
     Cloud: 0x0001,
@@ -228,10 +228,10 @@ const Enums = {
     Coin: 0x7,
     Throw: 0x8,
     Morph: 0x9,
-    'D.Blow': 0xA,
-    'Manip.': 0xB,
-    Mime: 0xC,
-    'E.Skill': 0xD
+    'D.Blow': 0xa,
+    'Manip.': 0xb,
+    Mime: 0xc,
+    'E.Skill': 0xd
   },
   SupportType: {
     Counter: 0x54, // 25
@@ -239,11 +239,11 @@ const Enums = {
     SneakAttack: 0x56,
     MPTurbo: 0x58,
     MPAbsorb: 0x59,
-    HPAbsorb: 0x5A,
-    AddedCut: 0x5C,
-    StealAsWell: 0x5D,
-    Elemental: 0x5E,
-    AddedEffect: 0x5F,
+    HPAbsorb: 0x5a,
+    AddedCut: 0x5c,
+    StealAsWell: 0x5d,
+    Elemental: 0x5e,
+    AddedEffect: 0x5f,
     All: 0x51, // 35
     FinalAttack: 0x57,
     QuadraMagic: 0x63
@@ -254,8 +254,8 @@ const Enums = {
       Fury: 0x20
     },
     Order: {
-      BackRow: 0xFE,
-      Normal: 0xFF
+      BackRow: 0xfe,
+      Normal: 0xff
     },
     LearnedLimits: {
       Limit_1_1: 0x0001,
@@ -277,10 +277,10 @@ const Enums = {
       Vincent: 0x07,
       Cid: 0x08,
       YoungCloud: 0x09,
-      Sephiroth: 0x0A,
-      Chocobo: 0x0B,
-      None: 0xFE,
-      None: 0xFF
+      Sephiroth: 0x0a,
+      Chocobo: 0x0b,
+      None: 0xfe,
+      None: 0xff
     }
   },
   Battle: {
@@ -295,12 +295,12 @@ const Enums = {
       Snow: 0x0007,
       Swamp: 0x0008,
       Sector1TrainStation: 0x0009,
-      Reactor1: 0x000A,
-      Reactor1Core: 0x000B,
-      Reactor1Entrance: 0x000C,
-      Sector4Subway: 0x000D,
-      NibelCavesorAForestCaves: 0x000E,
-      ShinraHQ: 0x000F,
+      Reactor1: 0x000a,
+      Reactor1Core: 0x000b,
+      Reactor1Entrance: 0x000c,
+      Sector4Subway: 0x000d,
+      NibelCavesorAForestCaves: 0x000e,
+      ShinraHQ: 0x000f,
       MidgarRaidSubway: 0x0010,
       HojosLab: 0x0011,
       ShinraElevators: 0x0012,
@@ -311,12 +311,12 @@ const Enums = {
       CoralValley: 0x0017,
       MidgarSlums: 0x0018,
       Sector4CorridorsorJunonPath: 0x0019,
-      Sector4GantriesorMidgarUnderground: 0x001A,
-      Sector7SupportPillarStairway: 0x001B,
-      Sector7SupportPillarTop: 0x001C,
-      Sector8: 0x001D,
-      Sewers: 0x001E,
-      MythrilMines: 0x001F,
+      Sector4GantriesorMidgarUnderground: 0x001a,
+      Sector7SupportPillarStairway: 0x001b,
+      Sector7SupportPillarTop: 0x001c,
+      Sector8: 0x001d,
+      Sewers: 0x001e,
+      MythrilMines: 0x001f,
       NorthernCraterFloatingPlatforms: 0x0020,
       CorelMountainPath: 0x0021,
       JunonBeach: 0x0022,
@@ -327,12 +327,12 @@ const Enums = {
       CidsBackyard: 0x0027,
       FinalDescenttoSephiroth: 0x0028,
       Reactor5Entrance: 0x0029,
-      TempleOfTheAncientsEscherRoom: 0x002A,
-      ShinraMansion: 0x002B,
-      JunonAirshipDock: 0x002C,
-      WhirlwindMaze: 0x002D,
-      JunonUnderwaterReactor: 0x002E,
-      GongagaReactor: 0x002F,
+      TempleOfTheAncientsEscherRoom: 0x002a,
+      ShinraMansion: 0x002b,
+      JunonAirshipDock: 0x002c,
+      WhirlwindMaze: 0x002d,
+      JunonUnderwaterReactor: 0x002e,
+      GongagaReactor: 0x002f,
       Gelnika: 0x0030,
       TrainGraveyard: 0x0031,
       GreatGlacierIceCavesOrGaeaCliffsInside: 0x0032,
@@ -343,12 +343,12 @@ const Enums = {
       NorthernCraterHatchery: 0x0037,
       NorthernCraterWaterArea: 0x0038,
       SaferBattle: 0x0039,
-      KalmFlashbackDragonBattle: 0x003A,
-      JunonUnderwaterPipe: 0x003B,
-      Blank2: 0x003C,
-      CorelRailwayCanyon: 0x003D,
-      WhirlwindMazeCrater: 0x003E,
-      CorelRailwayRollercoaster: 0x003F,
+      KalmFlashbackDragonBattle: 0x003a,
+      JunonUnderwaterPipe: 0x003b,
+      Blank2: 0x003c,
+      CorelRailwayCanyon: 0x003d,
+      WhirlwindMazeCrater: 0x003e,
+      CorelRailwayRollercoaster: 0x003f,
       WoodenBridge: 0x0040,
       DaChao: 0x0041,
       FortCondor: 0x0042,
@@ -359,12 +359,12 @@ const Enums = {
       CorelTrainBattle: 0x0047,
       CosmoCanyon: 0x0048,
       CavernsOfTheGi: 0x0049,
-      NibelheimMansionBasement: 0x004A,
-      TempleOfTheAncientsDemonsGate: 0x004B,
-      TempleOfTheAncientsMuralRoom: 0x004C,
-      TempleOfTheAncientsClockPassage: 0x004D,
-      FinalBattleSephiroth: 0x004E,
-      Jungle: 0x004F,
+      NibelheimMansionBasement: 0x004a,
+      TempleOfTheAncientsDemonsGate: 0x004b,
+      TempleOfTheAncientsMuralRoom: 0x004c,
+      TempleOfTheAncientsClockPassage: 0x004d,
+      FinalBattleSephiroth: 0x004e,
+      Jungle: 0x004f,
       UltimateWeaponHighwind: 0x0050,
       CorelReactor: 0x0051,
       Unused: 0x0052,
@@ -394,6 +394,12 @@ const Enums = {
       Targetable: 0x0010,
       MainScriptActive: 0x0008
     },
+    BattleFlags: {
+      Unknown: 0b10, // This is popular
+      CantEscape: 0b100,
+      NoVictoryPoses: 0b1000,
+      NoPremptive: 0b10000
+    },
     ElementRates: {
       Death: 0x00,
       DoubleDamage: 0x02,
@@ -401,48 +407,87 @@ const Enums = {
       NullifyDamage: 0x05,
       Absorb: 0x06,
       FullCure: 0x0,
-      Nothing: 0xFF
+      Nothing: 0xff
     }
   }
 }
 
-const getMateriaType = (materiaTypeData) => {
-  const lowerNybble = (materiaTypeData & 0x0F)
+const getMateriaType = materiaTypeData => {
+  const lowerNybble = materiaTypeData & 0x0f
   let baseType
   switch (lowerNybble) {
-    case 0x2: case 0x3: case 0x6: case 0x7: case 0x8:
+    case 0x2:
+    case 0x3:
+    case 0x6:
+    case 0x7:
+    case 0x8:
       baseType = Enums.MateriaType.Command
       break
     case 0x5:
       baseType = Enums.MateriaType.Support
       break
-    case 0x9: case 0xA:
+    case 0x9:
+    case 0xa:
       baseType = Enums.MateriaType.Magic
       break
-    case 0xB: case 0xC:
+    case 0xb:
+    case 0xc:
       baseType = Enums.MateriaType.Summon
       break
-    case 0x0: case 0x1: case 0x4: case 0xD: case 0xE: case 0xF: default:
+    case 0x0:
+    case 0x1:
+    case 0x4:
+    case 0xd:
+    case 0xe:
+    case 0xf:
+    default:
       baseType = Enums.MateriaType.Independent
       break
   }
   return baseType
 }
-const getMateriaEquipEffects = (equipEffectBytes) => {
+const getMateriaEquipEffects = equipEffectBytes => {
   // console.log('getMateriaEquipEffects', equipEffectBytes)
   switch (equipEffectBytes) {
     case 0x00:
       return []
     case 0x01:
-      return [['Strength', -2], ['Vitality', -1], ['Magic', 2], ['Spirit', 1], ['HP', -5], ['MP', 5]]
+      return [
+        ['Strength', -2],
+        ['Vitality', -1],
+        ['Magic', 2],
+        ['Spirit', 1],
+        ['HP', -5],
+        ['MP', 5]
+      ]
     case 0x02:
-      return [['Strength', -4], ['Vitality', -2], ['Magic', 4], ['Spirit', 2], ['HP', -10], ['MP', 10]]
+      return [
+        ['Strength', -4],
+        ['Vitality', -2],
+        ['Magic', 4],
+        ['Spirit', 2],
+        ['HP', -10],
+        ['MP', 10]
+      ]
     case 0x03:
-      return [['Dexterity', 2], ['Luck', -2]]
+      return [
+        ['Dexterity', 2],
+        ['Luck', -2]
+      ]
     case 0x04:
-      return [['Strength', -1], ['Vitality', -1], ['Magic', 1], ['Spirit', 1]]
+      return [
+        ['Strength', -1],
+        ['Vitality', -1],
+        ['Magic', 1],
+        ['Spirit', 1]
+      ]
     case 0x05:
-      return [['Strength', 1], ['Vitality', 1], ['Magic', -1], ['Spirit', -1]]
+      return [
+        ['Strength', 1],
+        ['Vitality', 1],
+        ['Magic', -1],
+        ['Spirit', -1]
+      ]
     case 0x06:
       return [['Vitality', 1]]
     case 0x07:
@@ -451,24 +496,60 @@ const getMateriaEquipEffects = (equipEffectBytes) => {
       return [['Luck', -1]]
     case 0x09:
       return [['Dexterity', -2]]
-    case 0x0A:
+    case 0x0a:
       return [['Dexterity', 2]]
-    case 0x0B:
-      return [['Strength', -1], ['Magic', 1], ['HP', -2], ['MP', 2]]
-    case 0x0C:
-      return [['Magic', 1], ['HP', -2], ['MP', 2]]
-    case 0x0D:
-      return [['Magic', 1], ['Spirit', 1], ['HP', -5], ['MP', 5]]
-    case 0x0E:
-      return [['Magic', 2], ['Spirit', 2], ['HP', -10], ['MP', 10]]
-    case 0x0F:
-      return [['Magic', 4], ['Spirit', 4], ['HP', -10], ['MP', 15]]
+    case 0x0b:
+      return [
+        ['Strength', -1],
+        ['Magic', 1],
+        ['HP', -2],
+        ['MP', 2]
+      ]
+    case 0x0c:
+      return [
+        ['Magic', 1],
+        ['HP', -2],
+        ['MP', 2]
+      ]
+    case 0x0d:
+      return [
+        ['Magic', 1],
+        ['Spirit', 1],
+        ['HP', -5],
+        ['MP', 5]
+      ]
+    case 0x0e:
+      return [
+        ['Magic', 2],
+        ['Spirit', 2],
+        ['HP', -10],
+        ['MP', 10]
+      ]
+    case 0x0f:
+      return [
+        ['Magic', 4],
+        ['Spirit', 4],
+        ['HP', -10],
+        ['MP', 15]
+      ]
     case 0x10:
-      return [['Magic', 8], ['Spirit', 8], ['HP', -10], ['MP', 20]]
+      return [
+        ['Magic', 8],
+        ['Spirit', 8],
+        ['HP', -10],
+        ['MP', 20]
+      ]
   }
   return []
 }
-const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magicNames, index, commandData) => {
+const parseMateriaData = (
+  materiaType,
+  materiaAttributes,
+  equipEffectBytes,
+  magicNames,
+  index,
+  commandData
+) => {
   const type = getMateriaType(materiaType)
   const equipEffect = getMateriaEquipEffects(equipEffectBytes)
   let attributes = {}
@@ -484,9 +565,11 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
         })
       }
     }
-    if (materiaType === 0xA) { // Master Magic
+    if (materiaType === 0xa) {
+      // Master Magic
       attributes.master = 'Magic'
-      for (let i = 0; i <= 0x35; i++) { // Ignore last two empty magics, probably not a great idea, but I'll do it anyway, 0x37
+      for (let i = 0; i <= 0x35; i++) {
+        // Ignore last two empty magics, probably not a great idea, but I'll do it anyway, 0x37
         attributes.magic.push({
           level: 1,
           attackId: i,
@@ -497,7 +580,8 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
   }
   if (type === Enums.MateriaType.Summon) {
     attributes.summon = []
-    if (materiaType === 0xC) { // Master Summon
+    if (materiaType === 0xc) {
+      // Master Summon
       attributes.master = 'Summon'
       for (let i = 0x38; i <= 0x47; i++) {
         attributes.summon.push({
@@ -515,24 +599,65 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
   if (type === Enums.MateriaType.Command) {
     const attr1 = materiaAttributes[0]
     const filteredAttrs = materiaAttributes.filter(a => a !== 255)
-    const materiaTypeLowerNybble = materiaType & 0x0F
+    const materiaTypeLowerNybble = materiaType & 0x0f
     if (materiaType === 0x12) {
-      attributes = { type: 'Replace', menu: { id: 1, name: commandData[1].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
+      attributes = {
+        type: 'Replace',
+        menu: { id: 1, name: commandData[1].name },
+        with: filteredAttrs.map(id => {
+          return { id, name: commandData[id].name }
+        })
+      }
     } else if (materiaTypeLowerNybble === 0x3) {
       if (attr1 === 0x15) {
-        attributes = { type: 'Replace', menu: { id: 2, name: commandData[2].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
+        attributes = {
+          type: 'Replace',
+          menu: { id: 2, name: commandData[2].name },
+          with: filteredAttrs.map(id => {
+            return { id, name: commandData[id].name }
+          })
+        }
         // attributes = { type: 'Replace', menu: 'Magic', with: 'WMagic' }
       } else if (attr1 === 0x16) {
-        attributes = { type: 'Replace', menu: { id: 3, name: commandData[3].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
+        attributes = {
+          type: 'Replace',
+          menu: { id: 3, name: commandData[3].name },
+          with: filteredAttrs.map(id => {
+            return { id, name: commandData[id].name }
+          })
+        }
       } else if (attr1 === 0x17) {
-        attributes = { type: 'Replace', menu: { id: 4, name: commandData[4].name }, with: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
+        attributes = {
+          type: 'Replace',
+          menu: { id: 4, name: commandData[4].name },
+          with: filteredAttrs.map(id => {
+            return { id, name: commandData[id].name }
+          })
+        }
       }
     } else if (materiaTypeLowerNybble === 0x6) {
-      attributes = { type: 'Add', menu: filteredAttrs.map(id => { return { id, name: commandData[id].name } }) }
+      attributes = {
+        type: 'Add',
+        menu: filteredAttrs.map(id => {
+          return { id, name: commandData[id].name }
+        })
+      }
     } else if (materiaTypeLowerNybble === 0x7) {
-      attributes = { type: 'Add', menu: filteredAttrs.map(id => { return { id, name: commandData[id].name } }), skill: 'EnemySkill' }
-    } else if (materiaTypeLowerNybble === 0x8) { // Master Command
-      attributes = { type: 'AddAll', menu: [0x5, 0x6, 0x7, 0x9, 0xA, 0xB, 0xC].map(id => { return { id, name: commandData[id].name } }) }
+      attributes = {
+        type: 'Add',
+        menu: filteredAttrs.map(id => {
+          return { id, name: commandData[id].name }
+        }),
+        skill: 'EnemySkill'
+      }
+    } else if (materiaTypeLowerNybble === 0x8) {
+      // Master Command
+      attributes = {
+        type: 'AddAll',
+        menu: [0x5, 0x6, 0x7, 0x9, 0xa, 0xb, 0xc].map(id => {
+          return { id, name: commandData[id].name }
+        })
+      }
       attributes.master = 'Command'
     }
     // console.log('  cmd', materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), attributes, filteredAttrs)
@@ -549,13 +674,17 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     const attr1 = materiaAttributes[0]
     materiaAttributes.shift()
     if (materiaType === 0x00) {
-      if (attr1 === 0x0C) {
+      if (attr1 === 0x0c) {
         attributes = { type: 'Underwater' }
       } else if (attr1 === 0x62) {
         attributes = { type: 'HP<->MP' }
       }
     } else if ((materiaType === 0x20 || materiaType === 0x40) && attr1 < 0xa) {
-      attributes = { type: 'StatBoost', stat: parseKernelEnums(Enums.CharacterStat, attr1), attributes: materiaAttributes }
+      attributes = {
+        type: 'StatBoost',
+        stat: parseKernelEnums(Enums.CharacterStat, attr1),
+        attributes: materiaAttributes
+      }
     } else if (materiaType === 0x20 && attr1 === 0x53) {
       attributes = { type: 'CounterAttack', attributes: materiaAttributes }
     } else if (materiaType === 0x20 && attr1 === 0xb) {
@@ -567,15 +696,35 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
     } else if (materiaType === 0x34) {
       attributes = { type: 'MegaAll', attributes: materiaAttributes }
     } else if (materiaType === 0x40) {
-      attributes = { type: 'StatBoost', stat: 'EXP', attributes: materiaAttributes.filter(a => a !== 255) }
+      attributes = {
+        type: 'StatBoost',
+        stat: 'EXP',
+        attributes: materiaAttributes.filter(a => a !== 255)
+      }
     } else if (materiaType === 0x41 && attr1 === 0x0) {
-      attributes = { type: 'StatBoost', stat: 'Gil', attributes: materiaAttributes.filter(a => a !== 255) }
+      attributes = {
+        type: 'StatBoost',
+        stat: 'Gil',
+        attributes: materiaAttributes.filter(a => a !== 255)
+      }
     } else if (materiaType === 0x41 && attr1 === 0x1 && index === 7) {
-      attributes = { type: 'StatBoost', stat: 'EncounterDown', attributes: materiaAttributes.filter(a => a !== 255) }
+      attributes = {
+        type: 'StatBoost',
+        stat: 'EncounterDown',
+        attributes: materiaAttributes.filter(a => a !== 255)
+      }
     } else if (materiaType === 0x41 && attr1 === 0x1 && index === 8) {
-      attributes = { type: 'StatBoost', stat: 'EncounterUp', attributes: materiaAttributes.filter(a => a !== 255) }
+      attributes = {
+        type: 'StatBoost',
+        stat: 'EncounterUp',
+        attributes: materiaAttributes.filter(a => a !== 255)
+      }
     } else if (materiaType === 0x41 && attr1 === 0x2) {
-      attributes = { type: 'StatBoost', stat: 'ChocoboUp', attributes: materiaAttributes.filter(a => a !== 255) }
+      attributes = {
+        type: 'StatBoost',
+        stat: 'ChocoboUp',
+        attributes: materiaAttributes.filter(a => a !== 255)
+      }
     }
     // console.log('  ind', index, materiaType, dec2hex(materiaType), attr1, dec2hex(attr1), materiaAttributes)
   }
@@ -622,24 +771,46 @@ const parseMateriaData = (materiaType, materiaAttributes, equipEffectBytes, magi
 }
 const parseKernelEnums = (type, val) => {
   const singleResultTypes = [
-    Enums.GrowthRate, Enums.MateriaSlot, Enums.CharacterStat, Enums.ConditionSubMenu,
-    Enums.MateriaElements, Enums.DamageModifier, Enums.AccessoryEffect, Enums.CommandType, Enums.SupportType,
-    Enums.Character.Flags, Enums.Character.Order, Enums.Character.PartyMember, Enums.InitialCursorAction,
-    Enums.Battle.Location, Enums.Battle.Layout]
-  const inverseBitTypes = [Enums.SpecialEffects, Enums.Restrictions, Enums.StatusEffect]
+    Enums.GrowthRate,
+    Enums.MateriaSlot,
+    Enums.CharacterStat,
+    Enums.ConditionSubMenu,
+    Enums.MateriaElements,
+    Enums.DamageModifier,
+    Enums.AccessoryEffect,
+    Enums.CommandType,
+    Enums.SupportType,
+    Enums.Character.Flags,
+    Enums.Character.Order,
+    Enums.Character.PartyMember,
+    Enums.InitialCursorAction,
+    Enums.Battle.Location,
+    Enums.Battle.Layout
+  ]
+  const inverseBitTypes = [
+    Enums.SpecialEffects,
+    Enums.Restrictions,
+    Enums.StatusEffect,
+    Enums.Battle.BattleFlags
+  ]
 
-  if (type === Enums.Elements && val === 0xFFFF) {
+  if (type === Enums.Elements && val === 0xffff) {
     return []
-  } else if ((type === Enums.Statuses && val === 0xFF) || (type === Enums.EquipmentStatus && val === 0xFF)) {
+  } else if (
+    (type === Enums.Statuses && val === 0xff) ||
+    (type === Enums.EquipmentStatus && val === 0xff)
+  ) {
     return []
-  } else if (type === Enums.TargetData && val === 0xFF) {
+  } else if (type === Enums.TargetData && val === 0xff) {
     return []
   } else if (type === Enums.MateriaType) {
     return getMateriaType(val) // Specific behaviour required, but it is nice to abstract it behind parseKernelEnums
-  } else if (singleResultTypes.includes(type)) { // Is this exhaustive? Restrictions, CharacterStat, MateriaType?
+  } else if (singleResultTypes.includes(type)) {
+    // Is this exhaustive? Restrictions, CharacterStat, MateriaType?
     let text = 'None'
     for (const prop in type) {
-      if (val === type[prop]) { // Id matching
+      if (val === type[prop]) {
+        // Id matching
         text = prop
       }
     }
@@ -648,11 +819,13 @@ const parseKernelEnums = (type, val) => {
     const enums = []
     for (const prop in type) {
       if (inverseBitTypes.includes(type)) {
-        if ((val & type[prop]) !== type[prop]) { // Bitwise matching, but inverse, eg 0 is on
+        if ((val & type[prop]) !== type[prop]) {
+          // Bitwise matching, but inverse, eg 0 is on
           enums.push(prop)
         }
       } else {
-        if ((val & type[prop]) === type[prop]) { // Bitwise matching
+        if ((val & type[prop]) === type[prop]) {
+          // Bitwise matching
           enums.push(prop)
         }
       }
