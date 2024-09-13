@@ -3,9 +3,10 @@ const path = require('path')
 
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const { toHex2 } = require('./string-util.js')
+const { parseAttackData } = require('./kernel-sections.js')
 
-const extractShopInfo = (r) => {
-  r.offset = 0x005219C8
+const extractShopInfo = r => {
+  r.offset = 0x005219c8
   const shopNames = extractShopNames(r)
   const text = extractShopText(r)
   const shops = extractShopList(r)
@@ -20,38 +21,45 @@ const extractShopInfo = (r) => {
     delete shop.shopNameType
     for (let j = 0; j < shop.items.length; j++) {
       const item = shop.items[j]
-      item.price = item.type === 'item' ? shopItemPrices[item.id] : shopMateriaPrices[item.id]
+      item.price =
+        item.type === 'item'
+          ? shopItemPrices[item.id]
+          : shopMateriaPrices[item.id]
     }
   }
   // console.log('text', text.normal, text.slang)
   return {
-    shops, text, shopItemPrices, shopMateriaPrices, sellPriceMateriaMasterMultiplier
+    shops,
+    text,
+    shopItemPrices,
+    shopMateriaPrices,
+    sellPriceMateriaMasterMultiplier
   }
 }
-const extractShopNames = (r) => {
+const extractShopNames = r => {
   const names = []
   const totalNames = 9
   const namesBytes = 20
   const sectionOffset = r.offset
   for (let i = 0; i < totalNames; i++) {
-    r.offset = sectionOffset + (i * namesBytes)
+    r.offset = sectionOffset + i * namesBytes
     names.push(r.readKernelString(namesBytes))
   }
-  r.offset = sectionOffset + (totalNames * namesBytes)
+  r.offset = sectionOffset + totalNames * namesBytes
   const padding = r.readInt()
   //   console.log('names', names)
   return names
 }
-const extractShopText = (r) => {
+const extractShopText = r => {
   const text = []
   const totalText = 18
   const textBytes = 46
   const sectionOffset = r.offset
   for (let i = 0; i < totalText; i++) {
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     text.push(r.readKernelString(textBytes))
   }
-  r.offset = sectionOffset + (totalText * textBytes)
+  r.offset = sectionOffset + totalText * textBytes
   //   console.log('text', text)
   return {
     normal: {
@@ -76,7 +84,7 @@ const extractShopText = (r) => {
     }
   }
 }
-const extractShopList = (r) => {
+const extractShopList = r => {
   const shops = []
   const totalSections = 80
   const textBytes = 84
@@ -91,7 +99,7 @@ const extractShopList = (r) => {
     // text.push(val)
     // console.log('val', r.offset, i, bin, val)
 
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     const shopNameType = r.readShort()
     const inventory = r.readShort()
 
@@ -104,9 +112,9 @@ const extractShopList = (r) => {
       //   items.push([materiaFlag, unknownItem1, itemId, unknownItem2])
       if (materiaFlag > 0) {
         // console.log('materiaFlag', materiaFlag)
-        items.push({type: 'materia', id: itemId})
+        items.push({ type: 'materia', id: itemId })
       } else {
-        items.push({type: 'item', id: itemId})
+        items.push({ type: 'item', id: itemId })
       }
     }
 
@@ -119,12 +127,12 @@ const extractShopList = (r) => {
     // console.log('offset', r.offset)
     shops.push(shop)
   }
-  r.offset = sectionOffset + (totalSections * textBytes)
+  r.offset = sectionOffset + totalSections * textBytes
   //   console.log('offset next', r.offset)
   //   console.log('shops', shops)
   return shops
 }
-const extractShopItemPrices = (r) => {
+const extractShopItemPrices = r => {
   const prices = []
   const totalSections = 320
   const textBytes = 4
@@ -136,19 +144,19 @@ const extractShopItemPrices = (r) => {
     // const val = r.readKernelString(textBytes)
     // r.offset = sectionOffset + (i * textBytes)
     // const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     const price = r.readUShort()
     const unknown = r.readUShort()
     // text.push(val)
     // console.log('val', r.offset, i, bin, val, price, unknown)
 
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     prices.push(price)
   }
   //   console.log('extractShopItemPrices', prices)
   return prices
 }
-const extractShopMateriaPrices = (r) => {
+const extractShopMateriaPrices = r => {
   const prices = []
   const totalSections = 96
   const textBytes = 4
@@ -160,64 +168,70 @@ const extractShopMateriaPrices = (r) => {
     // const val = r.readKernelString(textBytes)
     // r.offset = sectionOffset + (i * textBytes)
     // const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     const price = r.readUShort()
     const unknown = r.readUShort()
     // text.push(val)
     // console.log('val', r.offset, i, bin, val, price, unknown)
 
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     prices.push(price)
   }
   //   console.log('extractShopMateriaPrices', prices)
   return prices
 }
-const extractShopMateriaSellMultipler = (r) => {
-  r.offset = 0x0031F14F
+const extractShopMateriaSellMultipler = r => {
+  r.offset = 0x0031f14f
   const multiplier = r.readUByte()
   // console.log('multiplier', multiplier)
   return multiplier
 }
-const extractDefaultNames = (r) => {
+const extractDefaultNames = r => {
   const names = []
 
   const totalSections = 10
   const textBytes = 12
-  const sectionOffset = 0x005206B8
+  const sectionOffset = 0x005206b8
   //   console.log('section total', 0x00523858 - sectionOffset)
   for (let i = 0; i < totalSections; i++) {
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     const name = r.readKernelString(textBytes)
-    r.offset = sectionOffset + (i * textBytes)
-    const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
+    r.offset = sectionOffset + i * textBytes
+    const bin = r
+      .readUByteArray(textBytes)
+      .map(b => toHex2(b))
+      .join(' ')
     // console.log('val', r.offset, i, bin, name)
 
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     names.push(name)
   }
 
   return names
 }
-const extractBlinkData = (r) => {
+const extractBlinkData = r => {
   const timFilesString = []
 
   let totalSections = 220 - 12
   let textBytes = 1
-  let sectionOffset = 0x0050636C + 12
+  let sectionOffset = 0x0050636c + 12
   //   console.log('section total', 0x00523858 - sectionOffset)
   for (let i = 0; i < totalSections; i++) {
     // r.offset = sectionOffset + (i * textBytes)
     // const name = r.readKernelString(textBytes)
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     const tileFileLetter = r.readString(textBytes)
     // r.offset = sectionOffset + (i * textBytes)
     // const bin = r.readUByteArray(textBytes).map(b => toHex2(b)).join(' ')
     // console.log('val', r.offset, i, bin, name, tileFileLetter)
 
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     timFilesString.push(tileFileLetter === '' ? ' ' : tileFileLetter)
   }
-  const timFiles = timFilesString.join('').split(' ').filter(f => f !== '')
+  const timFiles = timFilesString
+    .join('')
+    .split(' ')
+    .filter(f => f !== '')
   console.log('timFiles', timFiles)
 
   totalSections = 152
@@ -226,7 +240,7 @@ const extractBlinkData = (r) => {
 
   const modelsString = []
   for (let i = 0; i < totalSections; i++) {
-    r.offset = sectionOffset + (i * textBytes)
+    r.offset = sectionOffset + i * textBytes
     const modelsLetter = r.readString(textBytes)
     modelsString.push(modelsLetter === '' ? ' ' : modelsLetter)
 
@@ -234,7 +248,10 @@ const extractBlinkData = (r) => {
     // r.offset = sectionOffset + (i * textBytes)
     // timFilesString.push(name2 === '' ? ' ' : name2)
   }
-  const models = modelsString.join('').split(' ').filter(f => f !== '')
+  const models = modelsString
+    .join('')
+    .split(' ')
+    .filter(f => f !== '')
   console.log('models', models)
 
   const blinkData = {}
@@ -264,7 +281,7 @@ const extractBlinkData = (r) => {
     }
     const files = timFiles.filter(f => f.startsWith(prefix))
     if (files.length > 0) {
-      const obj = {name, leftEye: files[0].replace('.tim', '')}
+      const obj = { name, leftEye: files[0].replace('.tim', '') }
       if (files.length > 1) {
         obj.rightEye = files[1].replace('.tim', '')
       }
@@ -277,13 +294,13 @@ const extractBlinkData = (r) => {
   return blinkData
 }
 const saveData = async (data, outputFile) => {
-//   console.log('saveData', data, outputFile)
+  //   console.log('saveData', data, outputFile)
 
   await fs.outputFile(outputFile, JSON.stringify(data))
 }
-const extractBattleCharacterModels = (r) => {
+const extractBattleCharacterModels = r => {
   let totalSections = 196
-  let sectionOffset = 0x004FE310
+  let sectionOffset = 0x004fe310
   r.offset = sectionOffset
   let s = ''
   for (let i = 0; i < totalSections; i++) {
@@ -294,15 +311,41 @@ const extractBattleCharacterModels = (r) => {
       s = s + ' '
     }
   }
-  const data = s.replace(/ +(?= )/g, '').split(' ').filter(m => m !== '').map((name, i) => {
-    const id = i + 460
-    const id2 = Math.floor(id / 26)
-    const id3 = id - (id2 * 26)
-    return {name, enemyId: id, hrc: String.fromCharCode(id2 + 97) + String.fromCharCode(id3 + 97) + 'aa'}
-  }
-  )
+  const data = s
+    .replace(/ +(?= )/g, '')
+    .split(' ')
+    .filter(m => m !== '')
+    .map((name, i) => {
+      const id = i + 460
+      const id2 = Math.floor(id / 26)
+      const id3 = id - id2 * 26
+      return {
+        name,
+        enemyId: id,
+        hrc:
+          String.fromCharCode(id2 + 97) + String.fromCharCode(id3 + 97) + 'aa'
+      }
+    })
   console.log('extractBattleCharacterModels', data)
   return data
+}
+const numOfLimits = 71
+const getLimitNames = r => {
+  const names = []
+  r.offset = 0x51fbf0
+  for (let i = 0; i < numOfLimits; i++) {
+    const element = array[i]
+  }
+  return names
+}
+const extractLimitData = r => {
+  r.offset = 0x51e0d4
+  const limitData = []
+  for (let i = 0; i < numOfLimits; i++) {
+    limitData.push(parseAttackData(r))
+  }
+  console.log('limitData', limitData)
+  return limitData
 }
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   console.log('Extract Exe Data: START')
@@ -312,11 +355,13 @@ const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   const defaultNames = extractDefaultNames(r)
   const blinkData = extractBlinkData(r)
   const battleCharacterModels = extractBattleCharacterModels(r)
+  const limitData = extractLimitData(r)
   const data = {
     shopData,
     defaultNames,
     blinkData,
-    battleCharacterModels
+    battleCharacterModels,
+    limitData
   }
   await saveData(data, path.join(outputExeDirectory, 'ff7.exe.json'))
 
