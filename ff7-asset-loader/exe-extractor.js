@@ -232,7 +232,7 @@ const extractBlinkData = r => {
     .join('')
     .split(' ')
     .filter(f => f !== '')
-  console.log('timFiles', timFiles)
+  // console.log('timFiles', timFiles)
 
   totalSections = 152
   textBytes = 1
@@ -252,7 +252,7 @@ const extractBlinkData = r => {
     .join('')
     .split(' ')
     .filter(f => f !== '')
-  console.log('models', models)
+  // console.log('models', models)
 
   const blinkData = {}
   for (let i = 0; i < models.length / 2; i++) {
@@ -289,7 +289,7 @@ const extractBlinkData = r => {
     }
   }
 
-  console.log('blinkData', blinkData)
+  // console.log('blinkData', blinkData)
 
   return blinkData
 }
@@ -326,26 +326,30 @@ const extractBattleCharacterModels = r => {
           String.fromCharCode(id2 + 97) + String.fromCharCode(id3 + 97) + 'aa'
       }
     })
-  console.log('extractBattleCharacterModels', data)
+  // console.log('extractBattleCharacterModels', data)
   return data
 }
 const numOfLimits = 71
-const getLimitNames = r => {
-  const names = []
-  r.offset = 0x51fbf0
+const extractLimits = r => {
+  r.offset = 0x51e0d4
+  const limits = []
   for (let i = 0; i < numOfLimits; i++) {
-    const element = array[i]
+    limits.push(parseAttackData(r))
   }
-  return names
+  return limits
+}
+const extractTifaSlots = r => {
+  r.offset = 0x51d4d0
+  const slots = Array.from({ length: 10 }, () => r.readUByteArray(16)).filter(
+    a => a[0] !== 0
+  )
+  // console.log('slots', slots)
+  return slots
 }
 const extractLimitData = r => {
-  r.offset = 0x51e0d4
-  const limitData = []
-  for (let i = 0; i < numOfLimits; i++) {
-    limitData.push(parseAttackData(r))
-  }
-  console.log('limitData', limitData)
-  return limitData
+  const limits = extractLimits(r)
+  const tifaSlots = extractTifaSlots(r)
+  return { limits, tifaSlots }
 }
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   console.log('Extract Exe Data: START')
