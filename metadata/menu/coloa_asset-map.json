@@ -1,0 +1,20 @@
+{
+    "slots": [
+        {"id":1, "description":"bs-materia-all", "x":0,"y":64,"w":64,"h":64, "palette": 8},
+        {"id":1, "description":"bs-materia-command", "x":0,"y":0,"w":64,"h":64, "palette": 7},
+        {"id":1, "description":"bs-materia-independent", "x":0,"y":0,"w":64,"h":64, "palette": 6},
+        {"id":1, "description":"bs-materia-support", "x":0,"y":0,"w":64,"h":64, "palette": 5},
+        {"id":1, "description":"bs-materia-summon", "x":0,"y":0,"w":64,"h":64, "palette": 4},
+        {"id":1, "description":"bs-materia-magic", "x":0,"y":0,"w":64,"h":64, "palette": 3},
+        {"id":1, "description":"bs-mini", "x":128,"y":128,"w":64,"h":64, "palette": 14},
+        {"id":1, "description":"bs-poison", "x":192,"y":168,"w":64,"h":64, "palette": 11},
+        {"id":1, "description":"bs-speed", "x":0,"y":128,"w":64,"h":64, "palette": 9},
+        {"id":1, "description":"bs-armor", "x":192,"y":64,"w":64,"h":64, "palette": 10},
+        {"id":1, "description":"bs-accessory", "x":64,"y":64,"w":64,"h":64, "palette": 10},
+        {"id":1, "description":"bs-item", "x":128,"y":64,"w":64,"h":64, "palette": 9},
+        {"id":1, "description":"bs-hp-half", "x":192,"y":192,"w":64,"h":64, "palette": 1},
+        {"id":1, "description":"bs-levels-10", "x":128,"y":192,"w":64,"h":64, "palette": 1},
+        {"id":1, "description":"bs-levels-5", "x":64,"y":192,"w":64,"h":64, "palette": 1},
+        {"id":1, "description":"bs-time-damage", "x":0,"y":192,"w":64,"h":64, "palette": 10}
+    ]
+}

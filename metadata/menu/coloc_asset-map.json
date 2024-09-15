@@ -1,0 +1,8 @@
+{
+    "slots": [
+        {"id":1, "description":"bs-hp-mp-half", "x":0,"y":0,"w":64,"h":64, "palette": 1},
+        {"id":1, "description":"bs-mp-zero", "x":64,"y":0,"w":64,"h":64, "palette": 1},
+        {"id":1, "description":"bs-cure", "x":192,"y":0,"w":64,"h":64, "palette": 13},
+        {"id":1, "description":"bs-lucky-7s", "x":128,"y":0,"w":64,"h":64, "palette": 2}
+    ]
+}
