@@ -4,6 +4,7 @@ const path = require('path')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const { toHex2 } = require('./string-util.js')
 const { parseAttackData } = require('./kernel-sections.js')
+const { parseKernelEnums, Enums } = require('./kernel-enums.js')
 
 const extractShopInfo = r => {
   r.offset = 0x005219c8
@@ -340,16 +341,27 @@ const extractLimits = r => {
 }
 const extractTifaSlots = r => {
   r.offset = 0x51d4d0
-  const slots = Array.from({ length: 10 }, () => r.readUByteArray(16)).filter(
-    a => a[0] !== 0
-  )
+  const slots = Array.from({ length: 10 }, () => r.readUByteArray(16))
+    .filter(a => a[0] !== 0)
+    .map(v => v.map(vi => parseKernelEnums(Enums.Slots.Tifa, vi)))
+  // console.log('slots', slots)
+  return slots
+}
+const extractCaitSithSlots = r => {
+  r.offset = 0x0051d3d8
+  const slots = Array.from({ length: 3 }, () =>
+    r.readUByteArray(16).map(v => parseKernelEnums(Enums.Slots.CaitSith, v))
+  ).filter(a => a[0] !== 0)
   // console.log('slots', slots)
   return slots
 }
 const extractLimitData = r => {
   const limits = extractLimits(r)
   const tifaSlots = extractTifaSlots(r)
-  return { limits, tifaSlots }
+  const caitSithSlots = extractCaitSithSlots(r)
+
+  // 0x0051D570 battle square stuff seems to start around here
+  return { limits, tifaSlots, caitSithSlots }
 }
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   console.log('Extract Exe Data: START')

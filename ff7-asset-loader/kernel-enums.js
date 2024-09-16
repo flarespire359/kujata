@@ -409,6 +409,21 @@ const Enums = {
       FullCure: 0x0,
       Nothing: 0xff
     }
+  },
+  Slots: {
+    Tifa: {
+      Miss: 0x00,
+      Hit: 0x01,
+      Yeah: 0x02
+    },
+    CaitSith: {
+      CaitSith: 0x00,
+      Bar: 0x01,
+      Crown: 0x02,
+      Heart: 0x03,
+      Star: 0x04,
+      Moogle: 0x05
+    }
   }
 }
 
@@ -785,7 +800,9 @@ const parseKernelEnums = (type, val) => {
     Enums.Character.PartyMember,
     Enums.InitialCursorAction,
     Enums.Battle.Location,
-    Enums.Battle.Layout
+    Enums.Battle.Layout,
+    Enums.Slots.Tifa,
+    Enums.Slots.CaitSith
   ]
   const inverseBitTypes = [
     Enums.SpecialEffects,

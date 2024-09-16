@@ -4,7 +4,7 @@
         {"id":1, "description":"cait-cait2", "x":64,"y":0,"w":64,"h":96, "palette": 2},
         {"id":1, "description":"cait-cait3", "x":128,"y":0,"w":64,"h":96, "palette": 2},
         {"id":1, "description":"cait-bar", "x":0,"y":96,"w":64,"h":96, "palette": 3},
-        {"id":1, "description":"cait-hat", "x":64,"y":96,"w":64,"h":96, "palette": 3},
+        {"id":1, "description":"cait-crown", "x":64,"y":96,"w":64,"h":96, "palette": 3},
         {"id":1, "description":"cait-heart", "x":128,"y":96,"w":64,"h":96, "palette": 3},
         {"id":1, "description":"cait-star", "x":0,"y":192,"w":64,"h":96, "palette": 3, "compose":{
             "file": "ketcy2b_3.png","x":0,"y":0,"w":64,"h":32, "toX":0,"toY":64
