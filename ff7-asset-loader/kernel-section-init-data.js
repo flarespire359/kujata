@@ -1,3 +1,5 @@
+const fs = require('fs')
+const path = require('path')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 
 const { Enums, parseKernelEnums } = require('./kernel-enums')
@@ -8,11 +10,8 @@ const getCharacterRecord = (
   materiaNames,
   materiaDescriptions,
   weaponNames,
-  weaponDescriptions,
   armorNames,
-  armorDescriptions,
-  accessoryNames,
-  accessoryDescriptions
+  accessoryNames
 ) => {
   const id = r.readUByte()
 
@@ -237,8 +236,14 @@ const getInitSectionData = (
   armorNames,
   armorDescriptions,
   accessoryNames,
-  accessoryDescriptions
+  accessoryDescriptions,
+  inputExeDirectory
 ) => {
+  // Note: This is opinionated, but CaitSith and Vincent initial data is held in the exe. I'll add it alos as part of this file
+
+  let bufferExe = fs.readFileSync(path.join(inputExeDirectory, 'ff7_en.exe'))
+  let rExe = new FF7BinaryDataReader(bufferExe)
+
   // Output the raw kernel data as the different consumers might want the data stored differently as this will be opinionated
   // 2876 bytes, although, I believe it should be 0x0BA4 - 0x0054 (2896 bytes), investigate when putting the data together
   const raw = sectionData.buffer.toString('base64')
@@ -330,7 +335,7 @@ const getInitSectionData = (
     accessoryNames,
     accessoryDescriptions
   )
-  const caitsith = getCharacterRecord(
+  const youngCloud = getCharacterRecord(
     r,
     materiaNames,
     materiaDescriptions,
@@ -341,7 +346,30 @@ const getInitSectionData = (
     accessoryNames,
     accessoryDescriptions
   )
+  rExe.offset = 0x520c10
+  const caitsith = getCharacterRecord(
+    rExe,
+    materiaNames,
+    materiaDescriptions,
+    weaponNames,
+    weaponDescriptions,
+    armorNames,
+    armorDescriptions,
+    accessoryNames,
+    accessoryDescriptions
+  )
   const vincent = getCharacterRecord(
+    rExe,
+    materiaNames,
+    materiaDescriptions,
+    weaponNames,
+    weaponDescriptions,
+    armorNames,
+    armorDescriptions,
+    accessoryNames,
+    accessoryDescriptions
+  )
+  const sephiroth = getCharacterRecord(
     r,
     materiaNames,
     materiaDescriptions,
@@ -453,7 +481,10 @@ const getInitSectionData = (
       Yuffie: yuffie,
       CaitSith: caitsith,
       Vincent: vincent,
-      Cid: cid
+      Cid: cid,
+      YoungCloud: youngCloud,
+      Sephiroth: sephiroth
+      // NOte: CaitSith and Vincent are in exe data. In fenrir, I'll fetch this and combine
     },
     party: {
       // Not 100% sure, but need to hold the menu order separately
@@ -531,5 +562,6 @@ const getInitSectionData = (
   return { raw, data }
 }
 module.exports = {
-  getInitSectionData
+  getInitSectionData,
+  getCharacterRecord
 }

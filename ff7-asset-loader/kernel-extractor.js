@@ -53,14 +53,15 @@ const decompressBinGzip = (binPath, sectionCount) => {
   }
   return sections
 }
-const decompressKernel2 = (kernel2Path) => {
+const decompressKernel2 = kernel2Path => {
   let buffer = fs.readFileSync(kernel2Path)
   buffer = new LzsDecompressor().decompress(buffer)
   const r = new FF7BinaryDataReader(buffer)
 
   const sections = [{}, {}, {}, {}, {}, {}, {}, {}, {}] // Pad this out for the positions match the decompressed kernel.bin
   r.offset = 0
-  for (let i = 9; i < 27; i++) { // should be 27 sections
+  for (let i = 9; i < 27; i++) {
+    // should be 27 sections
     const sectionLength = r.readUInt()
     const sectionStart = r.offset
     const sectionEnd = r.offset + sectionLength
@@ -79,7 +80,11 @@ const saveKernelData = async (outputKernelDirectory, data) => {
   console.log('kernel.bin.json successfully extracted to', outputPath)
   await fs.writeJson(outputPath, data, { spaces: '\t' })
 }
-const extractKernelKernel2Bin = async (inputKernelDirectory, outputKernelDirectory) => {
+const extractKernelKernel2Bin = async (
+  inputKernelDirectory,
+  inputExeDirectory,
+  outputKernelDirectory
+) => {
   console.log('Extract kernel.bin and kernel2.bin: START')
   const kernelBinPath = path.join(inputKernelDirectory, 'KERNEL.BIN')
   const kernel2BinPath = path.join(inputKernelDirectory, 'kernel2.bin')
@@ -109,21 +114,61 @@ const extractKernelKernel2Bin = async (inputKernelDirectory, outputKernelDirecto
   data.summonAttackNames = getTextSectionData(kernel2Data[26])
 
   // Combine descriptions and names with kernel data
-  data.commandData = getCommandSectionData(kernelData[0], data.commandNames, data.commandDescriptions)
-  data.itemData = getItemSectionData(kernelData[4], data.itemNames, data.itemDescriptions)
-  data.weaponData = getWeaponSectionData(kernelData[5], data.weaponNames, data.weaponDescriptions)
-  data.armorData = getArmorSectionData(kernelData[6], data.armorNames, data.armorDescriptions)
-  data.accessoryData = getAccessorySectionData(kernelData[7], data.accessoryNames, data.accessoryDescriptions)
-  data.materiaData = getMateriaSectionData(kernelData[8], data.materiaNames, data.materiaDescriptions, data.magicNames, data.commandData)
+  data.commandData = getCommandSectionData(
+    kernelData[0],
+    data.commandNames,
+    data.commandDescriptions
+  )
+  data.itemData = getItemSectionData(
+    kernelData[4],
+    data.itemNames,
+    data.itemDescriptions
+  )
+  data.weaponData = getWeaponSectionData(
+    kernelData[5],
+    data.weaponNames,
+    data.weaponDescriptions
+  )
+  data.armorData = getArmorSectionData(
+    kernelData[6],
+    data.armorNames,
+    data.armorDescriptions
+  )
+  data.accessoryData = getAccessorySectionData(
+    kernelData[7],
+    data.accessoryNames,
+    data.accessoryDescriptions
+  )
+  data.materiaData = getMateriaSectionData(
+    kernelData[8],
+    data.materiaNames,
+    data.materiaDescriptions,
+    data.magicNames,
+    data.commandData
+  )
 
-  data.attackData = getAttackSectionData(kernelData[1], data.magicNames, data.magicDescriptions)
-  data.battleAndGrowthData = getBattleAndGrowthSectionData(kernelData[2], data.attackData)
-  data.initData = getInitSectionData(kernelData[3],
-    data.itemNames, data.itemDescriptions,
-    data.materiaNames, data.materiaDescriptions,
-    data.weaponNames, data.weaponDescriptions,
-    data.armorNames, data.armorDescriptions,
-    data.accessoryNames, data.accessoryDescriptions
+  data.attackData = getAttackSectionData(
+    kernelData[1],
+    data.magicNames,
+    data.magicDescriptions
+  )
+  data.battleAndGrowthData = getBattleAndGrowthSectionData(
+    kernelData[2],
+    data.attackData
+  )
+  data.initData = getInitSectionData(
+    kernelData[3],
+    data.itemNames,
+    data.itemDescriptions,
+    data.materiaNames,
+    data.materiaDescriptions,
+    data.weaponNames,
+    data.weaponDescriptions,
+    data.armorNames,
+    data.armorDescriptions,
+    data.accessoryNames,
+    data.accessoryDescriptions,
+    inputExeDirectory
   )
 
   await saveKernelData(outputKernelDirectory, data)
@@ -131,7 +176,11 @@ const extractKernelKernel2Bin = async (inputKernelDirectory, outputKernelDirecto
   console.log('Extract kernel.bin and kernel2.bin: END')
 }
 
-const extractWindowBin = async (inputKernelDirectory, outputKernelDirectory, metadataDirectory) => {
+const extractWindowBin = async (
+  inputKernelDirectory,
+  outputKernelDirectory,
+  metadataDirectory
+) => {
   console.log('Extract window.bin: START')
   const windowBinPath = path.join(inputKernelDirectory, 'WINDOW.BIN')
 
@@ -143,12 +192,18 @@ const extractWindowBin = async (inputKernelDirectory, outputKernelDirectory, met
     const windowSection = windowData[i]
     if (windowSection.type === 0) {
       const tim = new TimFile().loadTimFileFromBuffer(windowSection.buffer)
-      await tim.saveAllPalettesAsPngs(path.join(outputKernelDirectory, `window.bin_${i}.png`))
+      await tim.saveAllPalettesAsPngs(
+        path.join(outputKernelDirectory, `window.bin_${i}.png`)
+      )
 
       // Apparently we know nothing of the type 1 file, I imagine that it contains the references
       // to the x,y,w,h positions and palette colours for the assets to be used in the game
       // In the mean time, lets build the paletted pngs and extract them one by one
-      const windowBinSectionAssetMap = await extractWindowBinElements(i, outputKernelDirectory, metadataDirectory)
+      const windowBinSectionAssetMap = await extractWindowBinElements(
+        i,
+        outputKernelDirectory,
+        metadataDirectory
+      )
       for (const assetType in windowBinSectionAssetMap) {
         windowBinMetaData[assetType] = windowBinSectionAssetMap[assetType]
       }
@@ -157,7 +212,10 @@ const extractWindowBin = async (inputKernelDirectory, outputKernelDirectory, met
     }
   }
 
-  await fs.writeJson(path.join(outputDirMetaDataWindow, 'window.bin.metadata.json'), windowBinMetaData)
+  await fs.writeJson(
+    path.join(outputDirMetaDataWindow, 'window.bin.metadata.json'),
+    windowBinMetaData
+  )
 
   console.log('Extract window.bin: END')
 }
