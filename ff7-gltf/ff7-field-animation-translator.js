@@ -11,30 +11,38 @@ const BattleAnimationLoader = require('../ff7-asset-loader/battle-animation-load
 
 const fs = require('fs')
 const mkdirp = require('mkdirp')
-
+const path = require('path')
 // var IFALNA_DB = JSON.parse(fs.readFileSync('../ifalna-db/ifalna.json', 'utf-8'));
 
 module.exports = class FF7FieldAnimationTranslator {
-  constructor () {
-  }
+  constructor () {}
 
   // Translate a FF7 FIELD.LGP's *.A file to glTF 2.0 format
   // config = configuration object, see config.json for example
   // animFileId = which animation to include in the output gltf
   translateFF7FieldAnimationToGLTF (config, animFileId) {
-    let outputAnimationsDirectory = config.outputFieldCharDirectory
+    const outputAnimationsDirectory = path.join(
+      config['kujata-data-output-directory'],
+      'data',
+      'field',
+      'char.lgp'
+    )
+    const inputFieldCharDirectory = path.join(
+      config['unlgp-directory'],
+      'char.lgp'
+    )
 
     if (!fs.existsSync(outputAnimationsDirectory)) {
-      console.log('Creating output directory: ' + outputAnimationsDirectory)
+      // console.log('Creating output directory: ' + outputAnimationsDirectory)
       mkdirp.sync(outputAnimationsDirectory)
     }
 
     let ROOT_X_ROTATION_DEGREES = 180.0
     let FRAMES_PER_SECOND = 30.0
 
-    console.log('Will translate the following animFileId: ', animFileId)
+    // console.log('Will translate the following animFileId: ', animFileId)
 
-    let animationData = ALoader.loadA(config, animFileId)
+    let animationData = ALoader.loadA(inputFieldCharDirectory, animFileId)
     // console.log('animationData', animationData)
     let gltfFilename = animFileId.toLowerCase() + '.a.gltf'
     let binFilename = animFileId.toLowerCase() + '.a.bin'
@@ -191,7 +199,8 @@ module.exports = class FF7FieldAnimationTranslator {
         output: rootTranslationFrameDataAccessorIndex
       })
 
-      const samplerIndexRootTranslation = gltf.animations[animationIndex].samplers.length - 1
+      const samplerIndexRootTranslation =
+        gltf.animations[animationIndex].samplers.length - 1
       gltf.animations[animationIndex].channels.push({
         sampler: samplerIndexRootTranslation,
         target: {
@@ -241,7 +250,8 @@ module.exports = class FF7FieldAnimationTranslator {
         output: rootRotationFrameDataAccessorIndex
       })
       // nodeIndex = 0; // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
-      const samplerIndexRootRotation = gltf.animations[animationIndex].samplers.length - 1
+      const samplerIndexRootRotation =
+        gltf.animations[animationIndex].samplers.length - 1
       gltf.animations[animationIndex].channels.push({
         sampler: samplerIndexRootRotation,
         target: {
@@ -258,7 +268,9 @@ module.exports = class FF7FieldAnimationTranslator {
       const numBufferViews = gltf.bufferViews.length
       gltf.bufferViews[0].byteOffset = 0
       for (let i = 1; i < numBufferViews; i++) {
-        gltf.bufferViews[i].byteOffset = gltf.bufferViews[i - 1].byteOffset + gltf.bufferViews[i - 1].byteLength
+        gltf.bufferViews[i].byteOffset =
+          gltf.bufferViews[i - 1].byteOffset +
+          gltf.bufferViews[i - 1].byteLength
       }
 
       // TODO: set min and max for all accessors to help engines optimize
@@ -275,12 +287,12 @@ module.exports = class FF7FieldAnimationTranslator {
       // create *.bin file
       const binFilenameFull = outputAnimationsDirectory + '/' + binFilename
       fs.writeFileSync(binFilenameFull, combinedBuffer)
-      console.log('Wrote: ' + binFilenameFull)
+      // console.log('Wrote: ' + binFilenameFull)
     }
 
     // create *.gltf file
     const gltfFilenameFull = outputAnimationsDirectory + '/' + gltfFilename
     fs.writeFileSync(gltfFilenameFull, JSON.stringify(gltf, null, 2))
-    console.log('Wrote: ' + gltfFilenameFull)
-  }; // end function translateFF7FieldAnimationToGLTF
+    // console.log('Wrote: ' + gltfFilenameFull)
+  } // end function translateFF7FieldAnimationToGLTF
 } // end class FF7FieldAnimationTranslator (and end of modules.export)

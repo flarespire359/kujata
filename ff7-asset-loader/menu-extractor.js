@@ -44,7 +44,7 @@ const extractFontElement = async (
 
   let overviewCompositionActions = []
   const assetMap = await fs.readJson(
-    `../metadata/${type}/${fontMetaDataFile}_asset-map.json`
+    `./metadata/${type}/${fontMetaDataFile}_asset-map.json`
   )
 
   for (const assetType in assetMap) {
@@ -183,7 +183,7 @@ const extractSinglePaletteImages = async (
   metadataDirectory
 ) => {
   const assetMap = await fs.readJson(
-    '../metadata/menu/single-palette-images_asset-map.json'
+    './metadata/menu/single-palette-images_asset-map.json'
   )
   for (const assetType in assetMap) {
     for (let i = 0; i < assetMap[assetType].length; i++) {

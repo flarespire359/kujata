@@ -4,8 +4,7 @@ const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 // const PLoader = require('../ff7-asset-loader/p-loader.js')
 
 module.exports = class BattleModelLoader {
-  loadBattleLocationPiece (config, pieceFilename, boneIndex) {
-    // let model = PLoader.loadP(config, pieceFilename, true)
+  loadBattleLocationPiece (pieceFilename, boneIndex) {
     // const boneParent = boneIndex
     const boneLength = 1
     const bone = {
@@ -34,7 +33,7 @@ module.exports = class BattleModelLoader {
     return bone
   }
 
-  loadBattleBone (config, r, offset, boneIndex, pieceFilename, loadGeometry) {
+  loadBattleBone (r, offset, boneIndex, pieceFilename, loadGeometry) {
     r.offset = offset
     const boneParent = r.readInt()
     const boneLength = r.readFloat()
@@ -64,7 +63,7 @@ module.exports = class BattleModelLoader {
     return bone
   }
 
-  loadWeaponBone (config, r, offset, boneIndex, pieceFilename, loadGeometry) {
+  loadWeaponBone (r, offset, boneIndex, pieceFilename, loadGeometry) {
     // r.offset = offset;
     // let boneParent = r.readInt();
     // let boneParent = "root";
@@ -101,10 +100,8 @@ module.exports = class BattleModelLoader {
   }
 
   // similar to Kimera's "ReadAASkeleton" subroutine in FF7AASkeleton.bas
-  loadBattleModel (config, filename, loadGeometry) {
-    const buffer = fs.readFileSync(
-      config.inputBattleBattleDirectory + '/' + filename
-    )
+  loadBattleModel (inputBattleBattleDirectory, filename, loadGeometry) {
+    const buffer = fs.readFileSync(inputBattleBattleDirectory + '/' + filename)
 
     const r = new FF7BinaryDataReader(buffer)
 
@@ -149,9 +146,8 @@ module.exports = class BattleModelLoader {
         // 109='m', 122='z'
         const pieceFilename =
           baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
-        const pieceFilepath =
-          config.inputBattleBattleDirectory + '/' + pieceFilename
-        // let pieceFilenameAbsolute = config.inputBattleBattleDirectory + '/' + pieceFilename
+        const pieceFilepath = inputBattleBattleDirectory + '/' + pieceFilename
+        // let pieceFilenameAbsolute = inputBattleBattleDirectory + '/' + pieceFilename
 
         // console.log('pieceFilepath', pieceFilepath, pieceFilename)
 
@@ -161,11 +157,7 @@ module.exports = class BattleModelLoader {
           // console.log('pieceFilepath', pieceFilepath, 'present', loadGeometry)
           if (loadGeometry) {
             const boneIndex = battleModel.numBones
-            const bone = this.loadBattleLocationPiece(
-              config,
-              pieceFilename,
-              boneIndex
-            )
+            const bone = this.loadBattleLocationPiece(pieceFilename, boneIndex)
             // console.log('bone', bone)
             battleModel.bones.push(bone)
           }
@@ -181,9 +173,8 @@ module.exports = class BattleModelLoader {
       for (let bi = 0; bi < battleModel.numBones; bi++) {
         const pieceFilename =
           baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
-        // const pieceFilenameAbsolute = config.inputBattleBattleDirectory + '/' + pieceFilename
+        // const pieceFilenameAbsolute = inputBattleBattleDirectory + '/' + pieceFilename
         const bone = this.loadBattleBone(
-          config,
           r,
           52 + bi * 12,
           bi,
@@ -212,7 +203,7 @@ module.exports = class BattleModelLoader {
         const weaponFilename =
           baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
         const weaponFilenameAbsolute =
-          config.inputBattleBattleDirectory + '/' + weaponFilename
+          inputBattleBattleDirectory + '/' + weaponFilename
         if (fs.existsSync(weaponFilenameAbsolute)) {
           // console.log('weapon', weaponFilenameAbsolute)
           if (loadGeometry) {
@@ -224,10 +215,10 @@ module.exports = class BattleModelLoader {
       // TODO - Separate out weapons
       // battleModel.hasWeapon = false
       // for (const weaponFilename of battleModel.weaponModelFilenames) {
-      //   const weaponFilenameAbsolute = config.inputBattleBattleDirectory + '/' + weaponFilename
+      //   const weaponFilenameAbsolute = inputBattleBattleDirectory + '/' + weaponFilename
       //   if (fs.existsSync(weaponFilenameAbsolute)) {
       //     const bi = battleModel.numBones
-      //     const weaponBone = this.loadWeaponBone(config, r, 52 + bi * 12, bi, weaponFilename, loadGeometry)
+      //     const weaponBone = this.loadWeaponBone(r, 52 + bi * 12, bi, weaponFilename, loadGeometry)
       //     battleModel.bones.push(weaponBone)
       //     battleModel.numBones = battleModel.bones.length
       //     battleModel.hasWeapon = true
@@ -236,11 +227,10 @@ module.exports = class BattleModelLoader {
 
       const weaponFilename = battleModel.weaponModelFilenames[0]
       const weaponFilenameAbsolute =
-        config.inputBattleBattleDirectory + '/' + weaponFilename
+        inputBattleBattleDirectory + '/' + weaponFilename
       if (fs.existsSync(weaponFilenameAbsolute)) {
         const bi = battleModel.numBones
         const weaponBone = this.loadWeaponBone(
-          config,
           r,
           52 + bi * 12,
           bi,
@@ -268,7 +258,7 @@ module.exports = class BattleModelLoader {
         const pSufix2 = 99 + ti
         const texFileName =
           baseName + String.fromCharCode(pSufix1) + String.fromCharCode(pSufix2)
-        // const texFileNameAbsolute = config.inputBattleBattleDirectory + '/' + texFileName
+        // const texFileNameAbsolute = inputBattleBattleDirectory + '/' + texFileName
         battleModel.textureFilenames.push(texFileName)
         // console.log('TEXTURES ARE ' + texFileName)
       }

@@ -1,15 +1,18 @@
 const fs = require('fs')
 
 module.exports = {
-  loadP: function (config, pBaseFilename, isBattleModel) {
+  loadP: function (
+    inputBattleBattleDirectory,
+    inputFieldCharDirectory,
+    pBaseFilename,
+    isBattleModel
+  ) {
     let buffer = {}
     if (isBattleModel) {
-      buffer = fs.readFileSync(
-        config.inputBattleBattleDirectory + '/' + pBaseFilename
-      ) // e.g. "rtam"
+      buffer = fs.readFileSync(inputBattleBattleDirectory + '/' + pBaseFilename) // e.g. "rtam"
     } else {
       buffer = fs.readFileSync(
-        config.inputFieldCharDirectory + '/' + pBaseFilename + '.P'
+        inputFieldCharDirectory + '/' + pBaseFilename + '.P'
       )
     }
     let offset = 0
@@ -155,7 +158,7 @@ module.exports = {
       })
     }
     const unknown = readInt() // unknown
-    if (unknown > 0x00) console.log('p unknown', unknown)
+    // if (unknown > 0x00) console.log('p unknown', unknown)
     model.boundingBox = {
       max: { x: readFloat(), y: readFloat(), z: readFloat() },
       min: { x: readFloat(), y: readFloat(), z: readFloat() }

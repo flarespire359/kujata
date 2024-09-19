@@ -1,7 +1,6 @@
 const fs = require('fs')
 
 module.exports = {
-
   FIRST_LINE: ':HEADER_BLOCK 2',
   SKELETON_LINE_PREFIX: ':SKELETON ',
   BONES_LINE_PREFIX: ':BONES ',
@@ -18,16 +17,35 @@ module.exports = {
     let expectedCount = parseInt(tokens[0])
     let rsdBaseFilenames = tokens.slice(1)
 
-    if (expectedCount !== rsdBaseFilenames.length) { throw new Error('rsdDescription not valid, count did not match: ' + rsdDescription) }
+    if (expectedCount !== rsdBaseFilenames.length) {
+      throw new Error(
+        'rsdDescription not valid, count did not match: ' + rsdDescription
+      )
+    }
     return rsdBaseFilenames
   },
 
-  loadHrc: function (config, hrcBaseFilename) {
-    let fileContents = fs.readFileSync(config.inputFieldCharDirectory + '/' + hrcBaseFilename + '.HRC', 'utf-8')
-    let lines = fileContents.split(/\r?\n/g).filter(line => !line.startsWith('#'))
-    if (!lines[0].startsWith(this.FIRST_LINE)) { throw new Error('Expected first line to be: ' + this.FIRST_LINE) }
-    if (!lines[1].startsWith(this.SKELETON_LINE_PREFIX)) { throw new Error('Expected second line to start with: ' + this.SKELETON_LINE_PREFIX) }
-    if (!lines[2].startsWith(this.BONES_LINE_PREFIX)) { throw new Error('Expected third line to start with: ' + this.BONES_LINE_PREFIX) }
+  loadHrc: function (inputFieldCharDirectory, hrcBaseFilename) {
+    let fileContents = fs.readFileSync(
+      inputFieldCharDirectory + '/' + hrcBaseFilename + '.HRC',
+      'utf-8'
+    )
+    let lines = fileContents
+      .split(/\r?\n/g)
+      .filter(line => !line.startsWith('#'))
+    if (!lines[0].startsWith(this.FIRST_LINE)) {
+      throw new Error('Expected first line to be: ' + this.FIRST_LINE)
+    }
+    if (!lines[1].startsWith(this.SKELETON_LINE_PREFIX)) {
+      throw new Error(
+        'Expected second line to start with: ' + this.SKELETON_LINE_PREFIX
+      )
+    }
+    if (!lines[2].startsWith(this.BONES_LINE_PREFIX)) {
+      throw new Error(
+        'Expected third line to start with: ' + this.BONES_LINE_PREFIX
+      )
+    }
     let skeletonName = lines[1].substring(this.SKELETON_LINE_PREFIX.length)
     let numBones = parseInt(lines[2].substring(this.BONES_LINE_PREFIX.length))
     if (numBones === 0) {
@@ -54,5 +72,4 @@ module.exports = {
     // console.log('hrc', JSON.stringify(skeleton, null, 2))
     return skeleton
   }
-
 }

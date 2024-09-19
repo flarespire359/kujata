@@ -2,7 +2,7 @@ const zlib = require('zlib')
 const fs = require('fs-extra')
 const path = require('path')
 
-const LzsDecompressor = require('../lzs/lzs-decompressor.js')
+const LzsDecompressor = require('../tools/lzs/lzs-decompressor.js')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const {
   getTextSectionData,
@@ -76,6 +76,7 @@ const decompressKernel2 = kernel2Path => {
 const saveKernelData = async (outputKernelDirectory, data) => {
   // Note: Chosen to claim the kernel.bin.json as previously defined in parse-kernel.js
   const outputPath = path.join(outputKernelDirectory, 'kernel.bin.json')
+  fs.ensureDirSync(path.dirname(outputPath))
 
   console.log('kernel.bin.json successfully extracted to', outputPath)
   await fs.writeJson(outputPath, data, { spaces: '\t' })

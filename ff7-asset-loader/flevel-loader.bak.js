@@ -1,12 +1,11 @@
 const fs = require('fs')
-const path = require('path')
 const stringUtil = require('./string-util.js')
 // const LzsDecompressor = require('../lzs/lzs-decompressor.js')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const backgroundLayerRenderer = require('./background-layer-renderer.js')
 const musicList = JSON.parse(
-  fs.readFileSync('./metadata/music-list.json', 'utf-8')
-) // TODO
+  fs.readFileSync('./metadata/music-list/music-list-combined.json', 'utf-8')
+)
 // const { toHex2 } = require('./string-util.js')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
 
@@ -16,15 +15,24 @@ module.exports = class FLevelLoader {
     this.mapList = mapList || []
   }
 
-  loadFLevel (config, baseFilename, renderBackgroundLayers) {
+  loadFLevel () {
+    const config = {
+      inputFieldFLevelDirectory:
+        'C:/Users/Carol/Documents/code/ff7/ff7-fenrir/workings-out/unlgp/unlgp-flevel.lgp',
+      metadataDirectory:
+        'C:/Users/Carol/Documents/code/ff7/kujata-data/metadata',
+      renderBackgroundLayers: false
+    }
+    const baseFilename = 'md1stin'
+    const isDecompressed = false
     // const charMap = require('./char-map.js')
 
     let buffer = fs.readFileSync(
-      path.join(config['unlgp-directory'], 'flevel.lgp', baseFilename)
-      // config['kujata-data-output-directory'] + '/' + baseFilename
+      config.inputFieldFLevelDirectory + '/' + baseFilename
     )
-    buffer = this.lzsDecompressor.decompress(buffer)
-    console.log('buffer', buffer.length)
+    if (!isDecompressed) {
+      buffer = this.lzsDecompressor.decompress(buffer)
+    }
 
     const r = new FF7BinaryDataReader(buffer)
 
@@ -138,7 +146,7 @@ module.exports = class FLevelLoader {
         entityType: '', // Purely added for positioning in JSON, updated delow
         scripts: []
       }
-      const LOG_I = 0 // Change for debugging
+      const LOG_I = 9999 // Change for debugging
       if (i === LOG_I) {
         console.log(
           'entity',
@@ -316,12 +324,6 @@ module.exports = class FLevelLoader {
           let opIndex = 0
           let gotoIndex = 0
           while (!initReturn) {
-            console.log(
-              'entityScript.ops[opIndex]',
-              opIndex,
-              entityScript.ops[opIndex],
-              entityScript.ops
-            )
             const returnFound = entityScript.ops[opIndex].op === 'RET'
             const gotoFound = entityScript.ops[opIndex].goto !== undefined
             if (gotoFound) {
@@ -335,18 +337,7 @@ module.exports = class FLevelLoader {
               // if (i === LOG_I) { console.log('splitInit', 'initReturn', gotoIndex, opIndex, returnFound, gotoFound, entityScript.ops[opIndex].op, entityScript.ops[opIndex].byteIndex) }
               initReturn = true
             } else {
-              // if (i === LOG_I) {
-              console.log(
-                'splitInit',
-                'next',
-                gotoIndex,
-                opIndex,
-                returnFound,
-                gotoFound,
-                entityScript.ops[opIndex].op,
-                entityScript.ops[opIndex].byteIndex
-              )
-              //}
+              // if (i === LOG_I) { console.log('splitInit', 'next', gotoIndex, opIndex, returnFound, gotoFound, entityScript.ops[opIndex].op, entityScript.ops[opIndex].byteIndex) }
               opIndex++
             }
           }
@@ -963,15 +954,12 @@ module.exports = class FLevelLoader {
     // console.log('ff7 ->', ff7) // Check that all has been read properly
 
     // Render Backgrounds
-    if (renderBackgroundLayers) {
-      const bgFolder = path.join(
-        config['kujata-data-output-directory'],
-        'metadata',
-        'background-layers'
-      )
-      //`${config.metadataDirectory}/background-layers/`
-      // const thisBgFolder = `${bgFolder}/${baseFilename}`
-      const thisBgFolder = path.join(bgFolder, baseFilename)
+    if (
+      config.renderBackgroundLayers &&
+      config.renderBackgroundLayers === true
+    ) {
+      const bgFolder = `${config.metadataDirectory}/background-layers/`
+      const thisBgFolder = `${bgFolder}/${baseFilename}`
       if (!fs.existsSync(bgFolder)) {
         fs.mkdirSync(bgFolder)
       }
@@ -1002,7 +990,6 @@ module.exports = class FLevelLoader {
   } // end loadFLevel() function
 
   async ensureTexturesExist (config) {
-    // I'm not sure why this was commented out
     const texFiles = fs
       .readdirSync(config.inputFieldFLevelDirectory)
       .filter(f => f.toLowerCase().endsWith('.tex'))
@@ -1049,6 +1036,6 @@ module.exports = class FLevelLoader {
       })
       fs.writeFileSync(metadataFile, JSON.stringify(fieldTextureMetadata))
     }
-    console.log('fieldTextureMetadata', fieldTextureMetadata)
+    // console.log('fieldTextureMetadata', fieldTextureMetadata)
   }
 } // end module.exports = class FLevelLoader {

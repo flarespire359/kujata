@@ -5,7 +5,7 @@ const fs = require('fs-extra')
 const sharp = require('sharp')
 const { dec2hex, dec2bin } = require('./string-util.js')
 
-const getTextSectionData = (sectionData) => {
+const getTextSectionData = sectionData => {
   const strings = []
 
   const r = new FF7BinaryDataReader(sectionData.buffer)
@@ -150,10 +150,22 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
       equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
       elements: parseKernelEnums(Enums.Elements, attackElements), // Is this array of single?
       boostedStats: filterUnneededBoostedStats([
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat1), value: boostedStat1Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat2), value: boostedStat2Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat3), value: boostedStat3Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat4), value: boostedStat4Bonus}
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat1),
+          value: boostedStat1Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat2),
+          value: boostedStat2Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat3),
+          value: boostedStat3Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat4),
+          value: boostedStat4Bonus
+        }
       ]),
       materiaSlots: materiaSlots,
       soundEffectIdNormalHit: soundEffectIdNormalHit,
@@ -223,13 +235,28 @@ const getArmorSectionData = (sectionData, names, descriptions) => {
       materiaSlots: materiaSlots,
       growthRate: parseKernelEnums(Enums.GrowthRate, growthRate),
       equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
-      elementDamageModifier: parseKernelEnums(Enums.DamageModifier, elementDamageModifier),
+      elementDamageModifier: parseKernelEnums(
+        Enums.DamageModifier,
+        elementDamageModifier
+      ),
       elements: parseKernelEnums(Enums.Elements, elementalDefense),
       boostedStats: filterUnneededBoostedStats([
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat1), value: boostedStat1Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat2), value: boostedStat2Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat3), value: boostedStat3Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat4), value: boostedStat4Bonus}
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat1),
+          value: boostedStat1Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat2),
+          value: boostedStat2Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat3),
+          value: boostedStat3Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat4),
+          value: boostedStat4Bonus
+        }
       ]),
       restrictions: parseKernelEnums(Enums.Restrictions, restrictions)
       // unknown: {
@@ -265,10 +292,19 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
       description: descriptions[i],
       type: 'Accessory',
       boostedStats: filterUnneededBoostedStats([
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat1), value: boostedStat1Bonus},
-        {stat: parseKernelEnums(Enums.CharacterStat, boostedStat2), value: boostedStat2Bonus}
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat1),
+          value: boostedStat1Bonus
+        },
+        {
+          stat: parseKernelEnums(Enums.CharacterStat, boostedStat2),
+          value: boostedStat2Bonus
+        }
       ]),
-      elementDamageModifier: parseKernelEnums(Enums.DamageModifier, elementDamageModifier),
+      elementDamageModifier: parseKernelEnums(
+        Enums.DamageModifier,
+        elementDamageModifier
+      ),
       elements: parseKernelEnums(Enums.Elements, elements),
       accessoryEffect: parseKernelEnums(Enums.AccessoryEffect, accessoryEffect),
       status: parseKernelEnums(Enums.Statuses, status),
@@ -283,7 +319,13 @@ const getAccessorySectionData = (sectionData, names, descriptions) => {
   }
   return objects
 }
-const getMateriaSectionData = (sectionData, names, descriptions, magicNames, commandData) => {
+const getMateriaSectionData = (
+  sectionData,
+  names,
+  descriptions,
+  magicNames,
+  commandData
+) => {
   const r = new FF7BinaryDataReader(sectionData.buffer)
   const objectSize = 20
   const objects = []
@@ -304,12 +346,27 @@ const getMateriaSectionData = (sectionData, names, descriptions, magicNames, com
     const materiaType = r.readUByte()
     const materiaAttributes = r.readUByteArray(6)
 
-    const materiaData = parseMateriaData(materiaType, materiaAttributes, equipEffectBytes, magicNames, i, commandData)
+    const materiaData = parseMateriaData(
+      materiaType,
+      materiaAttributes,
+      equipEffectBytes,
+      magicNames,
+      i,
+      commandData
+    )
     const apLevels = [0]
-    if (level2Ap !== 0xFFFF) { apLevels.push(level2Ap * 100) }
-    if (level3Ap !== 0xFFFF) { apLevels.push(level3Ap * 100) }
-    if (level4Ap !== 0xFFFF) { apLevels.push(level4Ap * 100) }
-    if (level5Ap !== 0xFFFF) { apLevels.push(level5Ap * 100) }
+    if (level2Ap !== 0xffff) {
+      apLevels.push(level2Ap * 100)
+    }
+    if (level3Ap !== 0xffff) {
+      apLevels.push(level3Ap * 100)
+    }
+    if (level4Ap !== 0xffff) {
+      apLevels.push(level4Ap * 100)
+    }
+    if (level5Ap !== 0xffff) {
+      apLevels.push(level5Ap * 100)
+    }
     const object = {
       index: i,
       name: names[i],
@@ -352,7 +409,10 @@ const getCommandSectionData = (sectionData, names, descriptions) => {
       index: i,
       name: names[i],
       description: descriptions[i],
-      initialCursorAction: parseKernelEnums(Enums.InitialCursorAction, initialCursorAction),
+      initialCursorAction: parseKernelEnums(
+        Enums.InitialCursorAction,
+        initialCursorAction
+      ),
       targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
       cameraMovementIdSingleTargets: cameraMovementIdSingleTargets,
       cameraMovementIdMultipleTargets: cameraMovementIdMultipleTargets
@@ -361,7 +421,7 @@ const getCommandSectionData = (sectionData, names, descriptions) => {
   }
   return objects
 }
-const parseAttackData = (r) => {
+const parseAttackData = r => {
   const attackPercent = r.readUByte()
   const impactAnimation = r.readUByte()
   const targetAnimation = r.readUByte()
@@ -397,12 +457,15 @@ const parseAttackData = (r) => {
     targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
     animationID,
     damageCalculation: {
-      type: (damageCalculation & 0xF0) >> 4, // upper nybble
-      formula: damageCalculation & 0x0F // lower nybble
+      type: (damageCalculation & 0xf0) >> 4, // upper nybble
+      formula: damageCalculation & 0x0f // lower nybble
     },
     attackPower,
-    conditionSubMenu: parseKernelEnums(Enums.ConditionSubMenu, conditionSubMenu),
-    statusEffectChance: statusEffectChance & 0x3F,
+    conditionSubMenu: parseKernelEnums(
+      Enums.ConditionSubMenu,
+      conditionSubMenu
+    ),
+    statusEffectChance: statusEffectChance & 0x3f,
     statusEffect: parseKernelEnums(Enums.StatusEffect, statusEffectChance),
     additionalEffects: {
       type: additionalEffects, // TODO,
@@ -431,7 +494,7 @@ const getAttackSectionData = (sectionData, names, descriptions) => {
   }
   return objects
 }
-const getCharacterDataRecord = (r) => {
+const getCharacterDataRecord = r => {
   const strengthLevelCurve = r.readUByte()
   const vitalityLevelCurve = r.readUByte()
   const magicLevelCurve = r.readUByte()
@@ -572,7 +635,7 @@ const calculateSpellOrder = (spellOrderBytes, attackData) => {
   const spells = []
   for (let i = 0; i < spellOrderBytes.length; i++) {
     const spellOrderByte = spellOrderBytes[i]
-    if (spellOrderByte !== 0xFF) {
+    if (spellOrderByte !== 0xff) {
       const bin = dec2bin(spellOrderByte)
       const section = parseInt(bin.substr(0, 3), 2)
       const position = parseInt(bin.substr(3, 8), 2)
@@ -590,16 +653,23 @@ const calculateSpellOrder = (spellOrderBytes, attackData) => {
   })
   return spells
 }
-const filterUnneededBoostedStats = (boostedStats) => {
+const filterUnneededBoostedStats = boostedStats => {
   return boostedStats.filter(s => s.stat !== 'None')
 }
 
-const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataDirectory) => {
+const extractWindowBinElements = async (
+  fileId,
+  outputKernelDirectory,
+  metadataDirectory
+) => {
   // console.log('extractWindowBinElements: START', fileId)
 
   const basePalette = 1
-  const baseFile = path.join(outputKernelDirectory, `window.bin_${fileId}_${basePalette}.png`)
-  const metadata = await (sharp(baseFile).metadata())
+  const baseFile = path.join(
+    outputKernelDirectory,
+    `window.bin_${fileId}_${basePalette}.png`
+  )
+  const metadata = await sharp(baseFile).metadata()
   // console.log('metadata', metadata)
   const outputDirMetaDataWindow = path.join(metadataDirectory, 'window-assets')
 
@@ -615,7 +685,9 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
     }
   }).png()
 
-  const windowBinAssetMap = await fs.readJson(`../metadata/kernel/window.bin_${fileId}_asset-map.json`)
+  const windowBinAssetMap = await fs.readJson(
+    `./metadata/kernel/window.bin_${fileId}_asset-map.json`
+  )
   // console.log('windowBinAssetMap', windowBinAssetMap)
 
   // console.log('created', metadata)
@@ -623,15 +695,19 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
   for (let assetType in windowBinAssetMap) {
     // I was going to simply loop, but need to deal with variable width fonts, plus having the metadata to get the correct widths
     // I'll leave this in, but it's not triggered by the data as I pregenerated it
-    if (!Array.isArray(windowBinAssetMap[assetType]) && windowBinAssetMap[assetType].type && windowBinAssetMap[assetType].type === 'text') {
+    if (
+      !Array.isArray(windowBinAssetMap[assetType]) &&
+      windowBinAssetMap[assetType].type &&
+      windowBinAssetMap[assetType].type === 'text'
+    ) {
       const textConfig = windowBinAssetMap[assetType]
       const elements = []
       let i = 0
 
       for (let col = 0; col < textConfig.cols; col++) {
         for (let row = 0; row < textConfig.rows; row++) {
-          const x = textConfig.x + (row * textConfig.w)
-          const y = textConfig.y + (col * textConfig.h)
+          const x = textConfig.x + row * textConfig.w
+          const y = textConfig.y + col * textConfig.h
           // console.log({ "id": 0, "description": "battle menu text 192", "x": 128, "y": 248, "w": 8, "h": 8, "palette": 8 })
           i++
         }
@@ -662,19 +738,38 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
     for (let i = 0; i < windowBinAssetMap[assetType].length; i++) {
       const element = windowBinAssetMap[assetType][i]
       // console.log('element', element)
-      const elementFile = path.join(outputKernelDirectory, `window.bin_${fileId}_${element.palette}.png`)
-      const elementFileExtract = sharp(elementFile).extract({ left: element.x, top: element.y, width: element.w, height: element.h })
+      const elementFile = path.join(
+        outputKernelDirectory,
+        `window.bin_${fileId}_${element.palette}.png`
+      )
+      const elementFileExtract = sharp(elementFile).extract({
+        left: element.x,
+        top: element.y,
+        width: element.w,
+        height: element.h
+      })
       const elementFileBuffer = await elementFileExtract.toBuffer()
-      overviewCompositionActions.push({ input: elementFileBuffer, left: element.x, top: element.y })
+      overviewCompositionActions.push({
+        input: elementFileBuffer,
+        left: element.x,
+        top: element.y
+      })
 
       const assetFolder = path.join(outputDirMetaDataWindow, assetType)
       if (!fs.existsSync(assetFolder)) {
         fs.ensureDirSync(assetFolder)
       }
-      elementFileExtract.resize({ width: element.w * 4, height: element.h * 4, kernel: sharp.kernel.nearest })
-      await elementFileExtract.toFile(path.join(assetFolder, `${element.description}.png`))
+      elementFileExtract.resize({
+        width: element.w * 4,
+        height: element.h * 4,
+        kernel: sharp.kernel.nearest
+      })
+      await elementFileExtract.toFile(
+        path.join(assetFolder, `${element.description}.png`)
+      )
 
-      if (overviewCompositionActions.length === 100) { // For some reason 150+ layers is causing issues <- nope, just nodemon
+      if (overviewCompositionActions.length === 100) {
+        // For some reason 150+ layers is causing issues <- nope, just nodemon
         img.composite(overviewCompositionActions)
         const compositeAppliedImg = await img.toBuffer()
         img = sharp(compositeAppliedImg)
@@ -686,7 +781,9 @@ const extractWindowBinElements = async (fileId, outputKernelDirectory, metadataD
   // Some layers missing black textures
   img.composite(overviewCompositionActions)
 
-  await img.toFile(path.join(outputDirMetaDataWindow, `window.bin_${fileId}_overview.png`))
+  await img.toFile(
+    path.join(outputDirMetaDataWindow, `window.bin_${fileId}_overview.png`)
+  )
   // console.log('extractWindowBinElements: END')
   return windowBinAssetMap
 }

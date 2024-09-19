@@ -15,7 +15,8 @@ module.exports = class BattleAnimationLoader {
 
   // if v=0xFFFF, return -1
   unsignedShortToSignedShort (unsignedShort) {
-    const signedShort = unsignedShort < 0x8000 ? unsignedShort : unsignedShort - 0x10000
+    const signedShort =
+      unsignedShort < 0x8000 ? unsignedShort : unsignedShort - 0x10000
     // console.log("unsignedShortToSignedShort: " + unsignedShort + " => " + signedShort);
     return signedShort
   }
@@ -27,7 +28,7 @@ module.exports = class BattleAnimationLoader {
       aux_res = aux_res
     }
 
-    if ((val & Math.pow(2, (length - 1))) != 0) {
+    if ((val & Math.pow(2, length - 1)) != 0) {
       aux_res = Math.pow(2, 16) - 1
       aux_res = aux_res ^ (Math.pow(2, length) - 1)
       aux_res = aux_res | val
@@ -67,11 +68,19 @@ module.exports = class BattleAnimationLoader {
       const base_byte = Math.floor(FBit / 8)
       const unaligned_by_bits = FBit % 8
       if (unaligned_by_bits + nBits > 8) {
-        const is_aligned = (unaligned_by_bits == 0)
+        const is_aligned = unaligned_by_bits == 0
         const end_bits = (FBit + nBits) % 8
-        const clean_end = (end_bits == 0)
+        const clean_end = end_bits == 0
 
-        const num_bytes = Math.floor((nBits - (is_aligned ? 0 : 8 - unaligned_by_bits) - (clean_end ? 0 : end_bits)) / 8) + (is_aligned ? 0 : 1) + (clean_end ? 0 : 1)
+        const num_bytes =
+          Math.floor(
+            (nBits -
+              (is_aligned ? 0 : 8 - unaligned_by_bits) -
+              (clean_end ? 0 : end_bits)) /
+              8
+          ) +
+          (is_aligned ? 0 : 1) +
+          (clean_end ? 0 : 1)
         const last_aligned_byte = num_bytes - (clean_end ? 0 : 1) - 1
         let first_aligned_byte = 0
         res = 0
@@ -80,7 +89,7 @@ module.exports = class BattleAnimationLoader {
         // Stored at the begining of the byte
         if (!is_aligned) {
           res = this.CLng(vect[base_byte])
-          res = res & (Math.pow(2, (8 - unaligned_by_bits)) - 1)
+          res = res & (Math.pow(2, 8 - unaligned_by_bits) - 1)
           first_aligned_byte = 1
         }
 
@@ -93,19 +102,17 @@ module.exports = class BattleAnimationLoader {
         // unaligned bits from part of the last byte
         if (!clean_end) {
           res = res * Math.pow(2, end_bits)
-          res = res | (
-            (
-              Math.floor(
-                this.CLng(vect[base_byte + last_aligned_byte + 1]) /
-                 Math.pow(2, (8 - end_bits))
-              )
+          res =
+            res |
+            (Math.floor(
+              this.CLng(vect[base_byte + last_aligned_byte + 1]) /
+                Math.pow(2, 8 - end_bits)
             ) &
-                 (Math.pow(2, end_bits) - 1)
-          )
+              (Math.pow(2, end_bits) - 1))
         }
       } else {
         res = this.CLng(vect[base_byte])
-        res = Math.floor(res / Math.pow(2, (8 - (unaligned_by_bits + nBits)))) // TODO: bit shift would be faster! like res = res >> (unaligned_by_bits + nBits)
+        res = Math.floor(res / Math.pow(2, 8 - (unaligned_by_bits + nBits))) // TODO: bit shift would be faster! like res = res >> (unaligned_by_bits + nBits)
         res = res & (Math.pow(2, nBits) - 1)
       }
 
@@ -128,7 +135,7 @@ module.exports = class BattleAnimationLoader {
   }
 
   getDegreesFromRaw (val, key) {
-    return (val / Math.pow(2, (12 - key))) * 360.0
+    return (val / Math.pow(2, 12 - key)) * 360.0
   }
 
   readUncompressedFrameBoneRotation (stream, offsetBitHolder, key) {
@@ -168,12 +175,27 @@ module.exports = class BattleAnimationLoader {
 
   readUncompressedFrameBone (stream, offsetBitHolder, key) {
     const bone = {}
-    bone.AccumAlphaS = this.readUncompressedFrameBoneRotation(stream, offsetBitHolder, key)
-    bone.AccumBetaS = this.readUncompressedFrameBoneRotation(stream, offsetBitHolder, key)
-    bone.AccumGammaS = this.readUncompressedFrameBoneRotation(stream, offsetBitHolder, key)
-    bone.AccumAlphaL = bone.AccumAlphaS < 0 ? bone.AccumAlphaS + 0x1000 : bone.AccumAlphaS
-    bone.AccumBetaL = bone.AccumBetaS < 0 ? bone.AccumBetaS + 0x1000 : bone.AccumBetaS
-    bone.AccumGammaL = bone.AccumGammaS < 0 ? bone.AccumGammaS + 0x1000 : bone.AccumGammaS
+    bone.AccumAlphaS = this.readUncompressedFrameBoneRotation(
+      stream,
+      offsetBitHolder,
+      key
+    )
+    bone.AccumBetaS = this.readUncompressedFrameBoneRotation(
+      stream,
+      offsetBitHolder,
+      key
+    )
+    bone.AccumGammaS = this.readUncompressedFrameBoneRotation(
+      stream,
+      offsetBitHolder,
+      key
+    )
+    bone.AccumAlphaL =
+      bone.AccumAlphaS < 0 ? bone.AccumAlphaS + 0x1000 : bone.AccumAlphaS
+    bone.AccumBetaL =
+      bone.AccumBetaS < 0 ? bone.AccumBetaS + 0x1000 : bone.AccumBetaS
+    bone.AccumGammaL =
+      bone.AccumGammaS < 0 ? bone.AccumGammaS + 0x1000 : bone.AccumGammaS
     bone.x = this.getDegreesFromRaw(bone.AccumAlphaL, 0)
     bone.y = this.getDegreesFromRaw(bone.AccumBetaL, 0)
     bone.z = this.getDegreesFromRaw(bone.AccumGammaL, 0)
@@ -182,12 +204,21 @@ module.exports = class BattleAnimationLoader {
 
   readFrameBone (stream, offsetBitHolder, key, lastFrameBone) {
     const bone = {}
-    bone.AccumAlphaS = lastFrameBone.AccumAlphaS + this.readFrameBoneRotationDelta(stream, offsetBitHolder, key)
-    bone.AccumBetaS = lastFrameBone.AccumBetaS + this.readFrameBoneRotationDelta(stream, offsetBitHolder, key)
-    bone.AccumGammaS = lastFrameBone.AccumGammaS + this.readFrameBoneRotationDelta(stream, offsetBitHolder, key)
-    bone.AccumAlphaL = bone.AccumAlphaS < 0 ? bone.AccumAlphaS + 0x1000 : bone.AccumAlphaS
-    bone.AccumBetaL = bone.AccumBetaS < 0 ? bone.AccumBetaS + 0x1000 : bone.AccumBetaS
-    bone.AccumGammaL = bone.AccumGammaS < 0 ? bone.AccumGammaS + 0x1000 : bone.AccumGammaS
+    bone.AccumAlphaS =
+      lastFrameBone.AccumAlphaS +
+      this.readFrameBoneRotationDelta(stream, offsetBitHolder, key)
+    bone.AccumBetaS =
+      lastFrameBone.AccumBetaS +
+      this.readFrameBoneRotationDelta(stream, offsetBitHolder, key)
+    bone.AccumGammaS =
+      lastFrameBone.AccumGammaS +
+      this.readFrameBoneRotationDelta(stream, offsetBitHolder, key)
+    bone.AccumAlphaL =
+      bone.AccumAlphaS < 0 ? bone.AccumAlphaS + 0x1000 : bone.AccumAlphaS
+    bone.AccumBetaL =
+      bone.AccumBetaS < 0 ? bone.AccumBetaS + 0x1000 : bone.AccumBetaS
+    bone.AccumGammaL =
+      bone.AccumGammaS < 0 ? bone.AccumGammaS + 0x1000 : bone.AccumGammaS
     bone.x = this.getDegreesFromRaw(bone.AccumAlphaL, 0)
     bone.y = this.getDegreesFromRaw(bone.AccumBetaL, 0)
     bone.z = this.getDegreesFromRaw(bone.AccumGammaL, 0)
@@ -206,7 +237,11 @@ module.exports = class BattleAnimationLoader {
     // console.log("Z_start=" +frame.rootTranslation.x);
     frame.boneRotations = []
     for (let bi = 0; bi < bonesVectorLength; bi++) {
-      const boneRotation = this.readUncompressedFrameBone(stream, offsetBitHolder, key)
+      const boneRotation = this.readUncompressedFrameBone(
+        stream,
+        offsetBitHolder,
+        key
+      )
       boneRotation.i = bi
       frame.boneRotations.push(boneRotation)
     }
@@ -222,11 +257,28 @@ module.exports = class BattleAnimationLoader {
     for (let oi = 0; oi < 3; oi++) {
       const flag = this.getBitBlockV(stream, 1, offsetBitHolder) & 1
       const offLength = flag == 0 ? 7 : 16
-      if (oi == 0) { frame.rootTranslation.x = this.getBitBlockV(stream, offLength, offsetBitHolder) + lastFrame.rootTranslation.x } else if (oi == 1) { frame.rootTranslation.y = -this.getBitBlockV(stream, offLength, offsetBitHolder) + lastFrame.rootTranslation.y } else { frame.rootTranslation.z = this.getBitBlockV(stream, offLength, offsetBitHolder) + lastFrame.rootTranslation.z }
+      if (oi == 0) {
+        frame.rootTranslation.x =
+          this.getBitBlockV(stream, offLength, offsetBitHolder) +
+          lastFrame.rootTranslation.x
+      } else if (oi == 1) {
+        frame.rootTranslation.y =
+          -this.getBitBlockV(stream, offLength, offsetBitHolder) +
+          lastFrame.rootTranslation.y
+      } else {
+        frame.rootTranslation.z =
+          this.getBitBlockV(stream, offLength, offsetBitHolder) +
+          lastFrame.rootTranslation.z
+      }
     }
     frame.boneRotations = []
     for (let bi = 0; bi < bonesVectorLength; bi++) {
-      const boneRotation = this.readFrameBone(stream, offsetBitHolder, key, lastFrame.boneRotations[bi])
+      const boneRotation = this.readFrameBone(
+        stream,
+        offsetBitHolder,
+        key,
+        lastFrame.boneRotations[bi]
+      )
       boneRotation.i = bi
       frame.boneRotations.push(boneRotation)
     }
@@ -277,7 +329,7 @@ module.exports = class BattleAnimationLoader {
     let sanityCheck = true
 
     if (animation.numFrames != animation.numFrames2) {
-      console.log('WARNING: numFrames is different from NumFrames2')
+      // console.log('WARNING: numFrames is different from NumFrames2')
     }
 
     const errorMessage = null
@@ -297,11 +349,23 @@ module.exports = class BattleAnimationLoader {
     const offsetBitHolder = {
       FBit: 0
     }
-    animation.animationFrames[0] = this.readUncompressedFrame(byteStream, offsetBitHolder, animation.key, bonesVectorLength)
+    animation.animationFrames[0] = this.readUncompressedFrame(
+      byteStream,
+      offsetBitHolder,
+      animation.key,
+      bonesVectorLength
+    )
     for (let fi = 1; fi < animation.numFrames2; fi++) {
       // If we ran out of data while reading the frame, it means this frame doesn't
       const lastOffsetBit = offsetBitHolder.FBit
-      const success = this.readFrame(byteStream, offsetBitHolder, animation.key, bonesVectorLength, animation.animationFrames, fi)
+      const success = this.readFrame(
+        byteStream,
+        offsetBitHolder,
+        animation.key,
+        bonesVectorLength,
+        animation.animationFrames,
+        fi
+      )
       if (!success) {
         animation.numFrames2 = fi
         offsetBitHolder.FBit = lastOffsetBit
@@ -312,34 +376,43 @@ module.exports = class BattleAnimationLoader {
     if (animation.blockLength - animation.animationLength > 5) {
       // console.log("WARN: animation.blockLength - animation.animationLength > 5");
       r.offset = startOffset + 12 + animation.animationLength + 5
-      animation.unknownData = r.readUByteArray(animation.blockLength - animation.animationLength - 5).map(b => b.toString(16).padStart(2, '0')).join('')
+      animation.unknownData = r
+        .readUByteArray(animation.blockLength - animation.animationLength - 5)
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('')
     }
 
     r.offset = startOffset + animation.blockLength + 12
 
     if (!isWeaponAnim) {
-	    // final adjustment for bone rotations
+      // final adjustment for bone rotations
       animation.numBones-- // don't "count" the root bone
 
       for (const frame of animation.animationFrames) {
         frame.rootRotation = frame.boneRotations[0]
         frame.boneRotations = frame.boneRotations.slice(1)
-	    }
-	  } else {
-	    for (const frame of animation.animationFrames) {
-  		  frame.rootRotation = frame.boneRotations[0]
-	    }
-	  }
+      }
+    } else {
+      for (const frame of animation.animationFrames) {
+        frame.rootRotation = frame.boneRotations[0]
+      }
+    }
 
     return animation
   }
 
   // similar to Kimera's "ReadDAAnimationsPack" subroutine in FF7DAAnimationsPack.bas
   // filename should be something like "rtda" for Cloud (and will always end in "da")
-  loadBattleAnimationPack (config, filename, numBones, numBodyAnimations, numWeaponAnimations) {
+  loadBattleAnimationPack (
+    inputBattleBattleDirectory,
+    filename,
+    numBones,
+    numBodyAnimations,
+    numWeaponAnimations
+  ) {
     // console.log('loadBattleAnimationPack', filename, numBones, numBodyAnimations, numWeaponAnimations)
 
-    if (!fs.existsSync(config.inputBattleBattleDirectory + '/' + filename)) {
+    if (!fs.existsSync(inputBattleBattleDirectory + '/' + filename)) {
       const pack = {}
       pack.numAnimations = 0
       pack.numBodyAnimations = numBodyAnimations
@@ -366,7 +439,7 @@ module.exports = class BattleAnimationLoader {
       //   pack.bodyAnimations.push(baseAnimationData)
       return pack
     }
-    const buffer = fs.readFileSync(config.inputBattleBattleDirectory + '/' + filename)
+    const buffer = fs.readFileSync(inputBattleBattleDirectory + '/' + filename)
 
     const r = new FF7BinaryDataReader(buffer)
 
@@ -386,8 +459,13 @@ module.exports = class BattleAnimationLoader {
 
     for (let ai = 0; ai < numBodyAnimations; ai++) {
       // console.log("DEBUG: reading body animation " + ai);
-      const bonesPlusOne = (numBones > 1 ? numBones + 1 : 1)
-      const animation = this.readBattleAnimation(r, r.offset, bonesPlusOne, !isWeaponAnim)
+      const bonesPlusOne = numBones > 1 ? numBones + 1 : 1
+      const animation = this.readBattleAnimation(
+        r,
+        r.offset,
+        bonesPlusOne,
+        !isWeaponAnim
+      )
       pack.bodyAnimations.push(animation)
       if (ai == 0) {
         /// /console.log("DEBUG: animation 0 first frame = " + JSON.stringify(animation.animationFrames[0], null, 2));
@@ -402,5 +480,5 @@ module.exports = class BattleAnimationLoader {
     }
 
     return pack
-  }; // end loadBattleModel() function
+  } // end loadBattleModel() function
 } // end module.exports = class BattleModelLoader {
