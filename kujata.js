@@ -1,3 +1,6 @@
+#!/usr/bin/env node
+
+const os = require('os')
 const fs = require('fs')
 const path = require('path')
 const commander = require('commander')
@@ -11,7 +14,7 @@ const { extractKernel } = require('./data-extractors/extractor-kernel')
 const { extractMenu } = require('./data-extractors/extractor-menu')
 const { generateCachedBundle } = require('./data-extractors/cache-generator')
 const { extractMedias } = require('./data-extractors/extractor-media')
-const { default: inquirer } = require('inquirer')
+const { input } = require('@inquirer/prompts')
 const {
   extractFieldBattleModels
 } = require('./data-extractors/extractor-field-battle-models')
@@ -36,6 +39,7 @@ PROGRESS:
   - media - TBC
 - bundle - waiting on flevel
 */
+
 /*
 OTHERS to process:
 - battle/create-battle-skeleton-metadata.js - Need for ???
@@ -125,15 +129,13 @@ fenrir requires:
 /metadata/makou-reactor/backgrounds/${fieldName}.png
 
 */
-const configPath = 'config.json'
+const configPath = path.join(os.homedir(), '.kujata', 'config.json')
+
 const configDefault = {
-  'ff7-install-directory':
+  ff7InstallDirectory:
     'C:/Program Files (x86)/Steam/steamapps/common/FINAL FANTASY VII',
-  'unlgp-directory': '../unlgp',
-  'kujata-data-output-directory': '../kujata-data'
-}
-const getConfig = () => {
-  return JSON.parse(fs.readFileSync(configPath))
+  unlgpDirectory: '../unlgp',
+  kujataDataDirectory: '../kujata-data'
 }
 const validateSystem = () => {
   if (process.platform !== 'win32') {
@@ -146,52 +148,109 @@ const validateSystem = () => {
     )
   }
 }
-const validateConfig = () => {
-  if (!fs.existsSync(configPath))
-    fs.writeFileSync(configPath, JSON.stringify(configDefault, null, 3))
+const getConfig = () => {
+  return JSON.parse(fs.readFileSync(configPath))
+}
+const editConfig = async config => {
+  config.ff7InstallDirectory = await input({
+    message: `1/3 | ${chalk.cyan(
+      '🖊️   Add Final Fantasy VII Install directory:'
+    )}`,
+    default: config.ff7InstallDirectory,
+    validate: f =>
+      fs.existsSync(path.resolve(f)) &&
+      fs.existsSync(path.resolve(path.join(f, 'ff7.exe')))
+        ? true
+        : chalk.red("⚠️   I can't find a ff7.exe in this folder")
+  })
 
+  config.unlgpDirectory = await input({
+    message: `2/3 | ${chalk.cyan(
+      '🖊️   Add a directory for storing un-lgp data archives:'
+    )}`,
+    default: config.unlgpDirectory,
+    validate: f =>
+      fs.existsSync(path.resolve(f))
+        ? true
+        : chalk.red(
+            "⚠️   This doesn't look like a folder that exists, please create it first then try again"
+          )
+  })
+
+  config.kujataDataDirectory = await input({
+    message: `2/3 | ${chalk.cyan(
+      '🖊️   Add a directory for outputting all of you kujata data:'
+    )}`,
+    default: config.kujataDataDirectory,
+    validate: f =>
+      fs.existsSync(path.resolve(f))
+        ? true
+        : chalk.red(
+            "⚠️   This doesn't look like a folder that exists, please create it first then try again"
+          )
+  })
+
+  fs.writeFileSync(configPath, JSON.stringify(config, null, 3))
+  return config
+}
+const validateConfig = async shallEditConfig => {
+  if (!fs.existsSync(path.dirname(configPath))) {
+    fs.mkdirSync(path.dirname(configPath))
+  }
+
+  if (!fs.existsSync(configPath)) {
+    fs.writeFileSync(configPath, JSON.stringify(configDefault, null, 3))
+    console.log(
+      chalk.green(
+        '🚀  Running kujata for the first time! Set the config directories'
+      )
+    )
+    shallEditConfig = true
+  }
   const config = getConfig()
-  // console.log('config', config)
+  if (shallEditConfig) await editConfig(config)
+  console.log('config', config, path.resolve(config.unlgpDirectory))
+
   const errors = []
   if (
-    !config['ff7-install-directory'] ||
-    !fs.existsSync(path.join(config['ff7-install-directory'], 'ff7.exe'))
+    !config.ff7InstallDirectory ||
+    !fs.existsSync(path.join(config.ff7InstallDirectory, 'ff7.exe'))
   ) {
     errors.push(
       chalk.red(
-        '⚠️   Please set your',
-        chalk.underline('ff7-install-directory'),
-        'in',
-        chalk.underline('config.js'),
-        "and ensure that it's pointing to your FF7 install directory"
+        "⚠️   Can't find your",
+        chalk.underline('ff7 install directory.'),
+        'Run',
+        chalk.inverse('kujata config'),
+        "and ensure it's set correctly"
       )
     )
   }
   if (
-    !config['unlgp-directory'] ||
-    !fs.existsSync(path.join(config['unlgp-directory']))
+    !config.unlgpDirectory ||
+    !fs.existsSync(path.join(config.unlgpDirectory))
   ) {
     errors.push(
       chalk.red(
-        '⚠️   Please set your',
-        chalk.underline('unlgp-directory'),
-        'in',
-        chalk.underline('config.js'),
-        'and ensure that it exists'
+        "⚠️   Can't find your",
+        chalk.underline('unlgp directory.'),
+        'Run',
+        chalk.inverse('kujata config'),
+        "and ensure it's set correctly"
       )
     )
   }
   if (
-    !config['kujata-data-output-directory'] ||
-    !fs.existsSync(path.join(config['kujata-data-output-directory']))
+    !config.kujataDataDirectory ||
+    !fs.existsSync(path.join(config.kujataDataDirectory))
   ) {
     errors.push(
       chalk.red(
-        '⚠️   Please set your',
-        chalk.underline('kujata-data-output-directory'),
-        'in',
-        chalk.underline('config.js'),
-        'and ensure that it exists'
+        "⚠️   Can't find your",
+        chalk.underline('kujata data output directory.'),
+        'Run',
+        chalk.inverse('kujata config'),
+        "and ensure it's set correctly"
       )
     )
   }
@@ -205,10 +264,7 @@ const validateConfig = () => {
 const validateUnlgp = async (config, ...expectedFolders) => {
   const errors = []
   for (const expectedFolder of expectedFolders) {
-    const expectedFolderPath = path.join(
-      config['unlgp-directory'],
-      expectedFolder
-    )
+    const expectedFolderPath = path.join(config.unlgpDirectory, expectedFolder)
 
     const exists = fs.existsSync(expectedFolderPath)
     // console.log('validateUnlgp', expectedFolder, exists)
@@ -248,6 +304,13 @@ const validateUnlgp = async (config, ...expectedFolders) => {
   }
 }
 
+program
+  .command('config')
+  .description(
+    'Set config. ' +
+      chalk.green('FF7 install path. Un-lgp storage. Kujata data output folder')
+  )
+  .action(async () => await validateConfig(true))
 const flevelCommand = program
   .command('flevel')
   .description(
@@ -268,7 +331,7 @@ const flevelCommand = program
   )
   .option('-a, --all', 'Process all fields')
   .action(async (fields, options) => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await validateUnlgp(config, 'flevel.lgp')
     if (fields.length === 0 && !options.all) {
       flevelCommand.help()
@@ -293,7 +356,7 @@ const fieldModelCommand = program
   )
   .option('-a, --all', 'Process all models')
   .action(async (models, options) => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await validateUnlgp(config, 'char.lgp')
     if (models.length === 0 && !options.all) {
       fieldModelCommand.help()
@@ -309,7 +372,7 @@ program
       chalk.cyan('Includes all animations for all models')
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await validateUnlgp(config, 'char.lgp')
     await extractFieldAnimations(config)
   })
@@ -319,7 +382,9 @@ const battleModelCommand = program
   .command('battle-models')
   .description(
     'Extract battle models to glTF. ' +
-      chalk.cyan('Includes models, textures and animations')
+      chalk.cyan(
+        'Includes models, textures, weapons, backgrounds and animations'
+      )
   )
   .argument(
     '[model ids...]',
@@ -331,23 +396,12 @@ const battleModelCommand = program
   )
   .option('-a, --all', 'Process all models')
   .action(async (models, options) => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await validateUnlgp(config, 'battle.lgp')
     if (models.length === 0 && !options.all) {
       battleModelCommand.help()
     }
     await extractFieldBattleModels(config, models, options.all, true)
-  })
-  .showHelpAfterError()
-program
-  .command('cd')
-  .description(
-    'Extract cd data. ' + chalk.cyan('Includes credits and change disk data')
-  )
-  .action(async () => {
-    const config = validateConfig()
-    await validateUnlgp(config, 'cr_us.lgp', 'disc_us.lgp')
-    await extractCDData(config)
   })
   .showHelpAfterError()
 
@@ -358,7 +412,7 @@ program
       chalk.cyan('Includes enemies, scene.bin, mark.dat and camera data')
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await extractBattleData(config)
   })
   .showHelpAfterError()
@@ -370,7 +424,7 @@ program
       chalk.cyan('Includes shops, initial data, limit data')
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await extractExe(config)
   })
   .showHelpAfterError()
@@ -384,7 +438,7 @@ program
       )
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await extractKernel(config)
   })
   .showHelpAfterError()
@@ -396,12 +450,22 @@ program
       chalk.cyan('Includes images, text, icons, most images for the game')
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await validateUnlgp(config, 'menu_us.lgp')
     await extractMenu(config)
   })
   .showHelpAfterError()
-
+program
+  .command('cd')
+  .description(
+    'Extract cd data. ' + chalk.cyan('Includes credits and change disk data')
+  )
+  .action(async () => {
+    const config = await validateConfig()
+    await validateUnlgp(config, 'cr_us.lgp', 'disc_us.lgp')
+    await extractCDData(config)
+  })
+  .showHelpAfterError()
 program
   .command('media')
   .description(
@@ -409,7 +473,7 @@ program
       chalk.cyan('Sounds, music, movies, movie cam data')
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     validateSystem()
     await validateUnlgp(config, 'moviecam.lgp')
     await extractMedias(config)
@@ -423,7 +487,7 @@ program
       chalk.green('For fenrir game engine, zips up most common image assets')
   )
   .action(async () => {
-    const config = validateConfig()
+    const config = await validateConfig()
     await generateCachedBundle(config)
   })
   .showHelpAfterError()
@@ -445,7 +509,7 @@ const unlgpCommand = program
       unlgpCommand.help()
     }
     validateSystem()
-    const config = validateConfig()
+    const config = await validateConfig()
     await extractUnlgp(config, lgpFiles, options.all)
   })
   .showHelpAfterError()

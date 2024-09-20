@@ -8,24 +8,19 @@ const {
 
 const extractBattleData = async config => {
   await extractSceneBinData(
-    path.join(config['ff7-install-directory'], 'data', 'lang-en', 'battle'),
+    path.join(config.ff7InstallDirectory, 'data', 'lang-en', 'battle'),
     // config.inputBattleSceneDirectory,
-    path.join(
-      config['kujata-data-output-directory'],
-      'data',
-      'battle',
-      'scene.bin'
-    ),
+    path.join(config.kujataDataDirectory, 'data', 'battle', 'scene.bin'),
     // config.outputBattleSceneDirectory,
-    path.join(config['kujata-data-output-directory'], 'metadata')
+    path.join(config.kujataDataDirectory, 'metadata')
     // config.metadataDirectory
   )
   await extractMiscBattleData(
-    path.join(config['ff7-install-directory'], 'data', 'battle'),
+    path.join(config.ff7InstallDirectory, 'data', 'battle'),
     // config.inputBattleDataDirectory,
-    path.join(config['ff7-install-directory'], 'data', 'lang-en', 'battle'),
+    path.join(config.ff7InstallDirectory, 'data', 'lang-en', 'battle'),
     // config.inputBattleSceneDirectory,
-    path.join(config['kujata-data-output-directory'], 'data', 'battle')
+    path.join(config.kujataDataDirectory, 'data', 'battle')
     // config.outputBattleMiscDirectory
   )
 }

@@ -33,7 +33,7 @@ const JSZip = require('jszip')
 */
 const generateCachedBundle = async config => {
   console.log('generateCachedBundle: START')
-  const rootDir = config['kujata-data-output-directory']
+  const rootDir = config.kujataDataDirectory
   const zipConfig = [
     { folder: '/metadata/window-assets', file: 'window.bin.metadata.json' },
     { folder: '/metadata/menu-assets', file: 'menu_us.metadata.json' },

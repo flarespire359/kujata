@@ -22,15 +22,12 @@ module.exports = class FF7FieldAnimationTranslator {
   // animFileId = which animation to include in the output gltf
   translateFF7FieldAnimationToGLTF (config, animFileId) {
     const outputAnimationsDirectory = path.join(
-      config['kujata-data-output-directory'],
+      config.kujataDataDirectory,
       'data',
       'field',
       'char.lgp'
     )
-    const inputFieldCharDirectory = path.join(
-      config['unlgp-directory'],
-      'char.lgp'
-    )
+    const inputFieldCharDirectory = path.join(config.unlgpDirectory, 'char.lgp')
 
     if (!fs.existsSync(outputAnimationsDirectory)) {
       // console.log('Creating output directory: ' + outputAnimationsDirectory)

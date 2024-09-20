@@ -4,7 +4,7 @@ const path = require('path')
 
 const ensureMapListExists = config => {
   const mapListPathSrc = path.join(
-    config['unlgp-directory'],
+    config.unlgpDirectory,
     'flevel.lgp',
     'maplist'
   )

@@ -7,14 +7,14 @@ const {
 const extractCDData = async config => {
   console.log('Extract CD Data: START')
   await extractCreditsData(
-    path.join(config['unlgp-directory'], 'cr_us.lgp'),
-    path.join(config['kujata-data-output-directory'], 'data', 'cd'),
-    path.join(config['kujata-data-output-directory'], 'metadata')
+    path.join(config.unlgpDirectory, 'cr_us.lgp'),
+    path.join(config.kujataDataDirectory, 'data', 'cd'),
+    path.join(config.kujataDataDirectory, 'metadata')
   )
   await extractDiscData(
     path.join(config['unlgp-directory'], 'disc_us.lgp'),
-    path.join(config['kujata-data-output-directory'], 'data', 'cd'),
-    path.join(config['kujata-data-output-directory'], 'metadata')
+    path.join(config.kujataDataDirectory, 'data', 'cd'),
+    path.join(config.kujataDataDirectory, 'metadata')
   )
   console.log('Extract CD Data: END')
 }

@@ -103,7 +103,7 @@ const extractUnlgp = async (config, lgpFiles, all) => {
     const lgp = path.basename(lgpPath)
     progressBar.update(i, { current: lgp })
     // await sleep(100) // The update above can be slow to display
-    const result = extractLgp(lgpPath, config['unlgp-directory'])
+    const result = extractLgp(lgpPath, config.unlgpDirectory)
     if (!result) {
       errors.push(chalk.red(`⚠️   Error unlgp-ing`, chalk.inverse(lgp)))
     }

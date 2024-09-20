@@ -5,7 +5,7 @@ const stringUtil = require('./string-util.js')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const backgroundLayerRenderer = require('./background-layer-renderer.js')
 const musicList = JSON.parse(
-  fs.readFileSync('./metadata/music-list.json', 'utf-8')
+  fs.readFileSync(path.join(__dirname, '../metadata/music-list.json'), 'utf-8')
 ) // TODO
 // const { toHex2 } = require('./string-util.js')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
@@ -20,8 +20,8 @@ module.exports = class FLevelLoader {
     // const charMap = require('./char-map.js')
 
     let buffer = fs.readFileSync(
-      path.join(config['unlgp-directory'], 'flevel.lgp', baseFilename)
-      // config['kujata-data-output-directory'] + '/' + baseFilename
+      path.join(config.unlgpDirectory, 'flevel.lgp', baseFilename)
+      // config.kujataDataDirectory + '/' + baseFilename
     )
     buffer = this.lzsDecompressor.decompress(buffer)
     console.log('buffer', buffer.length)
@@ -965,7 +965,7 @@ module.exports = class FLevelLoader {
     // Render Backgrounds
     if (renderBackgroundLayers) {
       const bgFolder = path.join(
-        config['kujata-data-output-directory'],
+        config.kujataDataDirectory,
         'metadata',
         'background-layers'
       )

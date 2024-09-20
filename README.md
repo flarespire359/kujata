@@ -1,69 +1,43 @@
-![Logo](KUJATA.png)
-
 # kujata
 
-Translates Final Fantasy 7 assets to web-friendly formats like JSON and glTF
+> A cli-tool that translates Final Fantasy 7 assets to web-friendly formats like JSON and glTF
 
-## Current Features
+![Logo](KUJATA.png)
 
-- Translate FF7 field character models and animations (char.lgp) to JSON and glTF
-  - battle model support coming soon
-  - reverse translation (glTF-to-ff7) coming soon
+# Installation and usage
 
-- Translate FF7 field scene data (flevel.lgp) to JSON
-  - translates field scripts, gateways, tiles, palettes, textures, etc., but not all sections yet (only encounters is missing)
-  - renders separate layers for background images
+- Install nodejs
+- Run `npm i -g kujata`
+- Run any kujata command, eg:
+  - `kujata config` - Set ff7 directory and output folder
+  - `kujata flevel mdstin1 md1_1` asdasd 
+- View your outputted files
+- Use them to create something cool like:
+  - https://dangarfield.github.io/kujata-webapp - Viewer for kujata data and assets
+  - https://ff7-fenrir.netlify.app - Full FF7 reimplementation engine running natively in the browser 
 
-- Translate FF7 kernel data (kernel.bin, kernel2.bin) to JSON
-  - All sections except commandData, attackData, battleAndGrowthData, initData
-  - Some improvements still to be made, mainly around consistent naming and materia data
+# All commands
+| Command | Description |
+| --- | --- |
+| `kujata config` | Set config. FF7 install path. Un-lgp storage. Kujata data output folder |
+| `kujata flevel --all` | Extract all field data. Includes backgrounds, palettes, walkmesh, field scripts etc |
+| `kujata flevel md1stin md1_1` | Extract one or more field |
+| `kujata field-models -all` | Extract field models to glTF. Includes models and textures |
+| `kujata field-models aaaa aagb` | Extract one or more models |
+| `kujata field-animations` | Extract field model animations to glTF. Includes all animations for all models |
+| `kujata battle-models -all` | Extract battle models to glTF. Includes models, textures, weapons, backgrounds and animations |
+| `kujata battle-models rtaa ruaa` | Extract one or more models |
+| `kujata battle-data` | Extract battle data. Includes enemies, scene.bin, mark.dat and camera data |
+| `kujata exe` | Extract exe data. Includes shops, initial data, limit data |
+| `kujata kernel` | Extract kernel data. Includes command and attacks, initial data, and window.bin data |
+| `kujata menu` | Extract menu assets. Includes images, text, icons, most images for the game |
+| `kujata cd` | Extract cd data. Includes credits and change disk data |
+| `kujata bundle` | Bundle image assets. For fenrir game engine, zips up most common image assets |
+| `kujata unlgp battle.lgp` | Extract the files from the lgp archives |
 
-- Translate FF7 window data (window.bin) to multiple per palette pngs
-  - All window icons and colours
-  - All text icons and colours
-  - Every asset with it's prefered palette colors in its own separate png
-
-- TIM and TEX file loaders and converts into per palette pngs
-
-## Pre-requisites and setup
-- "git clone" this repo
-- install NodeJS and run "npm install" to install dependencies
-  - https://nodejs.org/en/download/
-- locate field/char.lgp and field/flevel.lgp from your Final Fantasy 7 PC installation
-- use unlgp 0.5b to extract lgp files to a directory
-  - see https://github.com/picklejar76/kujata/lgp-0.5b/bin/unlgp.exe
-- use TexTool_0.10 to translate TEX files to png (as needed)
-  - see https://github.com/picklejar76/kujata/tex-tool-0.10/TexTool.exe
-- edit config.json to configure your input and output directories
-  - see https://github.com/picklejar76/kujata/config.json
-
-## How to translate field char data (field/char.lgp) to glTF
-- Run "node test-ff7-to-gltf-translator.js"
-  - This translates AAAA.HRC (Cloud skeleton) to aaaa.gltf and aaaa.bin
-    - uses AAFE.A (Cloud standing animation) as base structure in the output
-    - includes all Cloud animations (based on Ifalna DB) in the output
-- Look at ff7-gltf/viewer/viewer.html for example of how to view in html page
-- Edit the js to translate other models as desired
-- For help, reach out to the author: picklejar76@gmail.com
-
-## How to translate field flevel data (field/flevel.lgp) to JSON
-- Look at https://github.com/picklejar76/kujata/ff7-asset-loader/test-flevel-loader.js
-- Better instructions coming soon
-- For help, reach out to the author: picklejar76@gmail.com
-
-## How to translate kernel data (kernel/kernel.bin, kernel/kernel2.bin) to JSON
-- Look at https://github.com/picklejar76/kujata/ff7-asset-loader/test-kernel-extractor.js
-- Better instructions coming soon
-- For help, reach out to the author: https://github.com/dangarfield/kujata
-
-## How to translate .TIM of .TEX files into PNGs
-- Look at https://github.com/picklejar76/kujata/ff7-asset-loader/test-kernel-extractor.js
-- ``` new TimFile().loadTimFileFromBuffer(file.buffer).saveAllPalettesAsPngs(outputFilePath)```
-- ``` new TimFile().loadTimFileFromPath(file.path).saveAllPalettesAsPngs(outputFilePath)```
-- ``` new TexFile().loadTexFileFromBuffer(file.buffer).saveAsPng(outputFilePath)```
-- ``` new TexFile().loadTexFileFromPath(file.path).saveAsPng(outputFilePath)```
 
 ## Thanks goes to...
+- picklejar76, for his work on creating the initial kujata 
 - qhimm community
 - Aali, for patching FF7, graphics work, lgp/unlgp utility, etc.
 - Borde, for authoring Kimera and TexTool_0.10

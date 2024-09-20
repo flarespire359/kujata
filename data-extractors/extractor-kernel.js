@@ -7,21 +7,18 @@ const {
 
 const extractKernel = async config => {
   const inputKernelDirectory = path.join(
-    config['ff7-install-directory'],
+    config.ff7InstallDirectory,
     'data',
     'lang-en',
     'kernel'
   )
-  const inputExeDirectory = path.join(config['ff7-install-directory']) // Note: CaitSith and Vincent initial data is held within exe
+  const inputExeDirectory = path.join(config.ff7InstallDirectory) // Note: CaitSith and Vincent initial data is held within exe
   const outputKernelDirectory = path.join(
-    config['kujata-data-output-directory'],
+    config.kujataDataDirectory,
     'data',
     'kernel'
   )
-  const metadataDirectory = path.join(
-    config['kujata-data-output-directory'],
-    'metadata'
-  )
+  const metadataDirectory = path.join(config.kujataDataDirectory, 'metadata')
   await extractKernelKernel2Bin(
     inputKernelDirectory,
     inputExeDirectory,

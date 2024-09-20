@@ -9,11 +9,11 @@ const { sleep } = require('../ff7-asset-loader/helper.js')
 const getAllModelsList = (config, isBattleModel) => {
   if (isBattleModel) {
     return fs
-      .readdirSync(path.join(config['unlgp-directory'], 'battle.lgp'))
+      .readdirSync(path.join(config.unlgpDirectory, 'battle.lgp'))
       .filter(f => f.toLowerCase().endsWith('aa'))
   } else {
     return fs
-      .readdirSync(path.join(config['unlgp-directory'], 'char.lgp'))
+      .readdirSync(path.join(config.unlgpDirectory, 'char.lgp'))
       .filter(f => f.toLowerCase().endsWith('.hrc'))
       .map(f => f.toLowerCase().replace('.hrc', ''))
   }
@@ -32,7 +32,7 @@ const getName = (model, isBattleModel) => {
 }
 const extractFieldAnimations = async config => {
   const animFiles = fs
-    .readdirSync(path.join(config['unlgp-directory'], 'char.lgp'))
+    .readdirSync(path.join(config.unlgpDirectory, 'char.lgp'))
     .filter(f => f.endsWith('.a'))
     .map(f => f.split('.a')[0])
   // console.log('animFiles', animFiles)

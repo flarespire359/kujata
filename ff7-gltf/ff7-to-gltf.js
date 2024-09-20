@@ -37,26 +37,20 @@ module.exports = class FF7GltfTranslator {
     isBattleModel
   ) {
     const inputBattleBattleDirectory = path.join(
-      config['unlgp-directory'],
+      config.unlgpDirectory,
       'battle.lgp'
     )
-    const inputFieldCharDirectory = path.join(
-      config['unlgp-directory'],
-      'char.lgp'
-    )
+    const inputFieldCharDirectory = path.join(config.unlgpDirectory, 'char.lgp')
 
-    const metadataDirectory = path.join(
-      config['kujata-data-output-directory'],
-      'metadata'
-    )
+    const metadataDirectory = path.join(config.kujataDataDirectory, 'metadata')
     const outputBattleBattleDirectory = path.join(
-      config['kujata-data-output-directory'],
+      config.kujataDataDirectory,
       'data',
       'battle',
       'battle.lgp'
     )
     const outputFieldCharDirectory = path.join(
-      config['kujata-data-output-directory'],
+      config.kujataDataDirectory,
       'data',
       'field',
       'char.lgp'

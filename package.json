@@ -2,13 +2,17 @@
   "name": "kujata",
   "version": "1.0.0",
   "description": "Translates Final Fantasy 7 assets to web-friendly formats like JSON and glTF",
-  "main": "test-ff7-to-gltf-translator.js",
+  "main": "kujata.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": {
+    "kujata": "./kujata.js"
   },
   "author": "picklejar76@gmail.com",
   "license": "ISC",
   "dependencies": {
+    "@inquirer/prompts": "^6.0.1",
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
     "commander": "^12.1.0",

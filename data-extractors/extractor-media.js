@@ -459,50 +459,47 @@ const createCombinedMoviesList = async (progress, outputMoviesDirectory) => {
 }
 const extractMedias = async config => {
   const inputSoundsDirectory = path.join(
-    config['ff7-install-directory'],
+    config.ff7InstallDirectory,
     'data',
     'sound'
   )
   const outputSoundsDirectory = path.join(
-    config['kujata-data-output-directory'],
+    config.kujataDataDirectory,
     'media',
     'sounds'
   )
 
-  const metadataDirectory = path.join(
-    config['kujata-data-output-directory'],
-    'metadata'
-  )
+  const metadataDirectory = path.join(config.kujataDataDirectory, 'metadata')
 
   const inputMusicDirectory = path.join(
-    config['ff7-install-directory'],
+    config.ff7InstallDirectory,
     'data',
     'music'
   )
   const inputMusicOggDirectory = path.join(
-    config['ff7-install-directory'],
+    config.ff7InstallDirectory,
     'data',
     'music_ogg'
   )
   const outputMusicDirectory = path.join(
-    config['kujata-data-output-directory'],
+    config.kujataDataDirectory,
     'media',
     'music'
   )
 
   const inputMoviesDirectory = path.join(
-    config['ff7-install-directory'],
+    config.ff7InstallDirectory,
     'data',
     'movies'
   )
   const outputMoviesDirectory = path.join(
-    config['kujata-data-output-directory'],
+    config.kujataDataDirectory,
     'media',
     'movies'
   )
 
   const inputMoviecamDirectory = path.join(
-    config['unlgp-directory'],
+    config.unlgpDirectory,
     'moviecam.lgp'
   )
 
