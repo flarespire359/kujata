@@ -104,6 +104,7 @@ module.exports = class FF7GltfTranslator {
     } else {
       skeleton = HrcLoader.loadHrc(inputFieldCharDirectory, hrcFileId)
     }
+    // console.log('\n\nskeleton', skeleton)
 
     const numBones = skeleton.bones.length
 
@@ -163,6 +164,7 @@ module.exports = class FF7GltfTranslator {
         animationDataList.push(animationData)
       }
     }
+    // console.log('battleAnimationPack', battleAnimationPack)
 
     let baseWeaponAnimationData = null
     // NEW
@@ -989,119 +991,127 @@ module.exports = class FF7GltfTranslator {
             }
           }
 
-          // Root translation : START
-          const rootTranslation =
-            animationData.animationFrames[f].rootTranslation
-          // console.log('rootTranslation', rootTranslation)
+          // TODO - A lot of optimisations should happen here
+          // Root translation and rotation only apply to first bone
+          if (boneIndex === 0) {
+            // console.log('boneIndex', boneIndex)
+            // Root translation : START
+            const rootTranslation =
+              animationData.animationFrames[f].rootTranslation
+            // console.log('rootTranslation', rootTranslation)
 
-          zList.push(rootTranslation)
-          frameRootTranslationBuffer.writeFloatLE(rootTranslation.x, f * 24 + 0)
-          frameRootTranslationBuffer.writeFloatLE(
-            rootTranslation.y - 13.535284042358398,
-            f * 24 + 4
-          )
-          frameRootTranslationBuffer.writeFloatLE(
-            -rootTranslation.z - 0.07706927508115768,
-            f * 24 + 8
-          )
+            zList.push(rootTranslation)
+            frameRootTranslationBuffer.writeFloatLE(
+              rootTranslation.x,
+              f * 24 + 0
+            )
+            frameRootTranslationBuffer.writeFloatLE(
+              rootTranslation.y - 13.535284042358398,
+              f * 24 + 4
+            )
+            frameRootTranslationBuffer.writeFloatLE(
+              -rootTranslation.z - 0.07706927508115768,
+              f * 24 + 8
+            )
 
-          frameRootTranslationBuffer.writeFloatLE(
-            rootTranslation.x,
-            f * 24 + 12
-          )
-          frameRootTranslationBuffer.writeFloatLE(
-            rootTranslation.y - 13.535284042358398,
-            f * 24 + 16
-          )
-          frameRootTranslationBuffer.writeFloatLE(
-            -rootTranslation.z - 0.07706927508115768,
-            f * 24 + 20
-          )
+            frameRootTranslationBuffer.writeFloatLE(
+              rootTranslation.x,
+              f * 24 + 12
+            )
+            frameRootTranslationBuffer.writeFloatLE(
+              rootTranslation.y - 13.535284042358398,
+              f * 24 + 16
+            )
+            frameRootTranslationBuffer.writeFloatLE(
+              -rootTranslation.z - 0.07706927508115768,
+              f * 24 + 20
+            )
 
-          allBuffers.push(frameRootTranslationBuffer)
-          numBuffersCreated++
+            allBuffers.push(frameRootTranslationBuffer)
+            numBuffersCreated++
 
-          const rootTranslationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
-          gltf.accessors.push({
-            bufferView: rootTranslationFrameDataAccessorIndex,
-            byteOffset: 0,
-            type: 'VEC3',
-            componentType: COMPONENT_TYPE.FLOAT,
-            count: numFrames * 2 // 2 rotations per frame
-          })
-          gltf.bufferViews.push({
-            buffer: 0,
-            byteLength: frameRootTranslationBuffer.length,
-            target: ARRAY_BUFFER
-          })
-          gltf.animations[animationIndex].samplers.push({
-            input: startAndEndTimeAccessorIndex,
-            interpolation: 'LINEAR',
-            output: rootTranslationFrameDataAccessorIndex
-          })
-          const nodeIndex = 0 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
-          const samplerIndexRootTranslation =
-            gltf.animations[animationIndex].samplers.length - 1
-          gltf.animations[animationIndex].channels.push({
-            sampler: samplerIndexRootTranslation,
-            target: {
-              node: nodeIndex,
-              path: 'translation'
-            }
-          })
-          // Root translation : END
+            const rootTranslationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
+            gltf.accessors.push({
+              bufferView: rootTranslationFrameDataAccessorIndex,
+              byteOffset: 0,
+              type: 'VEC3',
+              componentType: COMPONENT_TYPE.FLOAT,
+              count: numFrames * 2 // 2 rotations per frame
+            })
+            gltf.bufferViews.push({
+              buffer: 0,
+              byteLength: frameRootTranslationBuffer.length,
+              target: ARRAY_BUFFER
+            })
+            gltf.animations[animationIndex].samplers.push({
+              input: startAndEndTimeAccessorIndex,
+              interpolation: 'LINEAR',
+              output: rootTranslationFrameDataAccessorIndex
+            })
+            const nodeIndex = 0 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
+            const samplerIndexRootTranslation =
+              gltf.animations[animationIndex].samplers.length - 1
+            gltf.animations[animationIndex].channels.push({
+              sampler: samplerIndexRootTranslation,
+              target: {
+                node: nodeIndex,
+                path: 'translation'
+              }
+            })
+            // Root translation : END
 
-          // Root rotation : START
-          const rootRotation = animationData.animationFrames[f].rootRotation
-          // console.log('rootRotation', rootRotation)
-          const quatRoot = rotationToQuaternion(
-            toRadians(rootRotation.x),
-            toRadians(-rootRotation.y),
-            toRadians(rootRotation.z),
-            rotationOrder
-          )
-          // write rotation value for "start of frame"
-          frameRootRotationBuffer.writeFloatLE(quatRoot.x, f * 32 + 0)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.y, f * 32 + 4)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.z, f * 32 + 8)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.w, f * 32 + 12)
-          // write rotation value for "end of frame" (TODO: use "f+1" rotation for smoother animations)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.x, f * 32 + 16)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.y, f * 32 + 20)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.z, f * 32 + 24)
-          frameRootRotationBuffer.writeFloatLE(quatRoot.w, f * 32 + 28)
-          allBuffers.push(frameRootRotationBuffer)
-          numBuffersCreated++
+            // Root rotation : START
+            const rootRotation = animationData.animationFrames[f].rootRotation
+            // console.log('rootRotation', rootRotation)
+            const quatRoot = rotationToQuaternion(
+              toRadians(rootRotation.x),
+              toRadians(-rootRotation.y),
+              toRadians(rootRotation.z),
+              rotationOrder
+            )
+            // write rotation value for "start of frame"
+            frameRootRotationBuffer.writeFloatLE(quatRoot.x, f * 32 + 0)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.y, f * 32 + 4)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.z, f * 32 + 8)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.w, f * 32 + 12)
+            // write rotation value for "end of frame" (TODO: use "f+1" rotation for smoother animations)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.x, f * 32 + 16)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.y, f * 32 + 20)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.z, f * 32 + 24)
+            frameRootRotationBuffer.writeFloatLE(quatRoot.w, f * 32 + 28)
+            allBuffers.push(frameRootRotationBuffer)
+            numBuffersCreated++
 
-          const rootRotationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
-          gltf.accessors.push({
-            bufferView: rootRotationFrameDataAccessorIndex,
-            byteOffset: 0,
-            type: 'VEC4',
-            componentType: COMPONENT_TYPE.FLOAT,
-            count: numFrames * 2 // 2 rotations per frame
-          })
-          gltf.bufferViews.push({
-            buffer: 0,
-            byteLength: frameRootRotationBuffer.length,
-            target: ARRAY_BUFFER
-          })
-          gltf.animations[animationIndex].samplers.push({
-            input: startAndEndTimeAccessorIndex,
-            interpolation: 'LINEAR',
-            output: rootRotationFrameDataAccessorIndex
-          })
-          // nodeIndex = 0; // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
-          const samplerIndexRootRotation =
-            gltf.animations[animationIndex].samplers.length - 1
-          gltf.animations[animationIndex].channels.push({
-            sampler: samplerIndexRootRotation,
-            target: {
-              node: nodeIndex,
-              path: 'rotation'
-            }
-          })
-          // Root rotation : END
+            const rootRotationFrameDataAccessorIndex = numBuffersCreated - 1 // will assign to sampler.output
+            gltf.accessors.push({
+              bufferView: rootRotationFrameDataAccessorIndex,
+              byteOffset: 0,
+              type: 'VEC4',
+              componentType: COMPONENT_TYPE.FLOAT,
+              count: numFrames * 2 // 2 rotations per frame
+            })
+            gltf.bufferViews.push({
+              buffer: 0,
+              byteLength: frameRootRotationBuffer.length,
+              target: ARRAY_BUFFER
+            })
+            gltf.animations[animationIndex].samplers.push({
+              input: startAndEndTimeAccessorIndex,
+              interpolation: 'LINEAR',
+              output: rootRotationFrameDataAccessorIndex
+            })
+            // nodeIndex = 0 // node0=RootContainer, node1=BoneRoot, node2=Bone0, node3=Bone1, etc.
+            const samplerIndexRootRotation =
+              gltf.animations[animationIndex].samplers.length - 1
+            gltf.animations[animationIndex].channels.push({
+              sampler: samplerIndexRootRotation,
+              target: {
+                node: nodeIndex,
+                path: 'rotation'
+              }
+            })
+            // Root rotation : END
+          }
 
           const quat = rotationToQuaternion(
             toRadians(boneRotation.x),

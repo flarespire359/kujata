@@ -255,7 +255,7 @@ const flevelCommand = program
       chalk.cyan('Includes backgrounds, palettes, walkmesh, field scripts etc')
   )
   .argument(
-    '[field id[s]...]',
+    '[field ids...]',
     `add field ids or '--all', eg: \n${chalk.bgGreen(
       'kujata flevel md1stin'
     )} \n${chalk.bgGreen('kujata flevel md1_1 md1_2')} \n${chalk.bgGreen(
@@ -284,7 +284,7 @@ const fieldModelCommand = program
       chalk.cyan('Includes models and textures')
   )
   .argument(
-    '[model id[s]...]',
+    '[model ids...]',
     `add model ids or '--all', eg: \n${chalk.bgGreen(
       'kujata field-models aaaa'
     )} \n${chalk.bgGreen('kujata field-models aaaa aagb')} \n${chalk.bgGreen(
@@ -322,7 +322,7 @@ const battleModelCommand = program
       chalk.cyan('Includes models, textures and animations')
   )
   .argument(
-    '[model id[s]...]',
+    '[model ids...]',
     `add model ids or '--all', eg: \n${chalk.bgGreen(
       'kujata battle-models rtaa'
     )} \n${chalk.bgGreen('kujata battle-models rtaa ruaa')} \n${chalk.bgGreen(
@@ -432,7 +432,7 @@ const unlgpCommand = program
   .command('unlgp')
   .description('Extract the files from the lgp archives')
   .argument(
-    '[archive.lgp[s]...]',
+    '[archives...]',
     `add archives or '--all', eg: \n${chalk.bgGreen(
       'kujata unlgp flevel.lgp'
     )} \n${chalk.bgGreen(
