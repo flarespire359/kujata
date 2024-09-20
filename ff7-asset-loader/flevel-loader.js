@@ -4,12 +4,11 @@ const stringUtil = require('./string-util.js')
 // const LzsDecompressor = require('../lzs/lzs-decompressor.js')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const backgroundLayerRenderer = require('./background-layer-renderer.js')
-const musicList = JSON.parse(
-  fs.readFileSync(path.join(__dirname, '../metadata/music-list.json'), 'utf-8')
-) // TODO
-// const { toHex2 } = require('./string-util.js')
+// const { toHexlet2 } = require('./string-util.js')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
+const musicNames = require('../metadata/music-names.json')
 
+let musicList = null
 module.exports = class FLevelLoader {
   constructor (lzsDecompressor, mapList) {
     this.lzsDecompressor = lzsDecompressor
@@ -17,6 +16,24 @@ module.exports = class FLevelLoader {
   }
 
   loadFLevel (config, baseFilename, renderBackgroundLayers) {
+    this.ensureTexturesExist(config)
+    // console.log('\n\nflevel', config, baseFilename, renderBackgroundLayers)
+    if (!musicList) {
+      // Do this so the fields are not reliant on the media export
+      const musicIdx = fs
+        .readFileSync(
+          path.join(config.ff7InstallDirectory, 'data', 'music', 'music.idx')
+        )
+        .toString()
+        .split('\r\n')
+      musicIdx.unshift('')
+      musicIdx.unshift('')
+      musicList = musicIdx.map((name, index) => {
+        return { id: index, name, description: musicNames[name] }
+      })
+      // console.log('\n\nCREATED MUSIC LIST')
+    }
+
     // const charMap = require('./char-map.js')
 
     let buffer = fs.readFileSync(
@@ -24,7 +41,7 @@ module.exports = class FLevelLoader {
       // config.kujataDataDirectory + '/' + baseFilename
     )
     buffer = this.lzsDecompressor.decompress(buffer)
-    console.log('buffer', buffer.length)
+    // console.log('buffer', buffer.length)
 
     const r = new FF7BinaryDataReader(buffer)
 
@@ -138,7 +155,7 @@ module.exports = class FLevelLoader {
         entityType: '', // Purely added for positioning in JSON, updated delow
         scripts: []
       }
-      const LOG_I = 0 // Change for debugging
+      const LOG_I = 999 // Change for debugging
       if (i === LOG_I) {
         console.log(
           'entity',
@@ -316,12 +333,8 @@ module.exports = class FLevelLoader {
           let opIndex = 0
           let gotoIndex = 0
           while (!initReturn) {
-            console.log(
-              'entityScript.ops[opIndex]',
-              opIndex,
-              entityScript.ops[opIndex],
-              entityScript.ops
-            )
+            // const opX = entityScript.ops[opIndex]
+            // console.log(j, opIndex, opX, opX?.byteIndex, '->', gotoIndex)
             const returnFound = entityScript.ops[opIndex].op === 'RET'
             const gotoFound = entityScript.ops[opIndex].goto !== undefined
             if (gotoFound) {
@@ -329,24 +342,13 @@ module.exports = class FLevelLoader {
               // if (i === LOG_I) { console.log('splitInit', 'gotoIndex', gotoIndex, opIndex, returnFound, gotoFound, entityScript.ops[opIndex].op, entityScript.ops[opIndex].byteIndex) }
             }
             if (
-              returnFound &&
-              entityScript.ops[opIndex].byteIndex >= gotoIndex
+              returnFound
+              //&& entityScript.ops[opIndex].byteIndex >= gotoIndex
             ) {
               // if (i === LOG_I) { console.log('splitInit', 'initReturn', gotoIndex, opIndex, returnFound, gotoFound, entityScript.ops[opIndex].op, entityScript.ops[opIndex].byteIndex) }
               initReturn = true
             } else {
-              // if (i === LOG_I) {
-              console.log(
-                'splitInit',
-                'next',
-                gotoIndex,
-                opIndex,
-                returnFound,
-                gotoFound,
-                entityScript.ops[opIndex].op,
-                entityScript.ops[opIndex].byteIndex
-              )
-              //}
+              // if (i === LOG_I) { console.log('splitInit', 'next', gotoIndex, opIndex, returnFound, gotoFound, entityScript.ops[opIndex].op, entityScript.ops[opIndex].byteIndex) }
               opIndex++
             }
           }
@@ -1002,15 +1004,30 @@ module.exports = class FLevelLoader {
   } // end loadFLevel() function
 
   async ensureTexturesExist (config) {
-    // I'm not sure why this was commented out
+    const outputDir = path.join(
+      config.kujataDataDirectory,
+      'data',
+      'field',
+      'flevel.lgp',
+      'textures'
+    )
+    if (fs.existsSync(outputDir)) return
+
+    const flevelDir = path.join(config.unlgpDirectory, 'flevel.lgp')
+
+    const outputDirMetaData = path.join(
+      config.kujataDataDirectory,
+      'metadata',
+      'field-assets'
+    )
+    //`${config.metadataDirectory}/field-assets`
+
     const texFiles = fs
-      .readdirSync(config.inputFieldFLevelDirectory)
+      .readdirSync(flevelDir)
       .filter(f => f.toLowerCase().endsWith('.tex'))
-    const outputDir = `${config.outputFieldFLevelDirectory}/textures`
-    if (!fs.existsSync(outputDir)) {
-      fs.mkdirSync(outputDir)
-    }
-    const outputDirMetaData = `${config.metadataDirectory}/field-assets`
+
+    fs.mkdirSync(outputDir)
+
     if (!fs.existsSync(outputDirMetaData)) {
       fs.mkdirSync(outputDirMetaData)
     }
@@ -1018,14 +1035,16 @@ module.exports = class FLevelLoader {
     // console.log('ensureTexturesExist', config.inputFieldFLevelDirectory, config.outputFieldFLevelDirectory, texFiles, outputDir)
     for (let i = 0; i < texFiles.length; i++) {
       const texFile = texFiles[i]
-      const texPath = `${config.inputFieldFLevelDirectory}/${texFile}`
-      const pngPath = `${outputDir}/${texFile}.png`
-      const pngPathMetadataParent = `${outputDirMetaData}/field`
-      const pngPathMetadata = `${outputDirMetaData}/field/${texFile.replace(
-        '.tex',
-        ''
-      )}.png`
-      const metadataFile = `${outputDirMetaData}/flevel.metadata.json`
+      const texPath = path.join(flevelDir, texFile) //`${config.inputFieldFLevelDirectory}/${texFile}`
+      const pngPath = path.join(outputDir, `${texFile}.png`) //`${outputDir}/${texFile}.png`
+      const pngPathMetadataParent = path.join(outputDirMetaData, 'field') //`${outputDirMetaData}/field`
+      const pngPathMetadata = path.join(
+        outputDirMetaData,
+        'field',
+        `${texFile.replace('.tex', '')}.png`
+      )
+      // `${outputDirMetaData}/field/${texFile.replace('.tex','')}.png`
+      const metadataFile = path.join(outputDirMetaData, 'flevel.metadata.json') //`${outputDirMetaData}/flevel.metadata.json`
       const tex = new TexFile().loadTexFileFromPath(texPath)
       const w = tex.tex.header.width
       const h = tex.tex.header.height
@@ -1049,6 +1068,6 @@ module.exports = class FLevelLoader {
       })
       fs.writeFileSync(metadataFile, JSON.stringify(fieldTextureMetadata))
     }
-    console.log('fieldTextureMetadata', fieldTextureMetadata)
+    // console.log('fieldTextureMetadata', fieldTextureMetadata)
   }
 } // end module.exports = class FLevelLoader {

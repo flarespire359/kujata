@@ -9,7 +9,7 @@ const ensureMapListExists = config => {
     'maplist'
   )
   const mapListPathDest = path.join(
-    config['kujata-data-output-directory'],
+    config.kujataDataDirectory,
     'data',
     'field',
     'flevel.lgp',

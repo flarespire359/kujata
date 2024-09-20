@@ -68,7 +68,7 @@ const extractLgp = (lgpPath, outputRootPath) => {
 }
 const extractUnlgp = async (config, lgpFiles, all) => {
   // console.log('extractUnlgp', config, lgpFiles, all)
-  let lgpFilesToProcess = findLGPs(config['ff7-install-directory'])
+  let lgpFilesToProcess = findLGPs(config.ff7InstallDirectory)
   if (!all) {
     lgpFilesToProcess = lgpFilesToProcess.filter(lgp =>
       lgpFiles.some(suffix => lgp.endsWith(suffix))

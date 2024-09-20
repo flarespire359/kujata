@@ -16,11 +16,25 @@ const replacer = function (k, v) {
   return v
 }
 
-const decodeOneMap = (flevelLoader, config, fieldName) => {
-  const flevel = flevelLoader.loadFLevel(config, fieldName)
-  console.log('flevel', flevel)
-  const outputFilename =
-    config.outputFieldFLevelDirectory + '/' + fieldName + '.json'
+const decodeOneMap = (
+  flevelLoader,
+  config,
+  fieldName,
+  renderBackgroundLayers
+) => {
+  const flevel = flevelLoader.loadFLevel(
+    config,
+    fieldName,
+    renderBackgroundLayers
+  )
+  // console.log('flevel', flevel)
+  const outputFilename = path.join(
+    config.kujataDataDirectory,
+    'data',
+    'field',
+    'flevel.lgp',
+    `${fieldName}.json`
+  )
   fs.writeFileSync(outputFilename, JSON.stringify(flevel, replacer, 2))
   // console.log('Wrote: ' + outputFilename)
   return fieldName
@@ -117,9 +131,13 @@ const findMissingFromArray = (sourceArray, targetArray) => {
 }
 
 const extractFlevel = async (config, fields, all, renderBackgroundLayers) => {
-  console.log('extractFlevel: ', config, fields, all, renderBackgroundLayers)
+  // console.log('extractFlevel: ', config, fields, all, renderBackgroundLayers)
   const mapList = ensureMapListExists(config)
-
+  const availableFields = fs
+    .readdirSync(path.join(config.unlgpDirectory, 'flevel.lgp'))
+    .filter(f => !f.includes('.'))
+    .filter(f => f !== 'maplist')
+  // console.log('availableFields', availableFields)
   if (!all) {
     const invalidFields = findMissingFromArray(fields, mapList)
     if (invalidFields.length > 0) {
@@ -132,9 +150,19 @@ const extractFlevel = async (config, fields, all, renderBackgroundLayers) => {
       )
       return
     }
+    const unavailableFields = findMissingFromArray(fields, availableFields)
+    if (unavailableFields.length > 0) {
+      console.log(
+        chalk.red(
+          `⚠️   Unavailable field file - ${unavailableFields
+            .map(l => chalk.inverse(l))
+            .join(', ')}`
+        )
+      )
+      return
+    }
   }
-
-  const fieldsToProcess = all ? mapList : fields
+  const fieldsToProcess = all ? availableFields : fields
 
   const progressBar = new cliProgress.SingleBar({
     format:
@@ -156,9 +184,10 @@ const extractFlevel = async (config, fields, all, renderBackgroundLayers) => {
     progressBar.update(i, { current: fieldName })
     await sleep(500) // The update above can be slow to display
     try {
-      decodeOneMap(flevelLoader, config, fieldName)
+      decodeOneMap(flevelLoader, config, fieldName, renderBackgroundLayers)
       success.push(fieldName)
     } catch (error) {
+      // console.error('\n\n', error)
       errors.push(fieldName)
     }
 

@@ -12,7 +12,7 @@ const extractCDData = async config => {
     path.join(config.kujataDataDirectory, 'metadata')
   )
   await extractDiscData(
-    path.join(config['unlgp-directory'], 'disc_us.lgp'),
+    path.join(config.unlgpDirectory, 'disc_us.lgp'),
     path.join(config.kujataDataDirectory, 'data', 'cd'),
     path.join(config.kujataDataDirectory, 'metadata')
   )

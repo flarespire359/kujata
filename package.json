@@ -1,6 +1,6 @@
 {
   "name": "kujata",
-  "version": "1.0.1",
+  "version": "1.0.0",
   "description": "Translates Final Fantasy 7 assets to web-friendly formats like JSON and glTF",
   "main": "kujata.js",
   "scripts": {
@@ -9,7 +9,12 @@
   "bin": {
     "kujata": "./kujata.js"
   },
-  "author": "picklejar76@gmail.com",
+  "author": "dangarfielduk@hotmail.com",
+  "homepage": "https://dangarfield.github.io/kujata-webapp",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dangarfield/kujata"
+  },
   "license": "ISC",
   "dependencies": {
     "@inquirer/prompts": "^6.0.1",

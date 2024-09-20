@@ -91,7 +91,7 @@ class FF7BinaryDataReader {
     return b
   }
 
-  readString (len) {
+  readString (len, returnAfterMinReadCount) {
     let s = ''
     let readCount = len
     for (let i = 0; i < len; i++) {
@@ -103,7 +103,13 @@ class FF7BinaryDataReader {
         break
       }
     }
-    this.offset = this.offset + readCount + 1
+    if (returnAfterMinReadCount) {
+      // Return offset after finished reading, eg len = 24, but chars finish after 10. Return offset 11
+      this.offset = this.offset + readCount + 1
+    } else {
+      // Return offset after all bytes, eg len = 24, but chars finish after 10. Return offset 24
+      this.offset = this.offset + len
+    }
     return s
   }
 

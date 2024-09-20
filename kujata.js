@@ -209,7 +209,7 @@ const validateConfig = async shallEditConfig => {
   }
   const config = getConfig()
   if (shallEditConfig) await editConfig(config)
-  console.log('config', config, path.resolve(config.unlgpDirectory))
+  // console.log('config', config, path.resolve(config.unlgpDirectory))
 
   const errors = []
   if (
@@ -321,9 +321,11 @@ const flevelCommand = program
     '[field ids...]',
     `add field ids or '--all', eg: \n${chalk.bgGreen(
       'kujata flevel md1stin'
-    )} \n${chalk.bgGreen('kujata flevel md1_1 md1_2')} \n${chalk.bgGreen(
-      'kujata flevel --all'
-    )}\nRendering of background layers, pixels and palettes is disabled by default`
+    )}           One field \n${chalk.bgGreen(
+      'kujata flevel md1_1 md1_2 -r'
+    )}    Multiple fields with background images \n${chalk.bgGreen(
+      'kujata flevel --all -r'
+    )}          All fields with background images\n\nRendering of background layers, pixels and palettes is disabled by default`
   )
   .option(
     '-r, --render',
