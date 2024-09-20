@@ -10,7 +10,8 @@
 - Run `npm i -g kujata`
 - Run any kujata command, eg:
   - `kujata config` - Set ff7 directory and output folder
-  - `kujata flevel mdstin1 md1_1` asdasd 
+  - `kujata flevel mdstin1 md1_1` - Extract the backgrounds, palettes, walkmesh & field scripts for the first few fields
+  - `kujata battle-models rtaa ruaa` - Extract the cloud and tifa's battle model and animations in glTF format  
 - View your outputted files
 - Use them to create something cool like:
   - https://dangarfield.github.io/kujata-webapp - Viewer for kujata data and assets
