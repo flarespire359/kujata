@@ -34,6 +34,7 @@
 | `kujata kernel` | Extract kernel data. Includes command and attacks, initial data, and window.bin data |
 | `kujata menu` | Extract menu assets. Includes images, text, icons, most images for the game |
 | `kujata cd` | Extract cd data. Includes credits and change disk data |
+| `kujata media` | Convert media assets to web friendly formats. Sounds, music, movies, movie cam data |
 | `kujata bundle` | Bundle image assets. Add filelist.txt and zip images common images, For fenrir game engine |
 | `kujata unlgp battle.lgp` | Extract the files from the lgp archives |
 
