@@ -4,6 +4,7 @@ const path = require('path')
 const fs = require('fs-extra')
 const sharp = require('sharp')
 const { dec2hex, dec2bin } = require('./string-util.js')
+const { KUJATA_ROOT } = require('./helper.js')
 
 const getTextSectionData = sectionData => {
   const strings = []
@@ -686,7 +687,12 @@ const extractWindowBinElements = async (
   }).png()
 
   const windowBinAssetMap = await fs.readJson(
-    `./metadata/kernel/window.bin_${fileId}_asset-map.json`
+    path.join(
+      KUJATA_ROOT,
+      'metadata',
+      'kernel',
+      `window.bin_${fileId}_asset-map.json`
+    )
   )
   // console.log('windowBinAssetMap', windowBinAssetMap)
 
