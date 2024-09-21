@@ -202,7 +202,12 @@ const compositeImages = async (
   outputCreditsDirectory
 ) => {
   const assetMap = await fs.readJson(
-    path.join(KUJATA_ROOT, 'metadata', type, 'composite-images_asset-map.json')
+    path.join(
+      KUJATA_ROOT,
+      'metadata-src',
+      type,
+      'composite-images_asset-map.json'
+    )
   )
   // console.log('assetMap', assetMap)
   const assetMapKeys = Object.keys(assetMap)

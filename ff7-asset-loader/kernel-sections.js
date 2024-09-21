@@ -689,7 +689,7 @@ const extractWindowBinElements = async (
   const windowBinAssetMap = await fs.readJson(
     path.join(
       KUJATA_ROOT,
-      'metadata',
+      'metadata-src',
       'kernel',
       `window.bin_${fileId}_asset-map.json`
     )

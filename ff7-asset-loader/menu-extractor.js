@@ -46,7 +46,7 @@ const extractFontElement = async (
   const assetMap = await fs.readJson(
     path.join(
       KUJATA_ROOT,
-      'metadata',
+      'metadata-src',
       type,
       `${fontMetaDataFile}_asset-map.json`
     )
@@ -190,7 +190,7 @@ const extractSinglePaletteImages = async (
   const assetMap = await fs.readJson(
     path.join(
       KUJATA_ROOT,
-      'metadata',
+      'metadata-src',
       'menu',
       'single-palette-images_asset-map.json'
     )
