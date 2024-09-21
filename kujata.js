@@ -12,7 +12,9 @@ const { extractBattleData } = require('./data-extractors/extractor-battle-data')
 const { extractExe } = require('./data-extractors/extractor-exe')
 const { extractKernel } = require('./data-extractors/extractor-kernel')
 const { extractMenu } = require('./data-extractors/extractor-menu')
-const { generateCachedBundle } = require('./data-extractors/cache-generator')
+const {
+  generateCacheAndCreateFileList
+} = require('./data-extractors/cache-generator')
 const { extractMedias } = require('./data-extractors/extractor-media')
 const { input } = require('@inquirer/prompts')
 const {
@@ -35,18 +37,18 @@ PROGRESS:
   - field-models - DONE
   - battle-models - DONE
   - field-animations - DONE
-- metadata - tbc
+  - metadata - DONE
 - wm - tbc
   - exe - DONE
   - kernel - DONE
   - menu - DONE
   - media - TBC
-- bundle - waiting on flevel, also, add a filelist, checksum & size
+  - bundle - DONE
 */
 
 /*
 OTHERS to process:
-- battle/create-battle-skeleton-metadata.js - Need for ???
+    - battle/create-battle-skeleton-metadata.js - Need for ??? - Tweaked into just names
 - coemann8/parse-codemann8-data.js - Need for ???
     - data-extractors/scene-graph-generator.js - Need for ???
     - standing-animations/create-standing-animation.js - Need for ???
@@ -521,11 +523,13 @@ program
   .command('bundle')
   .description(
     'Bundle image assets. ' +
-      chalk.green('For fenrir game engine, zips up most common image assets')
+      chalk.green(
+        'Add filelist.txt and zip images common images, For fenrir game engine'
+      )
   )
   .action(async () => {
     const config = await validateConfig()
-    await generateCachedBundle(config)
+    await generateCacheAndCreateFileList(config)
   })
   .showHelpAfterError()
 

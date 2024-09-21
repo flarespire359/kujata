@@ -1,6 +1,6 @@
 {
   "name": "kujata",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Translates Final Fantasy 7 assets to web-friendly formats like JSON and glTF",
   "main": "kujata.js",
   "scripts": {
@@ -21,6 +21,7 @@
     "chalk": "^4.1.2",
     "cli-progress": "^3.12.0",
     "commander": "^12.1.0",
+    "fast-glob": "^3.3.2",
     "ffmpeg-path": "^5.5.5",
     "fs-extra": "^9.0.1",
     "inquirer": "^11.0.2",
