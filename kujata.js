@@ -16,7 +16,7 @@ const {
   generateCacheAndCreateFileList
 } = require('./data-extractors/cache-generator')
 const { extractMedias } = require('./data-extractors/extractor-media')
-const { input } = require('@inquirer/prompts')
+const { input, confirm } = require('@inquirer/prompts')
 const {
   extractFieldBattleModels
 } = require('./data-extractors/extractor-field-battle-models')
@@ -287,14 +287,9 @@ const validateUnlgp = async (config, ...expectedFolders) => {
         'to ensure that it exists'
       )
     )
-    const answer = await inquirer.prompt([
-      {
-        type: 'confirm',
-        name: 'confirmation',
-        message: `Shall I run this command for you now?`,
-        default: false
-      }
-    ])
+    const answer = await confirm({
+      message: `${chalk.cyan('🖊️   Shall I run this command for you now:')}`
+    })
 
     if (answer.confirmation) {
       await extractUnlgp(config, errors, false)
