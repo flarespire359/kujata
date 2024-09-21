@@ -4,7 +4,7 @@ const FF7GltfTranslator = require('../ff7-gltf/ff7-to-gltf.js')
 const chalk = require('chalk')
 const cliProgress = require('cli-progress')
 const FF7FieldAnimationTranslator = require('../ff7-gltf/ff7-field-animation-translator.js')
-const { sleep } = require('../ff7-asset-loader/helper.js')
+const { sleep, KUJATA_ROOT } = require('../ff7-asset-loader/helper.js')
 
 const getAllModelsList = (config, isBattleModel) => {
   if (isBattleModel) {
@@ -26,12 +26,12 @@ const findMissingFromArray = (sourceArray, targetArray) => {
 const names = {
   field: JSON.parse(
     fs.readFileSync(
-      path.join(__dirname, '..', 'metadata', 'skeleton-names-field.json')
+      path.join(KUJATA_ROOT, 'metadata', 'skeleton-names-field.json')
     )
   ),
   battle: JSON.parse(
     fs.readFileSync(
-      path.join(__dirname, '..', 'metadata', 'skeleton-names-battle.json')
+      path.join(KUJATA_ROOT, 'metadata', 'skeleton-names-battle.json')
     )
   )
 }

@@ -16,7 +16,7 @@ const {
   writeSceneGraph,
   processGatewaysForSceneGraph
 } = require('../ff7-asset-loader/scene-graph')
-const { sleep } = require('../ff7-asset-loader/helper')
+const { sleep, KUJATA_ROOT } = require('../ff7-asset-loader/helper')
 const {
   generateModelUsage,
   processModelUsage,
@@ -70,7 +70,7 @@ const copyFiles = (config, progress) => {
   }
 
   for (const [i, fileToCopy] of filesToCopy.entries()) {
-    const source = path.join(__dirname, '..', 'metadata', fileToCopy)
+    const source = path.join(KUJATA_ROOT, 'metadata', fileToCopy)
     const target = path.join(config.kujataDataDirectory, 'metadata', fileToCopy)
     fs.copyFileSync(source, target)
     progress.increment({

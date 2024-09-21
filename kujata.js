@@ -172,7 +172,7 @@ const editConfig = async config => {
 
   config.unlgpDirectory = await input({
     message: `2/3 | ${chalk.cyan(
-      '🖊️   Add a directory for storing un-lgp data archives:'
+      "🖊️   FF7 has a sort of '.zip' format. Please select an intermediary directory for storing the un-zipped archives. Eg, un-lgp data:"
     )}`,
     default: config.unlgpDirectory,
     validate: f =>
@@ -185,7 +185,7 @@ const editConfig = async config => {
 
   config.kujataDataDirectory = await input({
     message: `2/3 | ${chalk.cyan(
-      '🖊️   Add a directory for outputting all of your kujata data:'
+      '🖊️   Add a directory for where you want the output files to go, eg kujata data:'
     )}`,
     default: config.kujataDataDirectory,
     validate: f =>

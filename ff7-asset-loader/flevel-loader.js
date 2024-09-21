@@ -6,7 +6,7 @@ const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const backgroundLayerRenderer = require('./background-layer-renderer.js')
 // const { toHexlet2 } = require('./string-util.js')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
-const musicNames = require('../metadata/music-names.json')
+const { KUJATA_ROOT } = require('./helper.js')
 
 let musicList = null
 module.exports = class FLevelLoader {
@@ -28,6 +28,11 @@ module.exports = class FLevelLoader {
         .split('\r\n')
       musicIdx.unshift('')
       musicIdx.unshift('')
+
+      const musicNames = JSON.parse(
+        fs.readFileSync(path.join(KUJATA_ROOT, 'metadata', 'music-names.json'))
+      )
+
       musicList = musicIdx.map((name, index) => {
         return { id: index, name, description: musicNames[name] }
       })

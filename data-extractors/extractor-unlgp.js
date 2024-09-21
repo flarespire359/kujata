@@ -4,11 +4,10 @@ const path = require('path')
 const { spawnSync } = require('child_process')
 
 const cliProgress = require('cli-progress')
-const { sleep } = require('../ff7-asset-loader/helper')
+const { sleep, KUJATA_ROOT } = require('../ff7-asset-loader/helper')
 
 const UNLGP_EXE_PATH = path.resolve(
-  __dirname,
-  '..',
+  KUJATA_ROOT,
   'tools',
   'lgp-0.5b',
   'bin',
@@ -56,7 +55,7 @@ const extractLgp = (lgpPath, outputRootPath) => {
   let success = false
   try {
     const command = `cd ${outputPath} && "${UNLGP_EXE_PATH}" "${lgpPath}"`
-    console.log('\n\ncommand', command)
+    // console.log('\n\ncommand', command)
     const result = spawnSync(command, { shell: true })
 
     if (result.error) {

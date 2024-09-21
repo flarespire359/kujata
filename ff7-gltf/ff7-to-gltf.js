@@ -16,12 +16,13 @@ const fs = require('fs')
 const path = require('path')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
 const mkdirp = require('mkdirp')
+const { KUJATA_ROOT } = require('../ff7-asset-loader/helper.js')
 
 const allFieldModelAnimsList = {}
 const generateAllFieldModelAnimsList = () => {
   const all = JSON.parse(
     fs.readFileSync(
-      path.join(__dirname, '..', 'metadata', 'field-model-metadata.json')
+      path.join(KUJATA_ROOT, 'metadata', 'field-model-metadata.json')
     )
   )
 
@@ -78,8 +79,7 @@ module.exports = class FF7GltfTranslator {
       // Note: This is precalculated. But running `kujata metadata` will regenerate this file
       fs.readFileSync(
         path.join(
-          __dirname,
-          '..',
+          KUJATA_ROOT,
           'metadata',
           'field-model-standing-animation.json'
         ),

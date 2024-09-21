@@ -8,6 +8,7 @@ const {
   FF7BinaryDataReader
 } = require('../ff7-asset-loader/ff7-binary-data-reader.js')
 const chalk = require('chalk')
+const { KUJATA_ROOT } = require('../ff7-asset-loader/helper.js')
 const ffmpeg = require('ffmpeg-path').path
 // console.log('ffmpeg', ffmpeg)
 
@@ -21,7 +22,12 @@ const extractSounds = async (
   // D:\code\ff7\sfxedit_0.3\sfxdump.exe 'D:\Steam\steamapps\common\FINAL FANTASY VII\data\sound\audio.fmt' 'D:\Steam\steamapps\common\FINAL FANTASY VII\data\sound\audio.dat' D:\code\ff7\kujata-data-dg\data\media\sounds\
 
   // Check directories
-  const sfxDumpPath = path.join('sfxedit-0.3', 'sfxdump.exe')
+  const sfxDumpPath = path.join(
+    KUJATA_ROOT,
+    'tools',
+    'sfxedit-0.3',
+    'sfxdump.exe'
+  )
   const audioFmtPath = path.join(inputSoundsDirectory, 'audio.fmt')
   const audioDatPath = path.join(inputSoundsDirectory, 'audio.dat')
   const soundsOutputPath = path.join(outputSoundsDirectory)
@@ -420,7 +426,9 @@ const extractMoviecamData = async (
   // console.log('extractMoviecamData: END')
 }
 const createCombinedMoviesList = async (progress, outputMoviesDirectory) => {
-  const allMovies = await fs.readJson('./metadata/movie-list.json')
+  const allMovies = await fs.readJson(
+    path.join(KUJATA_ROOT, 'metadata', 'movie-list.json')
+  )
   // console.log('allMovies', allMovies)
   let nonFieldVideos = (await fs.readdir(outputMoviesDirectory))
     .filter(f => f.includes('.mp4'))
@@ -468,8 +476,6 @@ const extractMedias = async config => {
     'media',
     'sounds'
   )
-
-  const metadataDirectory = path.join(config.kujataDataDirectory, 'metadata')
 
   const inputMusicDirectory = path.join(
     config.ff7InstallDirectory,
