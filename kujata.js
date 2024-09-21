@@ -165,9 +165,9 @@ const editConfig = async config => {
     default: config.ff7InstallDirectory,
     validate: f =>
       fs.existsSync(path.resolve(f)) &&
-      fs.existsSync(path.resolve(path.join(f, 'ff7.exe')))
+      fs.existsSync(path.resolve(path.join(f, 'ff7_en.exe')))
         ? true
-        : chalk.red("⚠️   I can't find a ff7.exe in this folder")
+        : chalk.red("⚠️   I can't find a ff7_en.exe in this folder")
   })
 
   config.unlgpDirectory = await input({
@@ -220,7 +220,7 @@ const validateConfig = async shallEditConfig => {
   const errors = []
   if (
     !config.ff7InstallDirectory ||
-    !fs.existsSync(path.join(config.ff7InstallDirectory, 'ff7.exe'))
+    !fs.existsSync(path.join(config.ff7InstallDirectory, 'ff7_en.exe'))
   ) {
     errors.push(
       chalk.red(

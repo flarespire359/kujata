@@ -21,7 +21,7 @@
 | Command | Description |
 | --- | --- |
 | `kujata config` | Set config. FF7 install path. Un-lgp storage. Kujata data output folder |
-| `kujata flevel --all` | Extract all field data. Includes backgrounds, palettes, walkmesh, field scripts etc |
+| `kujata flevel --all -r` | Extract all field data. Includes backgrounds, palettes, walkmesh, field scripts etc |
 | `kujata flevel md1stin md1_1` | Extract one or more field |
 | `kujata field-models -all` | Extract field models to glTF. Includes models and textures |
 | `kujata field-models aaaa aagb` | Extract one or more models |
