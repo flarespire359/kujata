@@ -21,36 +21,40 @@ const {
 const {
   extractFieldAnimations
 } = require('./data-extractors/extractor-field-animations')
+const { extractMetadata } = require('./data-extractors/extractor-metadata')
 
 const program = new commander.Command()
 
 /*
 PROGRESS:
+  - config - DONE
   - unlgp - DONE
-- flevel - broken, need to fix
+  - flevel - DONE
   - cd - DONE
   - battle-data - DONE
   - field-models - DONE
   - battle-models - DONE
   - field-animations - DONE
+- metadata - tbc
+- wm - tbc
   - exe - DONE
   - kernel - DONE
   - menu - DONE
   - media - TBC
-- bundle - waiting on flevel
+- bundle - waiting on flevel, also, add a filelist, checksum & size
 */
 
 /*
 OTHERS to process:
 - battle/create-battle-skeleton-metadata.js - Need for ???
 - coemann8/parse-codemann8-data.js - Need for ???
-- data-extractors/scene-graph-generator.js - Need for ???
+    - data-extractors/scene-graph-generator.js - Need for ???
     DONT NEED - standing-animations/create-standing-animations.js - Need for ???
 - data-extractors/parse-wm-field-menu-names.js - Need for ???
 - data-extractors/generate-field-id-to-world-map-coords.js - Need for ???
 - data-extractors/generate-world-map-transition-data.js - Need for fenrir world map <-> field transitions
-- data-extractors/generate-op-codes-usages.js - Need for kujata-webapp op code usage
-- data-extractors/create-sound-list.js - Need for kujata-webapp sounds
+    - data-extractors/generate-op-codes-usages.js - Need for kujata-webapp op code usage
+    - data-extractors/create-sound-list.js - Need for kujata-webapp sounds
 */
 
 /*
@@ -58,19 +62,19 @@ kujata webapp requires:
 
 fields
   /data/field/flevel.lgp/maplist.json
-/metadata/scene-graph.json
-/metadata/chapters.json
+  /metadata/scene-graph.json
+  /metadata/chapters.json
 /metadata/makou-reactor/backgrounds/md1stin.png etc
 
 field detail
-/data/field/flevel.lgp/md1stin.json etc
+  /data/field/flevel.lgp/md1stin.json etc
 
 field-op-codes
-/metadata/op-categories.json
-/metadata/op-metadata.json
+  /metadata/op-categories.json
+  /metadata/op-metadata.json
 
 field-op-codes detail
-/metadata/op-code-usages/98.json etc
+  /metadata/op-code-usages/98.json etc
   
 field-models
 /metadata/ifalna.json
@@ -84,7 +88,7 @@ battle-models
 /metadata/ff7-battle-database.json
 
 sounds
-/metadata/sound-list.json
+  /metadata/sound-list.json
 
 */
 
@@ -99,8 +103,8 @@ fenrir requires:
 /data/wm/world_us.lgp/field.tbl.json
   /data/field/char.lgp/${modelLoader.hrcId.toLowerCase()}.gltf
   /data/field/char.lgp/${animId}.a.gltf
-/data/field/flevel.lgp/${fieldName}.json
-/data/field/flevel.lgp/textures/${blinkTextures[textureCount]}.tex.png
+  /data/field/flevel.lgp/${fieldName}.json
+  /data/field/flevel.lgp/textures/${blinkTextures[textureCount]}.tex.png
   /data/field/flevel.lgp/maplist.json
 
   /media/sounds/sounds-metadata.json
@@ -109,22 +113,22 @@ fenrir requires:
   /media/movies/moviecam-metadata.json
   /media/movies/${name}.cam.json
 
-/metadata/scene-graph.json
-/metadata/chapters.json
+  /metadata/scene-graph.json
+  /metadata/chapters.json
 /metadata/field-id-to-world-map-coords.json
 
   /metadata/credits-assets/credits.json
-/metadata/field-assets/flevel.metadata.json
+  /metadata/field-assets/flevel.metadata.json
   /metadata/menu-assets/menu_us.metadata.json
   /metadata/credits-assets/credits-font.metadata.json
   /metadata/disc-assets/disc.metadata.json
   /metadata/window-assets/window.bin.metadata.json
   /metadata/${textureGroupName}-assets/${assetType}/${asset.description}.png`
 
-/metadata/background-layers/${fieldName}/${fieldName}.json
-/metadata/background-layers/${fieldName}/${fileName}
-/metadata/background-layers/${fieldName}/pixels/${fileName}
-/metadata/background-layers/${fieldName}/palettes/${fieldName}-${paletteIndex}.png
+  /metadata/background-layers/${fieldName}/${fieldName}.json
+  /metadata/background-layers/${fieldName}/${fileName}
+  /metadata/background-layers/${fieldName}/pixels/${fileName}
+  /metadata/background-layers/${fieldName}/palettes/${fieldName}-${paletteIndex}.png
 
 /metadata/makou-reactor/backgrounds/${fieldName}.png
 
@@ -303,7 +307,23 @@ const validateUnlgp = async (config, ...expectedFolders) => {
     }
   }
 }
-
+const validateFieldsExport = config => {
+  const fieldFolder = path.join(
+    config.kujataDataDirectory,
+    'data',
+    'field',
+    'flevel.lgp'
+  )
+  if (!fs.existsSync(fieldFolder) || fs.readdirSync(fieldFolder).length < 700) {
+    program.error(
+      chalk.red(
+        '⚠️   First, we need to extract the field data. Run',
+        chalk.inverse(`kujata flevel --all`),
+        'to ensure that it exists'
+      )
+    )
+  }
+}
 program
   .command('config')
   .description(
@@ -377,6 +397,21 @@ program
     const config = await validateConfig()
     await validateUnlgp(config, 'char.lgp')
     await extractFieldAnimations(config)
+  })
+  .showHelpAfterError()
+
+program
+  .command('metadata')
+  .description(
+    'Extract general information. ' +
+      chalk.cyan(
+        'Includes field jumps, sound & operations usage, chapter lists, friendly names etc'
+      )
+  )
+  .action(async () => {
+    const config = await validateConfig()
+    validateFieldsExport(config)
+    await extractMetadata(config)
   })
   .showHelpAfterError()
 
