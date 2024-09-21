@@ -17,6 +17,11 @@ const {
   processGatewaysForSceneGraph
 } = require('../ff7-asset-loader/scene-graph')
 const { sleep } = require('../ff7-asset-loader/helper')
+const {
+  generateModelUsage,
+  processModelUsage,
+  writeModelUsage
+} = require('../ff7-asset-loader/model-usage')
 
 /*
  Move metadata files:
@@ -29,16 +34,18 @@ const { sleep } = require('../ff7-asset-loader/helper')
     op-metadata.json
 
 Generate:
- scene-graph.js
- op-code-usages/98.json etc
- sound-list.json
- field-model-metadata.json
+    scene-graph.js
+    op-code-usages/98.json etc
+    sound-list.json
+    field-model-metadata.json
+    field-animations-metadata.json
+    field-model-standing-animation.json
 
  field-id-to-world-map-coords.json ?? Could just put this in wm module?
  /data/wm/world_us.lgp/field.tbl.json ?? Can't remember what this is
 
 Not sure yet:
- ifalna.json
+    ifalna.json - Don't need anymore
  ff7-database.json
  ff7-battle-database.json
 */
@@ -85,6 +92,7 @@ const generateFieldData = async (config, progress) => {
   const opCodeUsages = {}
   const soundList = []
   const sceneGraph = createInitialSceneGraphNodes(config)
+  const modelUsage = generateModelUsage()
 
   await sleep(100) // Allow progress to show
   for (const [i, fieldFile] of fieldFiles.entries()) {
@@ -124,6 +132,9 @@ const generateFieldData = async (config, progress) => {
         field.triggers.gateways
       )
     }
+    if (field.model && field.model.modelLoaders) {
+      processModelUsage(modelUsage, fieldName, field.model.modelLoaders)
+    }
     progress.increment({
       current: fieldFile.length < i + 1 ? ' ' : fieldFiles[i + 1]
     })
@@ -131,6 +142,7 @@ const generateFieldData = async (config, progress) => {
   writeOpCodeUsages(config, opCodeUsages)
   writeSoundList(config, soundList)
   writeSceneGraph(config, sceneGraph)
+  writeModelUsage(config, modelUsage)
 }
 const extractMetadata = async config => {
   //   console.log('extractMetadata: START')
@@ -162,6 +174,6 @@ const extractMetadata = async config => {
   copyFiles(config, progressCopy)
   await generateFieldData(config, progressFieldData)
   multibar.stop()
-  console.log('extractMetadata: END')
+  console.log(chalk.green('🚀  Successfully extracted metadata'))
 }
 module.exports = { extractMetadata }

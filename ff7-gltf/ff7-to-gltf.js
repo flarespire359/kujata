@@ -17,6 +17,24 @@ const path = require('path')
 const { TexFile } = require('../ff7-asset-loader/tex-file.js')
 const mkdirp = require('mkdirp')
 
+const allFieldModelAnimsList = {}
+const generateAllFieldModelAnimsList = () => {
+  const all = JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, '..', 'metadata', 'field-model-metadata.json')
+    )
+  )
+
+  for (const hrcId of Object.keys(all)) {
+    allFieldModelAnimsList[hrcId] = []
+    for (const animType of Object.keys(all[hrcId].animationStats)) {
+      for (const anim of Object.keys(all[hrcId].animationStats[animType])) {
+        allFieldModelAnimsList[hrcId].push(anim)
+      }
+    }
+    // console.log('hrcId', hrcId, allFieldModelAnimsList)
+  }
+}
 module.exports = class FF7GltfTranslator {
   // Translate a FF7 FIELD.LGP's *.HRC file to glTF 2.0 format
   // hrcFileId = which skeleton to translate, e.g. "AAAA" for AAAA.HRC (Cloud)
@@ -24,7 +42,7 @@ module.exports = class FF7GltfTranslator {
   //   null            = use field-model-standing-animations.json to decide
   // animFileIds = which animation(s) to include in the output gltf
   //   null            = don't include any animations
-  //   []              = include all animations from ifalna.json
+  //   []              = include all animations from field usage
   //   ["AAFE, "AAGA"] = include only specific animations
   // includeTextures = whether to include textures in the translation (set to false to disable)
 
@@ -57,9 +75,14 @@ module.exports = class FF7GltfTranslator {
     )
 
     const standingAnimations = JSON.parse(
-      // TODO - Properly construct this
+      // Note: This is precalculated. But running `kujata metadata` will regenerate this file
       fs.readFileSync(
-        './metadata/field-model-standing-animations.json',
+        path.join(
+          __dirname,
+          '..',
+          'metadata',
+          'field-model-standing-animation.json'
+        ),
         'utf-8'
       )
     )
@@ -110,20 +133,11 @@ module.exports = class FF7GltfTranslator {
         animFileIds = []
       } else {
         if (animFileIds.length === 0) {
-          // console.log('Will translate all field animations from Ifalna database.')
-          const ifalna = JSON.parse(fs.readFileSync('./metadata/ifalna.json'))
-          const ifalnaEntry = ifalna[hrcFileId.toUpperCase()]
-          if (ifalnaEntry) {
-            if (ifalnaEntry.Anims) {
-              animFileIds = animFileIds.concat(ifalnaEntry.Anims)
-            }
-            if (ifalnaEntry.Anims2) {
-              animFileIds = animFileIds.concat(ifalnaEntry.Anims2)
-            }
-            if (ifalnaEntry.Anims3) {
-              animFileIds = animFileIds.concat(ifalnaEntry.Anims3)
-            }
+          console.log('Will translate all field animations from field usage.')
+          if (allFieldModelAnimsList[hrcFileId] === undefined) {
+            generateAllFieldModelAnimsList()
           }
+          animFileIds = allFieldModelAnimsList[hrcFileId]
         }
       }
     }

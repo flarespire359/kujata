@@ -49,7 +49,7 @@ OTHERS to process:
 - battle/create-battle-skeleton-metadata.js - Need for ???
 - coemann8/parse-codemann8-data.js - Need for ???
     - data-extractors/scene-graph-generator.js - Need for ???
-    DONT NEED - standing-animations/create-standing-animations.js - Need for ???
+    - standing-animations/create-standing-animation.js - Need for ???
 - data-extractors/parse-wm-field-menu-names.js - Need for ???
 - data-extractors/generate-field-id-to-world-map-coords.js - Need for ???
 - data-extractors/generate-world-map-transition-data.js - Need for fenrir world map <-> field transitions
@@ -77,15 +77,15 @@ field-op-codes detail
   /metadata/op-code-usages/98.json etc
   
 field-models
-/metadata/ifalna.json
-/metadata/ff7-database.json
+  /metadata/ifalna.json - Don't need
+/metadata/ff7-database.json // Leave for now and come back when looking at kujata-webapp
 
 field-models detail
-/metadata/field-model-metadata.json
-/metadata/skeleton-friendly-names.json
+  /metadata/field-model-metadata.json
+  /metadata/skeleton-names-field.json
 
 battle-models
-/metadata/ff7-battle-database.json
+/metadata/ff7-battle-database.json // Leave for now and come back when looking at kujata-webapp
 
 sounds
   /metadata/sound-list.json

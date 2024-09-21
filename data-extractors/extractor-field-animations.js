@@ -24,8 +24,16 @@ const findMissingFromArray = (sourceArray, targetArray) => {
   return sourceArray.filter(item => !targetSet.has(item))
 }
 const names = {
-  field: JSON.parse(fs.readFileSync('./metadata/skeleton-names-field.json')),
-  battle: JSON.parse(fs.readFileSync('./metadata/skeleton-names-battle.json'))
+  field: JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, '..', 'metadata', 'skeleton-names-field.json')
+    )
+  ),
+  battle: JSON.parse(
+    fs.readFileSync(
+      path.join(__dirname, '..', 'metadata', 'skeleton-names-battle.json')
+    )
+  )
 }
 const getName = (model, isBattleModel) => {
   return names[isBattleModel ? 'battle' : 'field'][model]
