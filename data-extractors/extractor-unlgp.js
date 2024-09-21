@@ -6,7 +6,14 @@ const { spawnSync } = require('child_process')
 const cliProgress = require('cli-progress')
 const { sleep } = require('../ff7-asset-loader/helper')
 
-const UNLGP_EXE_PATH = path.resolve(`./tools/lgp-0.5b/bin/unlgp.exe`)
+const UNLGP_EXE_PATH = path.resolve(
+  __dirname,
+  '..',
+  'tools',
+  'lgp-0.5b',
+  'bin',
+  'unlgp.exe'
+)
 const findLGPs = rootDir => {
   const results = []
   function searchDirectory (directory) {

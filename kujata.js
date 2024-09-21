@@ -185,7 +185,7 @@ const editConfig = async config => {
 
   config.kujataDataDirectory = await input({
     message: `2/3 | ${chalk.cyan(
-      '🖊️   Add a directory for outputting all of you kujata data:'
+      '🖊️   Add a directory for outputting all of your kujata data:'
     )}`,
     default: config.kujataDataDirectory,
     validate: f =>
