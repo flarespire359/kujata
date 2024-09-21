@@ -2,6 +2,7 @@ const fs = require('fs-extra')
 const path = require('path')
 const sharp = require('sharp')
 const { TexFile } = require('./tex-file.js')
+const { KUJATA_ROOT } = require('./helper.js')
 
 const extractAllAssetsAndPalettes = async (
   inputMenuDirectory,

@@ -10,6 +10,7 @@ const {
   extractFontElement,
   joinMetaData
 } = require('./menu-extractor')
+const { KUJATA_ROOT } = require('./helper.js')
 
 const convertImages = async (inputDir, outputDir) => {
   const images = (await fs.readdir(inputDir)).filter(f => f.endsWith('.tex'))
