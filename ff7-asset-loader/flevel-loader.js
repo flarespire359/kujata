@@ -1,4 +1,4 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const path = require('path')
 const stringUtil = require('./string-util.js')
 // const LzsDecompressor = require('../lzs/lzs-decompressor.js')
@@ -976,15 +976,13 @@ module.exports = class FLevelLoader {
         'metadata',
         'background-layers'
       )
+      fs.ensureDirSync(bgFolder)
+
       //`${config.metadataDirectory}/background-layers/`
       // const thisBgFolder = `${bgFolder}/${baseFilename}`
       const thisBgFolder = path.join(bgFolder, baseFilename)
-      if (!fs.existsSync(bgFolder)) {
-        fs.mkdirSync(bgFolder)
-      }
-      if (!fs.existsSync(thisBgFolder)) {
-        fs.mkdirSync(thisBgFolder)
-      }
+      fs.ensureDirSync(thisBgFolder)
+
       backgroundLayerRenderer.renderBackgroundLayers(
         flevel,
         thisBgFolder,
@@ -1025,17 +1023,14 @@ module.exports = class FLevelLoader {
       'metadata',
       'field-assets'
     )
+    fs.ensureDirSync(outputDir)
+    fs.ensureDirSync(outputDirMetaData)
     //`${config.metadataDirectory}/field-assets`
 
     const texFiles = fs
       .readdirSync(flevelDir)
       .filter(f => f.toLowerCase().endsWith('.tex'))
 
-    fs.mkdirSync(outputDir)
-
-    if (!fs.existsSync(outputDirMetaData)) {
-      fs.mkdirSync(outputDirMetaData)
-    }
     const fieldTextureMetadata = { field: [] }
     // console.log('ensureTexturesExist', config.inputFieldFLevelDirectory, config.outputFieldFLevelDirectory, texFiles, outputDir)
     for (let i = 0; i < texFiles.length; i++) {
@@ -1056,12 +1051,9 @@ module.exports = class FLevelLoader {
       if (!fs.existsSync(pngPath)) {
         await tex.saveAsPng(pngPath)
       }
-      if (!fs.existsSync(pngPathMetadataParent)) {
-        fs.mkdirSync(pngPathMetadataParent)
-      }
-      if (!fs.existsSync(pngPathMetadata)) {
-        await tex.saveAsPng(pngPathMetadata)
-      }
+
+      fs.ensureDirSync(pngPathMetadataParent)
+      fs.ensureDirSync(pngPathMetadata)
       fieldTextureMetadata.field.push({
         id: i,
         description: texFile.replace('.tex', ''),
