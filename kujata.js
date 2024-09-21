@@ -291,7 +291,7 @@ const validateUnlgp = async (config, ...expectedFolders) => {
       message: `${chalk.cyan('🖊️   Shall I run this command for you now:')}`
     })
 
-    if (answer.confirmation) {
+    if (answer) {
       await extractUnlgp(config, errors, false)
     } else {
       program.error(
