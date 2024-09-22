@@ -30,6 +30,7 @@
 | `kujata battle-models -all` | Extract battle models to glTF. Includes models, textures, weapons, backgrounds and animations |
 | `kujata battle-models rtaa ruaa` | Extract one or more models |
 | `kujata battle-data` | Extract battle data. Includes enemies, scene.bin, mark.dat and camera data |
+| `kujata world` | Extract world data. Very incomplete. Includes field transition positions only |
 | `kujata exe` | Extract exe data. Includes shops, initial data, limit data |
 | `kujata kernel` | Extract kernel data. Includes command and attacks, initial data, and window.bin data |
 | `kujata menu` | Extract menu assets. Includes images, text, icons, most images for the game |

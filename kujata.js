@@ -24,6 +24,7 @@ const {
   extractFieldAnimations
 } = require('./data-extractors/extractor-field-animations')
 const { extractMetadata } = require('./data-extractors/extractor-metadata')
+const { extractWorld } = require('./data-extractors/extractor-world')
 
 const program = new commander.Command()
 
@@ -38,7 +39,7 @@ PROGRESS:
   - battle-models - DONE
   - field-animations - DONE
   - metadata - DONE
-- wm - tbc
+  - world - tbc
   - exe - DONE
   - kernel - DONE
   - menu - DONE
@@ -53,7 +54,7 @@ OTHERS to process:
     - data-extractors/scene-graph-generator.js - Need for ???
     - standing-animations/create-standing-animation.js - Need for ???
 - data-extractors/parse-wm-field-menu-names.js - Need for ???
-- data-extractors/generate-field-id-to-world-map-coords.js - Need for ???
+    - data-extractors/generate-field-id-to-world-map-coords.js - Need for ???
 - data-extractors/generate-world-map-transition-data.js - Need for fenrir world map <-> field transitions
     - data-extractors/generate-op-codes-usages.js - Need for kujata-webapp op code usage
     - data-extractors/create-sound-list.js - Need for kujata-webapp sounds
@@ -66,7 +67,7 @@ fields
   /data/field/flevel.lgp/maplist.json
   /metadata/scene-graph.json
   /metadata/chapters.json
-/metadata/makou-reactor/backgrounds/md1stin.png etc
+  /metadata/makou-reactor/backgrounds/md1stin.png etc
 
 field detail
   /data/field/flevel.lgp/md1stin.json etc
@@ -80,14 +81,14 @@ field-op-codes detail
   
 field-models
   /metadata/ifalna.json - Don't need
-/metadata/ff7-database.json // Leave for now and come back when looking at kujata-webapp
+  /metadata/ff7-database.json // Replaced with friendly names
 
 field-models detail
   /metadata/field-model-metadata.json
   /metadata/skeleton-names-field.json
 
 battle-models
-/metadata/ff7-battle-database.json // Leave for now and come back when looking at kujata-webapp
+  /metadata/ff7-battle-database.json // Replaced with friendly names
 
 sounds
   /metadata/sound-list.json
@@ -102,7 +103,7 @@ fenrir requires:
   /data/battle/mark.dat.json
   /data/battle/scene.bin/scene.bin.json
   /data/battle/battle.lgp/${modelCode.toLowerCase()}.hrc.gltf
-/data/wm/world_us.lgp/field.tbl.json
+  /data/wm/world_us.lgp/field.tbl.json
   /data/field/char.lgp/${modelLoader.hrcId.toLowerCase()}.gltf
   /data/field/char.lgp/${animId}.a.gltf
   /data/field/flevel.lgp/${fieldName}.json
@@ -117,7 +118,7 @@ fenrir requires:
 
   /metadata/scene-graph.json
   /metadata/chapters.json
-/metadata/field-id-to-world-map-coords.json
+  /metadata/field-id-to-world-map-coords.json
 
   /metadata/credits-assets/credits.json
   /metadata/field-assets/flevel.metadata.json
@@ -132,7 +133,7 @@ fenrir requires:
   /metadata/background-layers/${fieldName}/pixels/${fileName}
   /metadata/background-layers/${fieldName}/palettes/${fieldName}-${paletteIndex}.png
 
-/metadata/makou-reactor/backgrounds/${fieldName}.png
+  /metadata/makou-reactor/backgrounds/${fieldName}.png -> https://makou-reactor-bg-images.netlify.app/md1stin.png
 
 */
 const configPath = path.join(os.homedir(), '.kujata', 'config.json')
@@ -461,6 +462,19 @@ program
   .action(async () => {
     const config = await validateConfig()
     await extractBattleData(config)
+  })
+  .showHelpAfterError()
+
+program
+  .command('world')
+  .description(
+    'Extract world data. ' +
+      chalk.cyan('Very incomplete. Includes field transition positions only')
+  )
+  .action(async () => {
+    const config = await validateConfig()
+    await validateUnlgp(config, 'world_us.lgp')
+    await extractWorld(config)
   })
   .showHelpAfterError()
 

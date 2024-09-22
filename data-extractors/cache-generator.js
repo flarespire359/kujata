@@ -10,6 +10,10 @@ const fastGlob = require('fast-glob')
 // In fenrir, a large number of assets are used
 // This is a convenience method to bundle the assets already in the kujata-data directory
 // Into a single zip that can be downloaded once unzipped and cached by a service worker
+const NETLIFY_TOML = `[[headers]]
+  for = "/*"
+    [headers.values]
+    Access-Control-Allow-Origin = "*"`
 
 const generateCachedBundle = async config => {
   const rootDir = config.kujataDataDirectory
@@ -135,6 +139,10 @@ const generateCacheAndCreateFileList = async config => {
 
   console.log(chalk.cyan('🛠️   Generating file list'))
   const filesTotal = await generateFileList(config)
+  fs.writeFileSync(
+    path.join(config.kujataDataDirectory, 'netlify.toml'),
+    NETLIFY_TOML
+  )
   console.log(chalk.green('🚀  Generated file list -', filesTotal, 'files'))
 }
 module.exports = {
