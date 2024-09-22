@@ -130,7 +130,13 @@ const findMissingFromArray = (sourceArray, targetArray) => {
   return sourceArray.filter(item => !targetSet.has(item))
 }
 
-const extractFlevel = async (config, fields, all, renderBackgroundLayers) => {
+const extractFlevel = async (
+  config,
+  fields,
+  all,
+  renderBackgroundLayers,
+  resumeRender
+) => {
   // console.log('extractFlevel: ', config, fields, all, renderBackgroundLayers)
   const mapList = ensureMapListExists(config)
   const availableFields = fs
@@ -182,9 +188,23 @@ const extractFlevel = async (config, fields, all, renderBackgroundLayers) => {
   for (const [i, fieldName] of fieldsToProcess.entries()) {
     // const lgp = path.basename(lgpPath)
     progressBar.update(i, { current: fieldName })
-    await sleep(500) // The update above can be slow to display
+    await sleep(200) // The update above can be slow to display
     try {
-      decodeOneMap(flevelLoader, config, fieldName, renderBackgroundLayers)
+      const fieldBackgroundFolderExists = fs.existsSync(
+        path.join(
+          config.kujataDataDirectory,
+          'metadata',
+          'background-layers',
+          fieldName
+        )
+      )
+      // console.log('\n\n', resumeRender, fieldBackgroundFolderExists)
+      if (resumeRender && fieldBackgroundFolderExists) {
+        continue
+      }
+      const shallRender = renderBackgroundLayers || resumeRender
+      // console.log('shallRender', shallRender)
+      decodeOneMap(flevelLoader, config, fieldName, shallRender)
       success.push(fieldName)
     } catch (error) {
       // console.error('\n\n', error)

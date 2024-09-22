@@ -338,15 +338,21 @@ const flevelCommand = program
     '[field ids...]',
     `add field ids or '--all', eg: \n${chalk.bgGreen(
       'kujata flevel md1stin'
-    )}           One field \n${chalk.bgGreen(
+    )}                 One field \n${chalk.bgGreen(
       'kujata flevel md1_1 md1_2 -r'
-    )}    Multiple fields with background images \n${chalk.bgGreen(
+    )}          Multiple fields with background images \n${chalk.bgGreen(
       'kujata flevel --all -r'
-    )}          All fields with background images\n\nRendering of background layers, pixels and palettes is disabled by default`
+    )}                All fields with background images\n${chalk.bgGreen(
+      'kujata flevel --all --resume-render'
+    )}   Only renders backgrounds that haven't been rendered already\n\nRendering of background layers, pixels and palettes is disabled by default`
   )
   .option(
     '-r, --render',
     'Turn on rendering of background layers, pixels and palettes'
+  )
+  .option(
+    '--resume-render',
+    'Render if not already rendered. Eg, resume progress of rendering'
   )
   .option('-a, --all', 'Process all fields')
   .action(async (fields, options) => {
@@ -355,7 +361,14 @@ const flevelCommand = program
     if (fields.length === 0 && !options.all) {
       flevelCommand.help()
     }
-    await extractFlevel(config, fields, options.all, options.render)
+    // console.log('options', options)
+    await extractFlevel(
+      config,
+      fields,
+      options.all,
+      options.render,
+      options.resumeRender
+    )
   })
   .showHelpAfterError()
 

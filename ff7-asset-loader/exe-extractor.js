@@ -1,6 +1,5 @@
 const fs = require('fs-extra')
 const path = require('path')
-
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
 const { toHex2 } = require('./string-util.js')
 const { parseAttackData } = require('./kernel-sections.js')
@@ -364,7 +363,6 @@ const extractLimitData = r => {
   return { limits, tifaSlots, caitSithSlots }
 }
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
-  console.log('Extract Exe Data: START')
   let buffer = fs.readFileSync(path.join(inputExeDirectory, 'ff7_en.exe'))
   let r = new FF7BinaryDataReader(buffer)
   const shopData = extractShopInfo(r)
@@ -380,8 +378,6 @@ const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
     limitData
   }
   await saveData(data, path.join(outputExeDirectory, 'ff7.exe.json'))
-
-  console.log('Extract Exe Data: END')
 }
 module.exports = {
   extractExeData
