@@ -1,7 +1,7 @@
 const fs = require('fs-extra')
 const path = require('path')
 const { FF7BinaryDataReader } = require('./ff7-binary-data-reader.js')
-const { toHex2 } = require('./string-util.js')
+const { toHex2, dec2hex, printBytes } = require('./string-util.js')
 const { parseAttackData } = require('./kernel-sections.js')
 const { parseKernelEnums, Enums } = require('./kernel-enums.js')
 
@@ -362,6 +362,104 @@ const extractLimitData = r => {
   // 0x0051D570 battle square stuff seems to start around here
   return { limits, tifaSlots, caitSithSlots }
 }
+
+const addFormationPositionData = (formations, count, r) => {
+  for (const formationType of Object.keys(Enums.Battle.Layout)) {
+    const playerPositions = []
+    for (let i = 0; i < count; i++) {
+      playerPositions.push({
+        x: r.readShort(),
+        y: r.readShort(),
+        z: r.readShort()
+      })
+    }
+    formations[formationType].positions['' + count] = playerPositions
+  }
+}
+const addFormationRotationData = (formations, count, r) => {
+  for (const formationType of Object.keys(Enums.Battle.Layout)) {
+    const playerRotations = []
+    for (let i = 0; i < count; i++) {
+      playerRotations.push(r.readShort())
+    }
+    formations[formationType].rotations['' + count] = playerRotations
+  }
+}
+const extractBattlePlayerFormationData = r => {
+  // https://github.com/Akari1982/q-gears_reverse/blob/47cf28f864d48d1959719cc28c7640bd573dc43c/ffvii/address_battle.txt#L70
+
+  r.offset = 0x003c0bf0
+  const formations = Object.keys(Enums.Battle.Layout).reduce(
+    (acc, item) => ({ ...acc, [item]: { positions: {}, rotations: {} } }),
+    {}
+  )
+  addFormationPositionData(formations, 3, r)
+  // console.log('3 player formation length', r.offset - 0x003c0bf0)
+  const formation3PlayerPadding = r.readUByteArray(6)
+  // printBytes('3 PLAYER FORMATIONS duplicate', r.readUByteArray(6 * 3 * 9, 2, 3 * 3, false))
+  const formation3PlayerDuplicate = r.readUByteArray(6 * 3 * 9) // 162
+  const formation3PlayerDuplicatePadding = r.readUByteArray(6)
+
+  // console.log('2 player offset', r.offset)
+  addFormationPositionData(formations, 2, r)
+  const formation2PlayerPadding = r.readUByteArray(4)
+  // printBytes('2 PLAYER FORMATIONS duplicate', r.readUByteArray(6 * 2 * 9, 2, 3 * 3, false))
+  const formation2PlayerDuplicate = r.readUByteArray(6 * 2 * 9) // 0s
+  const formation2PlayerDuplicatePadding = r.readUByteArray(4)
+
+  // printBytes('3 player rotation', r.readUByteArray(2 * 3 * 9), 2, 3, true)
+  addFormationRotationData(formations, 3, r)
+  const rotation3PlayerPadding = r.readUByteArray(2)
+  const rotation3PlayerDupe = r.readUByteArray(2 * 3 * 9)
+  // printBytes('3 player rotation dupe', r.readUByteArray(2 * 3 * 9), 2, 3, true)
+  const rotation3PlayerPaddingDupe = r.readUByteArray(2)
+
+  addFormationRotationData(formations, 2, r)
+  // printBytes('2 player rotation', r.readUByteArray(2 * 2 * 9), 2, 2, true)
+  const rotation2PlayerPadding = r.readUByteArray(2)
+  // console.log('rotation2PlayerPadding', rotation2PlayerPadding)
+  const rotation2PlayerDiff = r.readUByteArray(2 * 2 * 9)
+  // printBytes('2 player rotation diff', r.readUByteArray(2 * 2 * 9), 2, 2, true)
+  const rotation2PlayerPaddingDiff = r.readUByteArray(2)
+  // console.log('rotation2PlayerPaddingDiff', rotation2PlayerPaddingDiff)
+  const rotationSectionPadding = r.readUByteArray(4)
+
+  // console.log('???? r.offset', r.offset, dec2hex(r.offset))
+  // printBytes('????', r.readUByteArray(2 * 4 * 9), 1, 8, 'binary')
+
+  // r.offset - 0x3c0ee0, config section maybe?
+  // 11111000 01000101 00000000 00000000 00000000 01100000 00000000 00000000 - Normal              0
+  // 11111000 01000101 00000000 00000000 00000000 01100000 00000000 00000000 - Preemptive           1
+  // 00000100 01000110 00000000 00000000 00000000 01010000 00000000 00000000 - BackAttack            2
+  // 00001110 01000110 00000000 00000000 00000000 01010000 00000000 00000000 - SideAttack1            3
+  // 00001110 01000110 00000000 00000000 00000000 01010000 00000000 00000000 - PincerAttack            4
+  // 00001110 01000110 00000000 00000000 00000000 01010000 00000000 00000000 - SideAttack2            3
+  // 00001110 01000110 00000000 00000000 00000000 01010000 00000000 00000000 - SideAttack3            3
+  // 00001110 01000110 00000000 00000000 00000000 01010000 00000000 00000000 - SideAttack4            3
+  // 11111000 01000101 00000000 00000000 00000000 01100000 00000000 00000000 - NormalLockFrontRow  0
+
+  // r.offset = 0x003c09c8 // Not sure what this is yet:
+  // printBytes('????2', r.readUByteArray(2 * 4 * 10), 1, 10, 'binary')
+  // 00000000 00000000 00000000 00000000 00000001 00000000 00000000 00000000 00000001 00000000
+  // 00000000 00000000 00000010 00000000 00000000 00000000 00001000 00101001 01011110 00000000
+  // 00000000 00000000 00000000 00000000 00000001 00000000 00000000 00000000 00000001 00000000
+  // 00000000 00000000 00000010 00000000 00000000 00000000 00001000 00101001 01011110 00000000
+  // 00000000 00000000 00000000 00000000 00000001 00000000 00000000 00000000 00000001 00000000
+  // 00000000 00000000 00000010 00000000 00000000 00000000 00001000 00101001 01011110 00000000
+  // 00000000 00000000 00000000 00000000 00000001 00000000 00000000 00000000 00000000 00000000
+  // 00000000 00000000 00000011 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+
+  // console.log('formations', JSON.stringify(formations, null, 2))
+  // console.log(
+  //   'formations',
+  //   JSON.stringify(formations.NormalLockFrontRow, null, 2)
+  // )
+
+  // 0x003B62F0 - This appears to be the place that battle text, eg, Pre-emptive Attack!
+  // 00 01 02 03   04 03 03 03   05 00 00 00   00 00 00 00
+
+  return formations
+}
 const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   let buffer = fs.readFileSync(path.join(inputExeDirectory, 'ff7_en.exe'))
   let r = new FF7BinaryDataReader(buffer)
@@ -370,11 +468,13 @@ const extractExeData = async (inputExeDirectory, outputExeDirectory) => {
   const blinkData = extractBlinkData(r)
   const battleCharacterModels = extractBattleCharacterModels(r)
   const limitData = extractLimitData(r)
+  const battlePlayerFormationData = extractBattlePlayerFormationData(r)
   const data = {
     shopData,
     defaultNames,
     blinkData,
     battleCharacterModels,
+    battlePlayerFormationData,
     limitData
   }
   await saveData(data, path.join(outputExeDirectory, 'ff7.exe.json'))

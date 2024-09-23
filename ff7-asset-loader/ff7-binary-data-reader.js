@@ -78,6 +78,14 @@ class FF7BinaryDataReader {
     return array
   }
 
+  readByteArrayHex (length) {
+    const array = []
+    for (let i = 0; i < length; i++) {
+      array.push(stringUtil.dec2hex(this.readUByte()).replace('0x', ''))
+    }
+    return array
+  }
+
   readUShortArray (length) {
     const array = []
     for (let i = 0; i < length; i++) {
