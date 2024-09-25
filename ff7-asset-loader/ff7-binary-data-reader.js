@@ -279,6 +279,879 @@ class FF7BinaryDataReader {
     return opData
   }
 
+  readBattleCameraPositionOp () {
+    const $r = this
+    const offset = this.offset
+    const op = $r.readUByte()
+
+    const getRaw = (from, to) => {
+      // console.log('getRaw', from, to)
+      this.offset = from
+      return this.readUByteArray(to - from)
+        .map(v => stringUtil.dec2hex(v, 2, true).toUpperCase())
+        .join(' ')
+    }
+
+    // D5 - (One Word Parameter)
+    if (op === 0xd5) {
+      const arg = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        arg,
+        op: 'D5',
+        raw,
+        js: 'opD5()'
+      }
+    }
+    // D6 - (No Parameters)
+    if (op === 0xd6) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'D6',
+        raw,
+        js: 'opD6()'
+      }
+    }
+    // D7 - (Two Byte Parameters)
+    if (op === 0xd7) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        arg,
+        arg2,
+        op: 'D7',
+        raw,
+        js: 'opD7()'
+      }
+    }
+    // D8 - (Two Byte, Three Word, One Byte Parameters) *
+    if (op === 0xd8) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const arg6 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        op: 'D8',
+        raw,
+        js: 'opD8()'
+      }
+    }
+    // D9 - (No Parameters) Loads Point from memory at 0xBF2158
+    if (op === 0xd9) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'D9',
+        raw,
+        js: 'opD9()'
+      }
+    }
+    // DA - (No Parameters) Sets Unknown2 to 0
+    if (op === 0xda) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DA',
+        raw,
+        js: 'opDA()'
+      }
+    }
+    // DB - (No Parameters) Sets Unknown2 to 1
+    if (op === 0xdb) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DB',
+        raw,
+        js: 'opDB()'
+      }
+    }
+    // DC - (No Parameters) Sets Unknown1 to 1
+    if (op === 0xdc) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DC',
+        raw,
+        js: 'opDC()'
+      }
+    }
+    // DD - (One Byte Parameter) Sets active "Idle" camera index (based on formation data) to parameter
+    if (op === 0xdd) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DD',
+        arg,
+        raw,
+        js: 'opDD()'
+      }
+    }
+    // DE - (One Byte Parameter) If non-0 parameter, set 0xBF2A34 to 3
+    if (op === 0xde) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DE',
+        arg,
+        raw,
+        js: 'opDE()'
+      }
+    }
+    // DF - (No Parameter) Sets 0xBF2A34 to Fh; No questions asked
+    if (op === 0xdf) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DF',
+        raw,
+        js: 'opDF()'
+      }
+    }
+    // E0 - (Two Byte Parameters)
+    if (op === 0xe0) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E0',
+        arg,
+        arg2,
+        raw,
+        js: 'opE0()'
+      }
+    }
+    // E1 - (No Parameters) Loads current idle camera position point
+    if (op === 0xe1) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E1',
+        raw,
+        js: 'opE1()'
+      }
+    }
+    // E2 - (One Byte Parameter)
+    if (op === 0xe2) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E2',
+        arg,
+        raw,
+        js: 'opE2()'
+      }
+    }
+    // E3 - (Two Byte, Three Word, One Byte Parameters) *
+    if (op === 0xe3) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E3',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE3()'
+      }
+    }
+    // E4 - (One Byte, Three Word, One Byte Parameters) *
+    if (op === 0xe4) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E4',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE4()'
+      }
+    }
+    // E5 - (One Byte, Three Word, One Byte Parameters) *
+    if (op === 0xe5) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E5',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE5()'
+      }
+    }
+    // E6 - (Three Word, One Byte Parameters)
+    if (op === 0xe6) {
+      const arg = $r.readUShort()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E6',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        raw,
+        js: 'opE6()'
+      }
+    }
+    // E7 - (One Byte, Three Word, One Byte Parameters)
+    if (op === 0xe7) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E7',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE7()'
+      }
+    }
+    // E8 - (One Byte, Three Word, One Byte Parameters) ???
+    // https://github.com/q-gears/q-gears-reversing-data/blob/2b155a8c5455f5fc8addd2eda9e5cd4c226abe34/reversing/ffvii/ffvii_battle/camera/camera_script_export_attack_normal.lua#L84
+    if (op === 0xe8) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E8',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE8()'
+      }
+    }
+    // E9 - (One Byte, Three Word, One Byte Parameters)
+    if (op === 0xe9) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E9',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE9()'
+      }
+    }
+    // EB - (Two Byte, Three Word, One Byte Parameters)
+    if (op === 0xeb) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const arg6 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EB',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        raw,
+        js: 'opEB()'
+      }
+    }
+    // EF - (Two Byte, Three Word Parameters)
+    if (op === 0xef) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EF',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opEF()'
+      }
+    }
+    // F0 - (One Byte, Three Word Parameters)
+    if (op === 0xf0) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F0',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        raw,
+        js: 'opF0()'
+      }
+    }
+    // F1 - (No Parameters) Sets Unknown1 to 0
+    if (op === 0xf1) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F1',
+        raw,
+        js: 'opF1()'
+      }
+    }
+    // F2 - (One Byte, Two Word Parameters)
+    if (op === 0xf2) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F2',
+        arg,
+        arg2,
+        arg3,
+        raw,
+        js: 'opF2()'
+      }
+    }
+    // F3 - (One Byte, Two Word Parameters)
+    if (op === 0xf3) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F3',
+        arg,
+        arg2,
+        arg3,
+        raw,
+        js: 'opF3()'
+      }
+    }
+    // F4 - (No Parameters) Wait
+    if (op === 0xf4) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F4',
+        raw,
+        js: 'opF4()'
+      }
+    }
+    // F5 - (One Byte Parameter) Set Wait
+    if (op === 0xf5) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F5',
+        arg,
+        raw,
+        js: 'opF5()'
+      }
+    }
+    // F7 - (One Byte, Three Word Parameters)
+    // Note: In documentation, it states F8, but it's F7
+    if (op === 0xf7) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F7',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        raw,
+        js: 'opF7()'
+      }
+    }
+    // F8 - (Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)
+    // Note: In documentation, it states F7, but it's F8
+    if (op === 0xf8) {
+      const arg = $r.readUShort()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const arg6 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F8',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        raw,
+        js: 'opF8()'
+      }
+    }
+    // F9 - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)
+    if (op === 0xf9) {
+      const arg = $r.readUShort()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F9',
+        arg,
+        arg2,
+        arg3,
+        raw,
+        js: 'opF9()'
+      }
+    }
+    // FE - (One Optional Parameter) If waiting and next byte is C0h, then restart script and stop waiting. Else do nothing?
+    if (op === 0xfe) {
+      // TODO
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FE',
+        raw,
+        js: 'opFE()'
+      }
+    }
+    // FF - (No Parameters) ScriptEnd
+    if (op === 0xff) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FF',
+        raw,
+        js: 'opFF()'
+      }
+    }
+    // 00 - 2 scripts don't appear to have FF, but they both have 00 padding. Do this to allow parsing
+    if (op === 0x00) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: '00',
+        raw,
+        js: 'op00()'
+      }
+    }
+    console.error('    unsupported opCode: 0x' + stringUtil.toHex2(op))
+    throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
+  }
+  readBattleCameraDirectionOp () {
+    const $r = this
+    const offset = this.offset
+    const op = $r.readUByte()
+
+    const getRaw = (from, to) => {
+      // console.log('getRaw', from, to)
+      this.offset = from
+      return this.readUByteArray(to - from)
+        .map(v => stringUtil.dec2hex(v, 2, true).toUpperCase())
+        .join(' ')
+    }
+    // D8 - (Two Byte, Three Word, One Byte Parameters) *
+    if (op === 0xd8) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const arg6 = $r.readUByte() // Extra byte?
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'D8',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        raw,
+        js: 'opD8()'
+      }
+    }
+    // D9 - (No Parameters) Loads point from memory at 0xBFB1A0
+    if (op === 0xd9) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'D9',
+        raw,
+        js: 'opD9()'
+      }
+    }
+    // DB - (No Parameters) Sets Unknown to 0
+    if (op === 0xdb) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DB',
+        raw,
+        js: 'opDB()'
+      }
+    }
+    // DC - (No Parameters) Sets Unknown to 1
+    if (op === 0xdc) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DC',
+        raw,
+        js: 'opDC()'
+      }
+    }
+    // DD - (One Byte Parameter) Sets Current active "Idle" Camera (indexed in formation data) to parameter
+    if (op === 0xdd) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DD',
+        arg,
+        raw,
+        js: 'opDD()'
+      }
+    }
+    // DE - (One Byte Parameter) If non-0 parameter, set 0xBF2A34 to 3
+    if (op === 0xde) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DE',
+        arg,
+        raw,
+        js: 'opDE()'
+      }
+    }
+    // DF - (No Parameter) Sets 0xBF2A34 to Fh; No questions asked
+    if (op === 0xdf) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DF',
+        raw,
+        js: 'opDF()'
+      }
+    }
+    // E0 - (Two byte parameters)
+    if (op === 0xe0) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E0',
+        arg,
+        arg2,
+        raw,
+        js: 'opE0()'
+      }
+    }
+    // E1 - (No Parameters) Loads point of current active "Idle" camera
+    if (op === 0xe1) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E1',
+        raw,
+        js: 'opE1()'
+      }
+    }
+    // E2 - (One Byte parameter) Does something with active "Idle" Camera index and loading a new point based on it.
+    if (op === 0xe2) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E2',
+        arg,
+        raw,
+        js: 'opE2()'
+      }
+    }
+    // E3 - (Two Byte, Three Word, One Byte Parameters) *
+    if (op === 0xe3) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const arg6 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E3',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        raw,
+        js: 'opE3()'
+      }
+    }
+    // E4 - (One Byte, Three Word, One Byte Parameters) *
+    if (op === 0xe4) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E4',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE4()'
+      }
+    }
+    // E5 - (One Byte, Three Word, One Byte Parameters) *
+    if (op === 0xe5) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E5',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE5()'
+      }
+    }
+    // E6 - (Three Word, One Byte Parameters)
+    if (op === 0xe6) {
+      const arg = $r.readUShort()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E6',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        raw,
+        js: 'opE6()'
+      }
+    }
+    // E8 - (One Byte, Three Word, One Byte Parameters)
+    if (op === 0xe8) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E8',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opE8()'
+      }
+    }
+    // EA - (One Byte, Three Word, One Byte Parameters)
+    if (op === 0xea) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EA',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opEA()'
+      }
+    }
+    // EC - (Two Byte, Three Word, One Byte Parameters)
+    if (op === 0xec) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const arg6 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EC',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        arg6,
+        raw,
+        js: 'opEC()'
+      }
+    }
+    // F0 - (Two Byte, Three Word Parameters)
+    if (op === 0xf0) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const arg5 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F0',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        arg5,
+        raw,
+        js: 'opF0()'
+      }
+    }
+    // F4 - No Parameters; "Pause" processing while decrementing "Wait" by 1 each iteration. (Seems sketchy since loops would be different based on processing power)
+    if (op === 0xf4) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F4',
+        raw,
+        js: 'opF4()'
+      }
+    }
+    // F5 - One Parameter; Set "Wait"
+    if (op === 0xf5) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F5',
+        arg,
+        raw,
+        js: 'opF5()'
+      }
+    }
+    // F8 - (One Byte, Three Word Parameters)
+    if (op === 0xf8) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F8',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        raw,
+        js: 'opF8()'
+      }
+    }
+    // F9 - (One Byte, Three Word Parameters)
+    if (op === 0xf9) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const arg4 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F9',
+        arg,
+        arg2,
+        arg3,
+        arg4,
+        raw,
+        js: 'opF9()'
+      }
+    }
+    // FA - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)
+    if (op === 0xfa) {
+      const arg = $r.readUShort()
+      const arg2 = $r.readUShort()
+      const arg3 = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FA',
+        arg,
+        arg2,
+        arg3,
+        raw,
+        js: 'opFA()'
+      }
+    }
+    // FE - (One Optional Parameter) If waiting and next byte is C0h, then restart script and stop waiting. Else do nothing?
+    if (op === 0xfe) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FE',
+        arg,
+        raw,
+        js: 'opFE()'
+      }
+    }
+    // FF - (No Parameters) ScriptEnd
+    if (op === 0xff) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FF',
+        raw,
+        js: 'opFF()'
+      }
+    }
+
+    console.error('unsupported opCode: 0x' + stringUtil.toHex2(op))
+    throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
+  }
   readBattleOp () {
     const $r = this
     const op = $r.readUByte()
