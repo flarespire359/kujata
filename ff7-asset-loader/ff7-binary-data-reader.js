@@ -294,7 +294,7 @@ class FF7BinaryDataReader {
 
     // D5 - (One Word Parameter)
     if (op === 0xd5) {
-      const arg = $r.readUShort()
+      const arg = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         arg,
@@ -329,9 +329,9 @@ class FF7BinaryDataReader {
     if (op === 0xd8) {
       const arg = $r.readUByte()
       const arg2 = $r.readUByte()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
       const arg6 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -437,21 +437,21 @@ class FF7BinaryDataReader {
     }
     // E2 - (One Byte Parameter)
     if (op === 0xe2) {
-      const arg = $r.readUByte()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E2',
-        arg,
+        op: 'MOVA',
+        frames,
         raw,
-        js: 'opE2()'
+        js: `moveToXYZAsync({frames: ${frames}})`
       }
     }
     // E3 - (Two Byte, Three Word, One Byte Parameters) *
     if (op === 0xe3) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -468,9 +468,9 @@ class FF7BinaryDataReader {
     // E4 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe4) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -487,9 +487,9 @@ class FF7BinaryDataReader {
     // E5 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe5) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -505,9 +505,9 @@ class FF7BinaryDataReader {
     }
     // E6 - (Three Word, One Byte Parameters)
     if (op === 0xe6) {
-      const arg = $r.readUShort()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
+      const arg = $r.readShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
       const arg4 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -523,9 +523,9 @@ class FF7BinaryDataReader {
     // E7 - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xe7) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -543,9 +543,9 @@ class FF7BinaryDataReader {
     // https://github.com/q-gears/q-gears-reversing-data/blob/2b155a8c5455f5fc8addd2eda9e5cd4c226abe34/reversing/ffvii/ffvii_battle/camera/camera_script_export_attack_normal.lua#L84
     if (op === 0xe8) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -562,9 +562,9 @@ class FF7BinaryDataReader {
     // E9 - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xe9) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -582,9 +582,9 @@ class FF7BinaryDataReader {
     if (op === 0xeb) {
       const arg = $r.readUByte()
       const arg2 = $r.readUByte()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
       const arg6 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -603,9 +603,9 @@ class FF7BinaryDataReader {
     if (op === 0xef) {
       const arg = $r.readUByte()
       const arg2 = $r.readUByte()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'EF',
@@ -621,9 +621,9 @@ class FF7BinaryDataReader {
     // F0 - (One Byte, Three Word Parameters)
     if (op === 0xf0) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F0',
@@ -647,8 +647,8 @@ class FF7BinaryDataReader {
     // F2 - (One Byte, Two Word Parameters)
     if (op === 0xf2) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F2',
@@ -662,8 +662,8 @@ class FF7BinaryDataReader {
     // F3 - (One Byte, Two Word Parameters)
     if (op === 0xf3) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F3',
@@ -678,29 +678,29 @@ class FF7BinaryDataReader {
     if (op === 0xf4) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F4',
+        op: 'WAIT',
         raw,
-        js: 'opF4()'
+        js: 'executeWait()'
       }
     }
     // F5 - (One Byte Parameter) Set Wait
     if (op === 0xf5) {
-      const arg = $r.readUByte()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F5',
-        arg,
+        op: 'SETWAIT',
+        frames,
         raw,
-        js: 'opF5()'
+        js: `setWait({frames: ${frames}})`
       }
     }
     // F7 - (One Byte, Three Word Parameters)
     // Note: In documentation, it states F8, but it's F7
     if (op === 0xf7) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F7',
@@ -715,12 +715,12 @@ class FF7BinaryDataReader {
     // F8 - (Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)
     // Note: In documentation, it states F7, but it's F8
     if (op === 0xf8) {
-      const arg = $r.readUShort()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
-      const arg6 = $r.readUShort()
+      const arg = $r.readShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
+      const arg6 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F8',
@@ -736,17 +736,17 @@ class FF7BinaryDataReader {
     }
     // F9 - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)
     if (op === 0xf9) {
-      const arg = $r.readUShort()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F9',
-        arg,
-        arg2,
-        arg3,
+        op: 'XYZ',
+        x,
+        y,
+        z,
         raw,
-        js: 'opF9()'
+        js: `setXYZ({x: ${x}, y: ${y}, z:${z}});`
       }
     }
     // FE - (One Optional Parameter) If waiting and next byte is C0h, then restart script and stop waiting. Else do nothing?
@@ -756,6 +756,7 @@ class FF7BinaryDataReader {
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'FE',
+        arg,
         raw,
         js: 'opFE()'
       }
@@ -764,9 +765,9 @@ class FF7BinaryDataReader {
     if (op === 0xff) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'FF',
+        op: 'RET',
         raw,
-        js: 'opFF()'
+        js: 'return()'
       }
     }
     // 00 - 2 scripts don't appear to have FF, but they both have 00 padding. Do this to allow parsing
@@ -781,7 +782,7 @@ class FF7BinaryDataReader {
     console.error('    unsupported opCode: 0x' + stringUtil.toHex2(op))
     throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
   }
-  readBattleCameraDirectionOp () {
+  readBattleCameraTargetOp () {
     const $r = this
     const offset = this.offset
     const op = $r.readUByte()
@@ -796,9 +797,9 @@ class FF7BinaryDataReader {
     // D8 - (Two Byte, Three Word, One Byte Parameters) *
     if (op === 0xd8) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const arg6 = $r.readUByte() // Extra byte?
       const raw = getRaw(offset, $r.offset)
@@ -896,22 +897,22 @@ class FF7BinaryDataReader {
     }
     // E2 - (One Byte parameter) Does something with active "Idle" Camera index and loading a new point based on it.
     if (op === 0xe2) {
-      const arg = $r.readUByte()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E2',
-        arg,
+        op: 'MOVA',
+        frames,
         raw,
-        js: 'opE2()'
+        js: `moveToXYZAsync({frames: ${frames}})`
       }
     }
     // E3 - (Two Byte, Three Word, One Byte Parameters) *
     if (op === 0xe3) {
       const arg = $r.readUByte()
       const arg2 = $r.readUByte()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
       const arg6 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -929,9 +930,9 @@ class FF7BinaryDataReader {
     // E4 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe4) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -948,9 +949,9 @@ class FF7BinaryDataReader {
     // E5 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe5) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -966,9 +967,9 @@ class FF7BinaryDataReader {
     }
     // E6 - (Three Word, One Byte Parameters)
     if (op === 0xe6) {
-      const arg = $r.readUShort()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
+      const arg = $r.readShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
       const arg4 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -984,9 +985,9 @@ class FF7BinaryDataReader {
     // E8 - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xe8) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -1003,9 +1004,9 @@ class FF7BinaryDataReader {
     // EA - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xea) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const arg5 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -1023,9 +1024,9 @@ class FF7BinaryDataReader {
     if (op === 0xec) {
       const arg = $r.readUByte()
       const arg2 = $r.readUByte()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
       const arg6 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
@@ -1044,9 +1045,9 @@ class FF7BinaryDataReader {
     if (op === 0xf0) {
       const arg = $r.readUByte()
       const arg2 = $r.readUByte()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
-      const arg5 = $r.readUShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
+      const arg5 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F0',
@@ -1063,28 +1064,28 @@ class FF7BinaryDataReader {
     if (op === 0xf4) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F4',
+        op: 'WAIT',
         raw,
-        js: 'opF4()'
+        js: 'executeWait()'
       }
     }
     // F5 - One Parameter; Set "Wait"
     if (op === 0xf5) {
-      const arg = $r.readUByte()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F5',
-        arg,
+        op: 'SETWAIT',
+        frames,
         raw,
-        js: 'opF5()'
+        js: `setWait({frames: ${frames}})`
       }
     }
     // F8 - (One Byte, Three Word Parameters)
     if (op === 0xf8) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F8',
@@ -1099,9 +1100,9 @@ class FF7BinaryDataReader {
     // F9 - (One Byte, Three Word Parameters)
     if (op === 0xf9) {
       const arg = $r.readUByte()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
-      const arg4 = $r.readUShort()
+      const arg2 = $r.readShort()
+      const arg3 = $r.readShort()
+      const arg4 = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'F9',
@@ -1115,17 +1116,17 @@ class FF7BinaryDataReader {
     }
     // FA - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)
     if (op === 0xfa) {
-      const arg = $r.readUShort()
-      const arg2 = $r.readUShort()
-      const arg3 = $r.readUShort()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'FA',
-        arg,
-        arg2,
-        arg3,
+        op: 'XYZ',
+        x,
+        y,
+        z,
         raw,
-        js: 'opFA()'
+        js: `setXYZ({x: ${x}, y: ${y}, z:${z}});`
       }
     }
     // FE - (One Optional Parameter) If waiting and next byte is C0h, then restart script and stop waiting. Else do nothing?
@@ -1143,9 +1144,9 @@ class FF7BinaryDataReader {
     if (op === 0xff) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'FF',
+        op: 'RET',
         raw,
-        js: 'opFF()'
+        js: 'return()'
       }
     }
 

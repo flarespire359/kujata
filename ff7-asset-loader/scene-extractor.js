@@ -118,7 +118,11 @@ const getCameraPlacement = r => {
       camera2: { pos: readCameraVector(r), dir: readCameraVector(r) },
       camera3: { pos: readCameraVector(r), dir: readCameraVector(r) }
     }
-    r.readUByteArray(12) // unusued
+    const unk = r.readUByteArray(12) // unusued
+    if (unk.find(a => a !== 0xff)) {
+      console.log('unk', unk)
+    }
+    // console.log('data', unk)
     // data.locationName = parseKernelEnums(Enums.Battle.Location, data.locationId)
     // console.log('data', JSON.stringify(data))
     datas.push(data)

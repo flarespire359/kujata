@@ -10,22 +10,16 @@ const {
 } = require('../ff7-asset-loader/camera-data-loader.js')
 
 const extractBattleData = async config => {
-  // await extractSceneBinData(
-  //   path.join(config.ff7InstallDirectory, 'data', 'lang-en', 'battle'),
-  //   // config.inputBattleSceneDirectory,
-  //   path.join(config.kujataDataDirectory, 'data', 'battle', 'scene.bin'),
-  //   // config.outputBattleSceneDirectory,
-  //   path.join(config.kujataDataDirectory, 'metadata')
-  //   // config.metadataDirectory
-  // )
-  // await extractMiscBattleData(
-  //   path.join(config.ff7InstallDirectory, 'data', 'battle'),
-  //   // config.inputBattleDataDirectory,
-  //   path.join(config.ff7InstallDirectory, 'data', 'lang-en', 'battle'),
-  //   // config.inputBattleSceneDirectory,
-  //   path.join(config.kujataDataDirectory, 'data', 'battle')
-  //   // config.outputBattleMiscDirectory
-  // )
+  await extractSceneBinData(
+    path.join(config.ff7InstallDirectory, 'data', 'lang-en', 'battle'),
+    path.join(config.kujataDataDirectory, 'data', 'battle', 'scene.bin'),
+    path.join(config.kujataDataDirectory, 'metadata')
+  )
+  await extractMiscBattleData(
+    path.join(config.ff7InstallDirectory, 'data', 'battle'),
+    path.join(config.ff7InstallDirectory, 'data', 'lang-en', 'battle'),
+    path.join(config.kujataDataDirectory, 'data', 'battle')
+  )
   await extractBattleCameraData(config)
 }
 module.exports = {
