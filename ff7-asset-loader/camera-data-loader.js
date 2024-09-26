@@ -267,7 +267,7 @@ const getCamDataFromFile = (config, i) => {
   for (let i = 0; i < scriptsMainPosition.length; i++) {
     cam.scripts.main.push({
       position: scriptsMainPosition[i],
-      target: scriptOffsetsMainTarget[i]
+      target: scriptsMainTarget[i]
     })
   }
   for (let i = 0; i < scriptsVictoryPosition.length; i++) {

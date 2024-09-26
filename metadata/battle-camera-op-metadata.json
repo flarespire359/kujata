@@ -1,0 +1,304 @@
+{
+  "position": {
+    "name": "Position Operations",
+    "description": "Position Operations description",
+    "opCodes": [
+      {
+        "hex": "D5",
+        "shortName": "D5",
+        "description": "(One Word Parameter)"
+      },
+      {
+        "hex": "D6",
+        "shortName": "D6",
+        "description": "(No Parameters)"
+      },
+      {
+        "hex": "D7",
+        "shortName": "D7",
+        "description": "(Two Byte Parameters)"
+      },
+      {
+        "hex": "D8",
+        "shortName": "D8",
+        "description": "(Two Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "D9",
+        "shortName": "D9",
+        "description": "(No Parameters) Loads Point from memory at 0xBF2158"
+      },
+      {
+        "hex": "DA",
+        "shortName": "DA",
+        "description": "(No Parameters) Sets Unknown2 to 0"
+      },
+      {
+        "hex": "DB",
+        "shortName": "DB",
+        "description": "(No Parameters) Sets Unknown2 to 1"
+      },
+      {
+        "hex": "DC",
+        "shortName": "DC",
+        "description": "(No Parameters) Sets Unknown1 to 1"
+      },
+      {
+        "hex": "DD",
+        "shortName": "DD",
+        "description": "(One Byte Parameter) Sets active Idle camera index (based on formation data) to parameter"
+      },
+      {
+        "hex": "DE",
+        "shortName": "DE",
+        "description": "(One Byte Parameter) If non-0 parameter, set 0xBF2A34 to 3"
+      },
+      {
+        "hex": "DF",
+        "shortName": "DF",
+        "description": "(No Parameter) Sets 0xBF2A34 to Fh; No questions asked"
+      },
+      {
+        "hex": "E0",
+        "shortName": "E0",
+        "description": "(Two Byte Parameters)"
+      },
+      {
+        "hex": "E1",
+        "shortName": "E1",
+        "description": "(No Parameters) Loads current idle camera position point"
+      },
+      {
+        "hex": "E2",
+        "shortName": "MOVA",
+        "description": "Tweens the camera from the current position to the idle position"
+      },
+      {
+        "hex": "E3",
+        "shortName": "E3",
+        "description": "(Two Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "E4",
+        "shortName": "E4",
+        "description": "(One Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "E5",
+        "shortName": "E5",
+        "description": "(One Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "E6",
+        "shortName": "E6",
+        "description": "(Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "E7",
+        "shortName": "E7",
+        "description": "(One Byte, Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "E9",
+        "shortName": "E9",
+        "description": "(One Byte, Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "EB",
+        "shortName": "EB",
+        "description": "(Two Byte, Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "EF",
+        "shortName": "EF",
+        "description": "(Two Byte, Three Word Parameters)"
+      },
+      {
+        "hex": "F0",
+        "shortName": "F0",
+        "description": "(One Byte, Three Word Parameters)"
+      },
+      {
+        "hex": "F1",
+        "shortName": "F1",
+        "description": "(No Parameters) Sets Unknown1 to 0"
+      },
+      {
+        "hex": "F2",
+        "shortName": "F2",
+        "description": "(One Byte, Two Word Parameters)"
+      },
+      {
+        "hex": "F3",
+        "shortName": "F3",
+        "description": "(One Byte, Two Word Parameters)"
+      },
+      {
+        "hex": "F4",
+        "shortName": "WAIT",
+        "description": "Execute wait"
+      },
+      {
+        "hex": "F5",
+        "shortName": "SETWAIT",
+        "description": "Sets the wait in frames"
+      },
+      {
+        "hex": "F7",
+        "shortName": "F7",
+        "description": "(Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)"
+      },
+      {
+        "hex": "F8",
+        "shortName": "F8",
+        "description": "(One Byte, Three Word Parameters)"
+      },
+      {
+        "hex": "F9",
+        "shortName": "XYZ",
+        "description": "Sets the active camera position XYZ"
+      },
+      {
+        "hex": "FE",
+        "shortName": "FE",
+        "description": "(One Optional Parameter) If waiting and next byte is C0h, then restart script and stop waiting. Else do nothing?"
+      },
+      {
+        "hex": "FF",
+        "shortName": "FF",
+        "description": "(No Parameters) ScriptEnd"
+      }
+    ]
+  },
+  "target": {
+    "name": "Target Operations",
+    "description": "Target Operations description",
+    "opCodes": [
+      {
+        "hex": "D8",
+        "shortName": "D8",
+        "description": "(Two Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "D9",
+        "shortName": "D9",
+        "description": "(No Parameters) Loads point from memory at 0xBFB1A0"
+      },
+      {
+        "hex": "DB",
+        "shortName": "DB",
+        "description": "(No Parameters) Sets Unknown to 0"
+      },
+      {
+        "hex": "DC",
+        "shortName": "DC",
+        "description": "(No Parameters) Sets Unknown to 1"
+      },
+      {
+        "hex": "DD",
+        "shortName": "DD",
+        "description": "(One Byte Parameter) Sets Current active Idle Camera (indexed in formation data) to parameter"
+      },
+      {
+        "hex": "DE",
+        "shortName": "DE",
+        "description": "(One Byte Parameter) If non-0 parameter, set 0xBF2A34 to 3"
+      },
+      {
+        "hex": "DF",
+        "shortName": "DF",
+        "description": "(No Parameter) Sets 0xBF2A34 to Fh; No questions asked"
+      },
+      {
+        "hex": "E0",
+        "shortName": "E0",
+        "description": "(Two byte parameters)"
+      },
+      {
+        "hex": "E1",
+        "shortName": "E1",
+        "description": "(No Parameters) Loads point of current active Idle camera"
+      },
+      {
+        "hex": "E2",
+        "shortName": "MOVA",
+        "description": "Tweens the camera from the current position to the idle position"
+      },
+      {
+        "hex": "E3",
+        "shortName": "E3",
+        "description": "(Two Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "E4",
+        "shortName": "E4",
+        "description": "(One Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "E5",
+        "shortName": "E5",
+        "description": "(One Byte, Three Word, One Byte Parameters) *"
+      },
+      {
+        "hex": "E6",
+        "shortName": "E6",
+        "description": "(Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "E8",
+        "shortName": "E8",
+        "description": "(One Byte, Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "EA",
+        "shortName": "EA",
+        "description": "(One Byte, Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "EC",
+        "shortName": "EC",
+        "description": "(Two Byte, Three Word, One Byte Parameters)"
+      },
+      {
+        "hex": "F0",
+        "shortName": "F0",
+        "description": "(Two Byte, Three Word Parameters)"
+      },
+      {
+        "hex": "F4",
+        "shortName": "WAIT",
+        "description": "Execute wait"
+      },
+      {
+        "hex": "F5",
+        "shortName": "SETWAIT",
+        "description": "Sets the wait in frames"
+      },
+      {
+        "hex": "F8",
+        "shortName": "F8",
+        "description": "(One Byte, Three Word Parameters)"
+      },
+      {
+        "hex": "F9",
+        "shortName": "F9",
+        "description": "(One Byte, Three Word Parameters)"
+      },
+      {
+        "hex": "FA",
+        "shortName": "XYZ",
+        "description": "Sets the active camera position XYZ"
+      },
+      {
+        "hex": "FE",
+        "shortName": "FE",
+        "description": "(One Optional Parameter) If waiting and next byte is C0h, then restart script and stop waiting. Else do nothing?"
+      },
+      {
+        "hex": "FF",
+        "shortName": "FF",
+        "description": "(No Parameters) ScriptEnd"
+      }
+    ]
+  }
+}

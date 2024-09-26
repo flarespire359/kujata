@@ -22,6 +22,9 @@ const {
   processModelUsage,
   writeModelUsage
 } = require('../ff7-asset-loader/model-usage')
+const {
+  generateBattleCameraUsageMetadata
+} = require('../ff7-asset-loader/battle-camera-usage')
 
 /*
  Move metadata files:
@@ -58,7 +61,8 @@ const copyFiles = (config, progress) => {
     'movie-list.json',
     'music-names.json',
     'op-categories.json',
-    'op-metadata.json'
+    'op-metadata.json',
+    'battle-camera-op-metadata.json'
   ]
   progress.start(filesToCopy.length, 0, {
     title: 'Copying files     ',
@@ -173,6 +177,7 @@ const extractMetadata = async config => {
 
   copyFiles(config, progressCopy)
   await generateFieldData(config, progressFieldData)
+  generateBattleCameraUsageMetadata(config)
   multibar.stop()
   console.log(chalk.green('🚀  Successfully extracted metadata'))
 }
