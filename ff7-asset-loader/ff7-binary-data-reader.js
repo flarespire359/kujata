@@ -774,9 +774,9 @@ class FF7BinaryDataReader {
     if (op === 0x00) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: '00',
+        op: 'RET2',
         raw,
-        js: 'op00()'
+        js: 'return2()'
       }
     }
     console.error('    unsupported opCode: 0x' + stringUtil.toHex2(op))

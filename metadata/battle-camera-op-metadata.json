@@ -99,6 +99,11 @@
         "description": "(One Byte, Three Word, One Byte Parameters)"
       },
       {
+        "hex": "E8",
+        "shortName": "E8",
+        "description": "(One Byte, Three Word, One Byte Parameters)"
+      },
+      {
         "hex": "E9",
         "shortName": "E9",
         "description": "(One Byte, Three Word, One Byte Parameters)"
@@ -165,8 +170,13 @@
       },
       {
         "hex": "FF",
-        "shortName": "FF",
-        "description": "(No Parameters) ScriptEnd"
+        "shortName": "RET",
+        "description": "Return - Script End"
+      },
+      {
+        "hex": "00",
+        "shortName": "RET2",
+        "description": "Should be return but empty in 2 scripts"
       }
     ]
   },
@@ -296,8 +306,8 @@
       },
       {
         "hex": "FF",
-        "shortName": "FF",
-        "description": "(No Parameters) ScriptEnd"
+        "shortName": "RET",
+        "description": "Return - Script End"
       }
     ]
   }
