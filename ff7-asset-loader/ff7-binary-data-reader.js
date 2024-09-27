@@ -307,9 +307,9 @@ class FF7BinaryDataReader {
     if (op === 0xd6) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'D6',
+        op: 'FLASH',
         raw,
-        js: 'opD6()'
+        js: 'flashScreen()'
       }
     }
     // D7 - (Two Byte Parameters)
@@ -318,9 +318,9 @@ class FF7BinaryDataReader {
       const arg2 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
+        op: 'D7',
         arg,
         arg2,
-        op: 'D7',
         raw,
         js: 'opD7()'
       }
@@ -359,27 +359,27 @@ class FF7BinaryDataReader {
     if (op === 0xda) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'DA',
+        op: 'U2OFF',
         raw,
-        js: 'opDA()'
+        js: 'setUnknown2(false)'
       }
     }
     // DB - (No Parameters) Sets Unknown2 to 1
     if (op === 0xdb) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'DB',
+        op: 'U2ON',
         raw,
-        js: 'opDB()'
+        js: 'setUnknown2(true)'
       }
     }
     // DC - (No Parameters) Sets Unknown1 to 1
     if (op === 0xdc) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'DC',
+        op: 'U1ON',
         raw,
-        js: 'opDC()'
+        js: 'setUnknown1(true)'
       }
     }
     // DD - (One Byte Parameter) Sets active "Idle" camera index (based on formation data) to parameter
@@ -440,10 +440,10 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'MOVA',
+        op: 'MIDLE',
         frames,
         raw,
-        js: `moveToXYZAsync({frames: ${frames}})`
+        js: `moveToIdlePositionAsync({frames: ${frames}})`
       }
     }
     // E3 - (Two Byte, Three Word, One Byte Parameters) *
@@ -505,19 +505,19 @@ class FF7BinaryDataReader {
     }
     // E6 - (Three Word, One Byte Parameters)
     if (op === 0xe6) {
-      const arg = $r.readShort()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E6',
-        arg,
-        arg2,
-        arg3,
-        arg4,
+        op: 'MOVE',
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE6()'
+        js: `moveToPositionAsync({x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E7 - (One Byte, Three Word, One Byte Parameters)
@@ -639,9 +639,9 @@ class FF7BinaryDataReader {
     if (op === 0xf1) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F1',
+        op: 'U1OFF',
         raw,
-        js: 'opF1()'
+        js: 'setUnknown1(false)'
       }
     }
     // F2 - (One Byte, Two Word Parameters)
@@ -828,18 +828,18 @@ class FF7BinaryDataReader {
     if (op === 0xdb) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'DB',
+        op: 'U1OFF',
         raw,
-        js: 'opDB()'
+        js: 'setUnknown1(false)'
       }
     }
     // DC - (No Parameters) Sets Unknown to 1
     if (op === 0xdc) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'DC',
+        op: 'U1ON',
         raw,
-        js: 'opDC()'
+        js: 'setUnknown1(true)'
       }
     }
     // DD - (One Byte Parameter) Sets Current active "Idle" Camera (indexed in formation data) to parameter
@@ -900,10 +900,10 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'MOVA',
+        op: 'MIDLE',
         frames,
         raw,
-        js: `moveToXYZAsync({frames: ${frames}})`
+        js: `moveToIdlePositionAsync({frames: ${frames}})`
       }
     }
     // E3 - (Two Byte, Three Word, One Byte Parameters) *
@@ -967,19 +967,19 @@ class FF7BinaryDataReader {
     }
     // E6 - (Three Word, One Byte Parameters)
     if (op === 0xe6) {
-      const arg = $r.readShort()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E6',
-        arg,
-        arg2,
-        arg3,
-        arg4,
+        op: 'MOVE',
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE6()'
+        js: `moveToPositionAsync({x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E8 - (One Byte, Three Word, One Byte Parameters)

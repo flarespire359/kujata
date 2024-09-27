@@ -10,8 +10,8 @@
       },
       {
         "hex": "D6",
-        "shortName": "D6",
-        "description": "(No Parameters)"
+        "shortName": "FLASH",
+        "description": "Flash the screen white quickly"
       },
       {
         "hex": "D7",
@@ -30,18 +30,18 @@
       },
       {
         "hex": "DA",
-        "shortName": "DA",
-        "description": "(No Parameters) Sets Unknown2 to 0"
+        "shortName": "U2OFF",
+        "description": "Sets Unknown2 to 0"
       },
       {
         "hex": "DB",
-        "shortName": "DB",
-        "description": "(No Parameters) Sets Unknown2 to 1"
+        "shortName": "U2ON",
+        "description": "Sets Unknown2 to 1"
       },
       {
         "hex": "DC",
-        "shortName": "DC",
-        "description": "(No Parameters) Sets Unknown1 to 1"
+        "shortName": "U1ON",
+        "description": "Sets Unknown1 to 1"
       },
       {
         "hex": "DD",
@@ -70,7 +70,7 @@
       },
       {
         "hex": "E2",
-        "shortName": "MOVA",
+        "shortName": "MIDLE",
         "description": "Tweens the camera from the current position to the idle position"
       },
       {
@@ -90,8 +90,8 @@
       },
       {
         "hex": "E6",
-        "shortName": "E6",
-        "description": "(Three Word, One Byte Parameters)"
+        "shortName": "MOVE",
+        "description": "Tweens the camera from the current position to the given xyz position"
       },
       {
         "hex": "E7",
@@ -125,8 +125,8 @@
       },
       {
         "hex": "F1",
-        "shortName": "F1",
-        "description": "(No Parameters) Sets Unknown1 to 0"
+        "shortName": "U1OFF",
+        "description": "Sets Unknown1 to 0"
       },
       {
         "hex": "F2",
@@ -196,13 +196,13 @@
       },
       {
         "hex": "DB",
-        "shortName": "DB",
-        "description": "(No Parameters) Sets Unknown to 0"
+        "shortName": "U1OFF",
+        "description": "Sets Unknown1 to 0"
       },
       {
         "hex": "DC",
-        "shortName": "DC",
-        "description": "(No Parameters) Sets Unknown to 1"
+        "shortName": "U1ON",
+        "description": "Sets Unknown1 to 1"
       },
       {
         "hex": "DD",
@@ -231,7 +231,7 @@
       },
       {
         "hex": "E2",
-        "shortName": "MOVA",
+        "shortName": "MIDLE",
         "description": "Tweens the camera from the current position to the idle position"
       },
       {
@@ -251,8 +251,8 @@
       },
       {
         "hex": "E6",
-        "shortName": "E6",
-        "description": "(Three Word, One Byte Parameters)"
+        "shortName": "MOVE",
+        "description": "Tweens the camera from the current position to the given xyz position"
       },
       {
         "hex": "E8",
