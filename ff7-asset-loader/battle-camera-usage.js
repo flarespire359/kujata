@@ -7,7 +7,7 @@ const generateBattleCameraUsageMetadata = config => {
       path.join(config.kujataDataDirectory, 'data', 'battle', 'camdat.bin.json')
     )
   )
-  const ops = { position: {}, target: {} }
+  const ops = { position: {}, focus: {} }
   const incrementOp = (scriptType, code, usageType) => {
     if (!ops[scriptType][code]) {
       ops[scriptType][code] = { initial: 0, main: 0, victory: 0 }
@@ -20,8 +20,8 @@ const generateBattleCameraUsageMetadata = config => {
     for (const op of script.position) {
       incrementOp('position', op.op, 'initial')
     }
-    for (const op of script.target) {
-      incrementOp('target', op.op, 'initial')
+    for (const op of script.focus) {
+      incrementOp('focus', op.op, 'initial')
     }
   }
   for (const camdataFile of camdat.camdataFiles) {
@@ -30,8 +30,8 @@ const generateBattleCameraUsageMetadata = config => {
         for (const op of script.position) {
           incrementOp('position', op.op, usageType)
         }
-        for (const op of script.target) {
-          incrementOp('target', op.op, usageType)
+        for (const op of script.focus) {
+          incrementOp('focus', op.op, usageType)
         }
       }
     }

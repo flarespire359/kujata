@@ -54,7 +54,7 @@ const readCameraScript = (r, cameraScriptType, sortedOffsets) => {
       cameraScriptType === CAMERA_SCRIPT_TYPE.CAMERA_POSITION ||
       cameraScriptType === CAMERA_SCRIPT_TYPE.VICTORY_POSITION
         ? r.readBattleCameraPositionOp()
-        : r.readBattleCameraTargetOp()
+        : r.readBattleCameraFocusOp()
     script.push(op)
     // if (op.op === 'F8') {
     // console.log('op', JSON.stringify(op))
@@ -134,11 +134,11 @@ const getInitialCamData = config => {
   const r = new FF7BinaryDataReader(buffer)
   r.offset = 0x004ffad0
   const positionScriptOffsets = getOffsets(r, 0x004ffad0, 416 - 4) // Seems to be a 0 in the last position
-  const targetScriptOffsets = getOffsets(r, 0x004ffad0 + 416, 416 - 4) // Seems to be a 1 in the last position
+  const focusScriptOffsets = getOffsets(r, 0x004ffad0 + 416, 416 - 4) // Seems to be a 1 in the last position
   // console.log('positionScriptOffsets', positionScriptOffsets)
   // console.log('directionScriptOffsets', directionScriptOffsets)
 
-  const sortedOffsets = [...positionScriptOffsets, ...targetScriptOffsets].sort(
+  const sortedOffsets = [...positionScriptOffsets, ...focusScriptOffsets].sort(
     (a, b) => a - b
   )
   // console.log('sortedOffsets', sortedOffsets)
@@ -150,18 +150,18 @@ const getInitialCamData = config => {
     0x004feba0 - 416,
     sortedOffsets
   )
-  const targetScripts = getScripts(
+  const focusScripts = getScripts(
     r,
-    targetScriptOffsets,
+    focusScriptOffsets,
     CAMERA_SCRIPT_TYPE.CAMERA_DIRECTION,
     0x004feba0 - 416,
     sortedOffsets
   )
   return {
     positionScriptOffsets,
-    targetScriptOffsets,
+    focusScriptOffsets,
     positionScripts,
-    targetScripts
+    focusScripts
   }
 }
 const getCamDataFromFile = (config, i) => {
@@ -179,11 +179,11 @@ const getCamDataFromFile = (config, i) => {
   const header = {
     offsetMainPosition: r.readUShort(),
     unkHeader1: r.readUShort(),
-    offsetMainTarget: r.readUShort(),
+    offsetMainFocus: r.readUShort(),
     unkHeader2: r.readUShort(),
     offsetVictoryPosition: r.readUShort(),
     unkHeader3: r.readUShort(),
-    offsetVictoryTarget: r.readUShort(),
+    offsetVictoryFocus: r.readUShort(),
     unkHeader4: r.readUShort()
   }
 
@@ -191,23 +191,23 @@ const getCamDataFromFile = (config, i) => {
   const scriptOffsetsMainPosition = getOffsets(
     r,
     header.offsetMainPosition,
-    header.offsetMainTarget - header.offsetMainPosition
+    header.offsetMainFocus - header.offsetMainPosition
   )
-  const scriptOffsetsMainTarget = getOffsets(
+  const scriptOffsetsMainFocus = getOffsets(
     r,
-    header.offsetMainTarget,
-    header.offsetMainTarget - header.offsetMainPosition // eg, same as position script
+    header.offsetMainFocus,
+    header.offsetMainFocus - header.offsetMainPosition // eg, same as position script
   )
 
   const scriptOffsetsVictoryPosition = getOffsets(
     r,
     header.offsetVictoryPosition,
-    header.offsetVictoryTarget - header.offsetVictoryPosition
+    header.offsetVictoryFocus - header.offsetVictoryPosition
   )
-  const scriptOffsetsVictoryTarget = getOffsets(
+  const scriptOffsetsVictoryFocus = getOffsets(
     r,
-    header.offsetVictoryTarget,
-    header.offsetVictoryTarget - header.offsetVictoryPosition // eg, same as position script
+    header.offsetVictoryFocus,
+    header.offsetVictoryFocus - header.offsetVictoryPosition // eg, same as position script
   )
 
   const cam = {
@@ -217,23 +217,23 @@ const getCamDataFromFile = (config, i) => {
   for (let i = 0; i < scriptOffsetsMainPosition.length; i++) {
     cam.scriptOffsets.main.push({
       position: scriptOffsetsMainPosition[i],
-      target: scriptOffsetsMainTarget[i]
+      focus: scriptOffsetsMainFocus[i]
     })
   }
   for (let i = 0; i < scriptOffsetsVictoryPosition.length; i++) {
     cam.scriptOffsets.victory.push({
       position: scriptOffsetsVictoryPosition[i],
-      target: scriptOffsetsVictoryTarget[i]
+      focus: scriptOffsetsVictoryFocus[i]
     })
   }
 
   const sortedOffsetsMain = [
     ...scriptOffsetsMainPosition,
-    ...scriptOffsetsMainTarget
+    ...scriptOffsetsMainFocus
   ].sort((a, b) => a - b)
   const sortedOffsetsVictory = [
     ...scriptOffsetsVictoryPosition,
-    ...scriptOffsetsVictoryTarget
+    ...scriptOffsetsVictoryFocus
   ].sort((a, b) => a - b)
 
   const scriptsMainPosition = getScripts(
@@ -243,9 +243,9 @@ const getCamDataFromFile = (config, i) => {
     null,
     sortedOffsetsMain
   )
-  const scriptsMainTarget = getScripts(
+  const scriptsMainFocus = getScripts(
     r,
-    scriptOffsetsMainTarget,
+    scriptOffsetsMainFocus,
     CAMERA_SCRIPT_TYPE.CAMERA_DIRECTION,
     null,
     sortedOffsetsMain
@@ -257,9 +257,9 @@ const getCamDataFromFile = (config, i) => {
     null,
     sortedOffsetsVictory
   )
-  const scriptsVictoryTarget = getScripts(
+  const scriptsVictoryFocus = getScripts(
     r,
-    scriptOffsetsVictoryTarget,
+    scriptOffsetsVictoryFocus,
     CAMERA_SCRIPT_TYPE.VICTORY_DIRECTION,
     null,
     sortedOffsetsVictory
@@ -267,13 +267,13 @@ const getCamDataFromFile = (config, i) => {
   for (let i = 0; i < scriptsMainPosition.length; i++) {
     cam.scripts.main.push({
       position: scriptsMainPosition[i],
-      target: scriptsMainTarget[i]
+      focus: scriptsMainFocus[i]
     })
   }
   for (let i = 0; i < scriptsVictoryPosition.length; i++) {
     cam.scripts.victory.push({
       position: scriptsVictoryPosition[i],
-      target: scriptsVictoryTarget[i]
+      focus: scriptsVictoryFocus[i]
     })
   }
 
@@ -305,14 +305,14 @@ const extractBattleCameraData = async config => {
   for (let i = 0; i < initialCamData.positionScriptOffsets.length; i++) {
     cam.intialScriptOffsets.push({
       position: initialCamData.positionScriptOffsets[i],
-      target: initialCamData.targetScriptOffsets[i]
+      focus: initialCamData.focusScriptOffsets[i]
     })
   }
   cam.initialScripts = []
   for (let i = 0; i < initialCamData.positionScripts.length; i++) {
     cam.initialScripts.push({
       position: initialCamData.positionScripts[i],
-      target: initialCamData.targetScripts[i]
+      focus: initialCamData.focusScripts[i]
     })
   }
 
@@ -333,11 +333,11 @@ const extractBattleCameraData = async config => {
   writeCamData(config, cam)
 
   // console.log('initial position', cam.initialScripts[0].position)
-  // console.log('initial target', cam.initialScripts[0].target)
+  // console.log('initial focus', cam.initialScripts[0].focus)
   // console.log(
   //   'cam0 main position',
   //   cam.camdataFiles[0].scripts.main[0].position
   // )
-  // console.log('cam0 main target', cam.camdataFiles[0].scripts.main[0].target)
+  // console.log('cam0 main focus', cam.camdataFiles[0].scripts.main[0].focus)
 }
 module.exports = { extractBattleCameraData }

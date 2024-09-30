@@ -80,8 +80,8 @@
       },
       {
         "hex": "E4",
-        "shortName": "E4",
-        "description": "(One Byte, Three Word, One Byte Parameters) *"
+        "shortName": "MOVET",
+        "description": "Tweens the camera from the current position to the target with an offset"
       },
       {
         "hex": "E5",
@@ -120,8 +120,8 @@
       },
       {
         "hex": "F0",
-        "shortName": "F0",
-        "description": "(One Byte, Three Word Parameters)"
+        "shortName": "FOCUSA",
+        "description": "Focus on attacker"
       },
       {
         "hex": "F1",
@@ -180,9 +180,9 @@
       }
     ]
   },
-  "target": {
-    "name": "Target Operations",
-    "description": "Target Operations description",
+  "focus": {
+    "name": "Focus Operations",
+    "description": "Focus Operations description",
     "opCodes": [
       {
         "hex": "D8",
@@ -241,8 +241,8 @@
       },
       {
         "hex": "E4",
-        "shortName": "E4",
-        "description": "(One Byte, Three Word, One Byte Parameters) *"
+        "shortName": "MOVEA",
+        "description": "Tweens the camera from the current position to the attacker with an offset"
       },
       {
         "hex": "E5",
@@ -291,8 +291,8 @@
       },
       {
         "hex": "F9",
-        "shortName": "F9",
-        "description": "(One Byte, Three Word Parameters)"
+        "shortName": "FOCUSA",
+        "description": "Focus on attacker"
       },
       {
         "hex": "FA",

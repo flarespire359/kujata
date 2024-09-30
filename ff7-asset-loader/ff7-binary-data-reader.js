@@ -467,21 +467,21 @@ class FF7BinaryDataReader {
     }
     // E4 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe4) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readUByte()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E4',
-        arg,
-        arg2,
-        arg3,
-        arg4,
-        arg5,
+        op: 'MOVET',
+        bone,
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE4()'
+        js: `moveToTarget({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E5 - (One Byte, Three Word, One Byte Parameters) *
@@ -620,19 +620,19 @@ class FF7BinaryDataReader {
     }
     // F0 - (One Byte, Three Word Parameters)
     if (op === 0xf0) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
+      const bone = $r.readUByte() // Unsure if this is the bone
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F0',
-        arg,
-        arg2,
-        arg3,
-        arg4,
+        op: 'FOCUSA',
+        bone,
+        x,
+        y,
+        z,
         raw,
-        js: 'opF0()'
+        js: `focusOnAttacker({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}})`
       }
     }
     // F1 - (No Parameters) Sets Unknown1 to 0
@@ -782,7 +782,7 @@ class FF7BinaryDataReader {
     console.error('    unsupported opCode: 0x' + stringUtil.toHex2(op))
     throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
   }
-  readBattleCameraTargetOp () {
+  readBattleCameraFocusOp () {
     const $r = this
     const offset = this.offset
     const op = $r.readUByte()
@@ -929,21 +929,21 @@ class FF7BinaryDataReader {
     }
     // E4 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe4) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readUByte()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E4',
-        arg,
-        arg2,
-        arg3,
-        arg4,
-        arg5,
+        op: 'MOVEA',
+        bone,
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE4()'
+        js: `moveToAttacker({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E5 - (One Byte, Three Word, One Byte Parameters) *
@@ -1099,19 +1099,19 @@ class FF7BinaryDataReader {
     }
     // F9 - (One Byte, Three Word Parameters)
     if (op === 0xf9) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F9',
-        arg,
-        arg2,
-        arg3,
-        arg4,
+        op: 'FOCUSA',
+        bone,
+        x,
+        y,
+        z,
         raw,
-        js: 'opF9()'
+        js: `focusOnAttacker({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}})`
       }
     }
     // FA - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)
