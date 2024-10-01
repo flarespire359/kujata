@@ -715,23 +715,23 @@ class FF7BinaryDataReader {
     // F8 - (Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)
     // Note: In documentation, it states F7, but it's F8
     if (op === 0xf8) {
-      const arg = $r.readShort()
+      const angle = $r.readShort()
       const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
+      const x = $r.readShort()
       const arg4 = $r.readShort()
       const arg5 = $r.readShort()
-      const arg6 = $r.readShort()
+      const frames = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F8',
-        arg,
+        op: 'TRANS',
+        angle,
         arg2,
-        arg3,
+        x,
         arg4,
         arg5,
-        arg6,
+        frames,
         raw,
-        js: 'opF8()'
+        js: `translateCamera({angle: ${angle}, x: ${x}, frames: ${frames}, arg2: ${arg2}, arg4: ${arg4}, arg5: ${arg5}})`
       }
     }
     // F9 - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)
@@ -948,21 +948,21 @@ class FF7BinaryDataReader {
     }
     // E5 - (One Byte, Three Word, One Byte Parameters) *
     if (op === 0xe5) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readUByte()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E5',
-        arg,
-        arg2,
-        arg3,
-        arg4,
-        arg5,
+        op: 'MOVET',
+        bone,
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE5()'
+        js: `moveToTarget({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E6 - (Three Word, One Byte Parameters)
