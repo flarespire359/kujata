@@ -155,8 +155,8 @@
       },
       {
         "hex": "F8",
-        "shortName": "TRANS",
-        "description": "Translate camera from current position using angle and length"
+        "shortName": "SPIRAL",
+        "description": "Performs an archidean spiral on camera from current position using different parameters"
       },
       {
         "hex": "F9",

@@ -715,23 +715,33 @@ class FF7BinaryDataReader {
     // F8 - (Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)
     // Note: In documentation, it states F7, but it's F8
     if (op === 0xf8) {
-      const angle = $r.readShort()
-      const arg2 = $r.readShort()
-      const x = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readShort()
+      const zoom = $r.readShort()
+      const radius = $r.readShort()
+      const rotation = $r.readShort()
+      const growth = $r.readShort()
+      const yAdj = $r.readShort()
       const frames = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'TRANS',
-        angle,
-        arg2,
-        x,
-        arg4,
-        arg5,
+        op: 'SPIRAL',
+        zoom,
+        radius,
+        rotation,
+        growth,
+        yAdj,
         frames,
         raw,
-        js: `translateCamera({angle: ${angle}, x: ${x}, frames: ${frames}, arg2: ${arg2}, arg4: ${arg4}, arg5: ${arg5}})`
+        js: `spiralCamera({zoom: ${stringUtil.padSpaces6(
+          zoom
+        )}, radius: ${stringUtil.padSpaces6(
+          radius
+        )}, rotation: ${stringUtil.padSpaces6(
+          rotation
+        )}, growth: ${stringUtil.padSpaces6(
+          growth
+        )}, yAdj: ${stringUtil.padSpaces6(
+          yAdj
+        )}, frames: ${stringUtil.padSpaces6(frames)}})`
       }
     }
     // F9 - (Three Word Parameters) Load Point specified by parameters (X, Y, Z as Words)

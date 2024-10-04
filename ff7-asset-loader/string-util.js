@@ -13,6 +13,9 @@ const toHex5 = function (n) {
 const pad5 = function (n) {
   return ('' + n).padStart(5, '0')
 }
+const padSpaces6 = function (n) {
+  return ('' + n).padStart(6, ' ')
+}
 
 const dec2hex = (dec, padding, rawWithSpaces) => {
   const h = parseInt(dec).toString(16)
@@ -71,6 +74,7 @@ module.exports = {
   toHex2,
   toHex5,
   pad5,
+  padSpaces6,
   dec2hex,
   dec2bin,
   printBytes

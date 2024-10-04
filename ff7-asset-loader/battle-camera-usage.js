@@ -29,6 +29,9 @@ const generateBattleCameraUsageMetadata = config => {
       for (const script of camdataFile.scripts[usageType]) {
         for (const op of script.position) {
           incrementOp('position', op.op, usageType)
+          // if (op.op === 'SPIRAL') {
+          //   console.log(op.js)
+          // }
         }
         for (const op of script.focus) {
           incrementOp('focus', op.op, usageType)
