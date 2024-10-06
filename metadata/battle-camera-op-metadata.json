@@ -206,8 +206,8 @@
       },
       {
         "hex": "DD",
-        "shortName": "DD",
-        "description": "(One Byte Parameter) Sets Current active Idle Camera (indexed in formation data) to parameter"
+        "shortName": "SETIDLE",
+        "description": "Set idle camera index"
       },
       {
         "hex": "DE",

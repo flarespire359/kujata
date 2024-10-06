@@ -390,7 +390,7 @@ class FF7BinaryDataReader {
         op: 'SETIDLE',
         index,
         raw,
-        js: `setIdleCamIndex({index: ${index}})`
+        js: `setIdleCamPositionIndex({index: ${index}})`
       }
     }
     // DE - (One Byte Parameter) If non-0 parameter, set 0xBF2A34 to 3
@@ -854,13 +854,13 @@ class FF7BinaryDataReader {
     }
     // DD - (One Byte Parameter) Sets Current active "Idle" Camera (indexed in formation data) to parameter
     if (op === 0xdd) {
-      const arg = $r.readUByte()
+      const index = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'DD',
-        arg,
+        op: 'SETIDLE',
+        index,
         raw,
-        js: 'opDD()'
+        js: `setIdleCamFocusIndex({index: ${index}})`
       }
     }
     // DE - (One Byte Parameter) If non-0 parameter, set 0xBF2A34 to 3
