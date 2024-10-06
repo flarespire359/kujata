@@ -314,15 +314,15 @@ class FF7BinaryDataReader {
     }
     // D7 - (Two Byte Parameters)
     if (op === 0xd7) {
-      const arg = $r.readUByte()
+      const arg1 = $r.readUByte()
       const arg2 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'D7',
-        arg,
+        op: 'SETU3',
+        arg1,
         arg2,
         raw,
-        js: 'opD7()'
+        js: `setUnknown3({arg1: ${arg1}, arg2: ${arg2}})`
       }
     }
     // D8 - (Two Byte, Three Word, One Byte Parameters) *

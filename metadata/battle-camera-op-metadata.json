@@ -15,8 +15,8 @@
       },
       {
         "hex": "D7",
-        "shortName": "D7",
-        "description": "(Two Byte Parameters)"
+        "shortName": "SETU3",
+        "description": "Set on and then off 2 bytes in the sephiroth final battle. Unknown effect"
       },
       {
         "hex": "D8",
