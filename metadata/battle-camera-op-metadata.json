@@ -30,13 +30,13 @@
       },
       {
         "hex": "DA",
-        "shortName": "U2OFF",
-        "description": "Sets Unknown2 to 0"
+        "shortName": "EASING",
+        "description": "Allow easing, eg quadratic"
       },
       {
         "hex": "DB",
-        "shortName": "U2ON",
-        "description": "Sets Unknown2 to 1"
+        "shortName": "LINEAR",
+        "description": "Remove easing, eg linear"
       },
       {
         "hex": "DC",
@@ -80,8 +80,8 @@
       },
       {
         "hex": "E4",
-        "shortName": "MOVET",
-        "description": "Tweens the camera from the current position to the target with an offset"
+        "shortName": "MOVEA",
+        "description": "Tweens the camera from the current position to the attacker with an offset"
       },
       {
         "hex": "E5",

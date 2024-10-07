@@ -359,18 +359,18 @@ class FF7BinaryDataReader {
     if (op === 0xda) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'U2OFF',
+        op: 'EASING',
         raw,
-        js: 'setUnknown2(false)'
+        js: 'allowEasing()'
       }
     }
     // DB - (No Parameters) Sets Unknown2 to 1
     if (op === 0xdb) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'U2ON',
+        op: 'LINEAR',
         raw,
-        js: 'setUnknown2(true)'
+        js: 'removeEasing()'
       }
     }
     // DC - (No Parameters) Sets Unknown1 to 1
@@ -474,14 +474,14 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'MOVET',
+        op: 'MOVEA',
         bone,
         x,
         y,
         z,
         frames,
         raw,
-        js: `moveToTarget({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
+        js: `moveToAttacker({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E5 - (One Byte, Three Word, One Byte Parameters) *
