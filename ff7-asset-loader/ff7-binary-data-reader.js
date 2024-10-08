@@ -335,13 +335,13 @@ class FF7BinaryDataReader {
       const arg6 = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
+        op: 'D8',
         arg,
         arg2,
         arg3,
         arg4,
         arg5,
         arg6,
-        op: 'D8',
         raw,
         js: 'opD8()'
       }

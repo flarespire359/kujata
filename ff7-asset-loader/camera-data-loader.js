@@ -60,7 +60,7 @@ const readCameraScript = (r, cameraScriptType, sortedOffsets) => {
     // console.log('op', JSON.stringify(op))
     // }
 
-    if (op.op === 'RET') {
+    if (op.op === 'RET' || op.op === 'RET2') {
       while (r.peekUByte() === 0x00) {
         r.readUByte()
       }
