@@ -40,8 +40,8 @@
       },
       {
         "hex": "DC",
-        "shortName": "U1ON",
-        "description": "Sets Unknown1 to 1"
+        "shortName": "ZNORM",
+        "description": "Normal Z orientation"
       },
       {
         "hex": "DD",
@@ -85,8 +85,8 @@
       },
       {
         "hex": "E5",
-        "shortName": "E5",
-        "description": "(One Byte, Three Word, One Byte Parameters) *"
+        "shortName": "MOVET",
+        "description": "Tweens the camera from the current position to the target with an offset"
       },
       {
         "hex": "E6",
@@ -125,8 +125,8 @@
       },
       {
         "hex": "F1",
-        "shortName": "U1OFF",
-        "description": "Sets Unknown1 to 0"
+        "shortName": "ZNORM",
+        "description": "Normal Z orientation"
       },
       {
         "hex": "F2",
@@ -196,13 +196,13 @@
       },
       {
         "hex": "DB",
-        "shortName": "U1OFF",
-        "description": "Sets Unknown1 to 0"
+        "shortName": "ZNORM",
+        "description": "Normal Z orientation"
       },
       {
         "hex": "DC",
-        "shortName": "U1ON",
-        "description": "Sets Unknown1 to 1"
+        "shortName": "ZINV",
+        "description": "Inverted Z orientation"
       },
       {
         "hex": "DD",
