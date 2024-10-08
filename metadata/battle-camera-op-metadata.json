@@ -40,8 +40,8 @@
       },
       {
         "hex": "DC",
-        "shortName": "ZNORM",
-        "description": "Normal Z orientation"
+        "shortName": "ZINV",
+        "description": "Inverted Z orientation"
       },
       {
         "hex": "DD",
@@ -95,8 +95,8 @@
       },
       {
         "hex": "E7",
-        "shortName": "E7",
-        "description": "(One Byte, Three Word, One Byte Parameters)"
+        "shortName": "FOLLOWA",
+        "description": "Follows the attacker from a fixed distance"
       },
       {
         "hex": "E8",
@@ -256,8 +256,8 @@
       },
       {
         "hex": "E8",
-        "shortName": "E8",
-        "description": "(One Byte, Three Word, One Byte Parameters)"
+        "shortName": "FOLLOWA",
+        "description": "Follows the attacker from a fixed distance"
       },
       {
         "hex": "EA",

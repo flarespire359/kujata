@@ -522,21 +522,21 @@ class FF7BinaryDataReader {
     }
     // E7 - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xe7) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readUByte()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E7',
-        arg,
-        arg2,
-        arg3,
-        arg4,
-        arg5,
+        op: 'FOLLOWA',
+        bone,
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE7()'
+        js: `followAttacker({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // E8 - (One Byte, Three Word, One Byte Parameters) ???
@@ -620,7 +620,7 @@ class FF7BinaryDataReader {
     }
     // F0 - (One Byte, Three Word Parameters)
     if (op === 0xf0) {
-      const bone = $r.readUByte() // Unsure if this is the bone
+      const bone = $r.readUByte()
       const x = $r.readShort()
       const y = $r.readShort()
       const z = $r.readShort()
@@ -994,21 +994,21 @@ class FF7BinaryDataReader {
     }
     // E8 - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xe8) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readUByte()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E8',
-        arg,
-        arg2,
-        arg3,
-        arg4,
-        arg5,
+        op: 'FOLLOWA',
+        bone,
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opE8()'
+        js: `followAttacker({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // EA - (One Byte, Three Word, One Byte Parameters)
