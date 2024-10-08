@@ -430,9 +430,9 @@ class FF7BinaryDataReader {
     if (op === 0xe1) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E1',
+        op: 'IDLE',
         raw,
-        js: 'opE1()'
+        js: 'instantlyGoToIdle()'
       }
     }
     // E2 - (One Byte Parameter)
@@ -440,7 +440,7 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'MIDLE',
+        op: 'MOVEI',
         frames,
         raw,
         js: `moveToIdlePositionAsync({frames: ${frames}})`
@@ -900,9 +900,9 @@ class FF7BinaryDataReader {
     if (op === 0xe1) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E1',
+        op: 'IDLE',
         raw,
-        js: 'opE1()'
+        js: 'instantlyGoToIdle()'
       }
     }
     // E2 - (One Byte parameter) Does something with active "Idle" Camera index and loading a new point based on it.
@@ -910,7 +910,7 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'MIDLE',
+        op: 'MOVEI',
         frames,
         raw,
         js: `moveToIdlePositionAsync({frames: ${frames}})`

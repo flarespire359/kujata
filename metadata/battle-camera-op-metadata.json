@@ -65,12 +65,12 @@
       },
       {
         "hex": "E1",
-        "shortName": "E1",
-        "description": "(No Parameters) Loads current idle camera position point"
+        "shortName": "IDLE",
+        "description": "Instantly go to the idle position"
       },
       {
         "hex": "E2",
-        "shortName": "MIDLE",
+        "shortName": "MOVEI",
         "description": "Tweens the camera from the current position to the idle position"
       },
       {
@@ -226,12 +226,12 @@
       },
       {
         "hex": "E1",
-        "shortName": "E1",
-        "description": "(No Parameters) Loads point of current active Idle camera"
+        "shortName": "IDLE",
+        "description": "Instantly go to the idle position"
       },
       {
         "hex": "E2",
-        "shortName": "MIDLE",
+        "shortName": "MOVEI",
         "description": "Tweens the camera from the current position to the idle position"
       },
       {
