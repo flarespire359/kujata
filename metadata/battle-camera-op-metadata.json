@@ -150,8 +150,8 @@
       },
       {
         "hex": "F7",
-        "shortName": "F7",
-        "description": "(Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)"
+        "shortName": "FOCUST",
+        "description": "Focus on target"
       },
       {
         "hex": "F8",
@@ -261,8 +261,8 @@
       },
       {
         "hex": "EA",
-        "shortName": "EA",
-        "description": "(One Byte, Three Word, One Byte Parameters)"
+        "shortName": "FOLLOWT",
+        "description": "Follows the target from a fixed distance"
       },
       {
         "hex": "EC",

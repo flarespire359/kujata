@@ -697,19 +697,19 @@ class FF7BinaryDataReader {
     // F7 - (One Byte, Three Word Parameters)
     // Note: In documentation, it states F8, but it's F7
     if (op === 0xf7) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F7',
-        arg,
-        arg2,
-        arg3,
-        arg4,
+        op: 'FOCUST',
+        bone,
+        x,
+        y,
+        z,
         raw,
-        js: 'opF7()'
+        js: `focusOnTarget({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}})`
       }
     }
     // F8 - (Six Word Parameters) Store These values in six words starting at 0xBFCE0C (not in order)
@@ -1013,21 +1013,21 @@ class FF7BinaryDataReader {
     }
     // EA - (One Byte, Three Word, One Byte Parameters)
     if (op === 0xea) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
-      const arg5 = $r.readUByte()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'EA',
-        arg,
-        arg2,
-        arg3,
-        arg4,
-        arg5,
+        op: 'FOLLOWT',
+        bone,
+        x,
+        y,
+        z,
+        frames,
         raw,
-        js: 'opEA()'
+        js: `followTarget({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}, frames: ${frames}})`
       }
     }
     // EC - (Two Byte, Three Word, One Byte Parameters)
