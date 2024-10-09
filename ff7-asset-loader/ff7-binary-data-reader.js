@@ -1092,19 +1092,19 @@ class FF7BinaryDataReader {
     }
     // F8 - (One Byte, Three Word Parameters)
     if (op === 0xf8) {
-      const arg = $r.readUByte()
-      const arg2 = $r.readShort()
-      const arg3 = $r.readShort()
-      const arg4 = $r.readShort()
+      const bone = $r.readUByte()
+      const x = $r.readShort()
+      const y = $r.readShort()
+      const z = $r.readShort()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'F8',
-        arg,
-        arg2,
-        arg3,
-        arg4,
+        op: 'FOCUST',
+        bone,
+        x,
+        y,
+        z,
         raw,
-        js: 'opF8()'
+        js: `focusOnTarget({bone: ${bone}, x: ${x}, y: ${y}, z: ${z}})`
       }
     }
     // F9 - (One Byte, Three Word Parameters)

@@ -286,8 +286,8 @@
       },
       {
         "hex": "F8",
-        "shortName": "F8",
-        "description": "(One Byte, Three Word Parameters)"
+        "shortName": "FOCUST",
+        "description": "Focus on target"
       },
       {
         "hex": "F9",
