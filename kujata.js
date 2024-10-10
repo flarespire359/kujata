@@ -457,10 +457,13 @@ program
   .command('battle-data')
   .description(
     'Extract battle data. ' +
-      chalk.cyan('Includes enemies, scene.bin, mark.dat and camera data')
+      chalk.cyan(
+        'Includes enemies, scene.bin, mark.dat, camera scripts & battle action scripts'
+      )
   )
   .action(async () => {
     const config = await validateConfig()
+    await validateUnlgp(config, 'battle.lgp')
     await extractBattleData(config)
   })
   .showHelpAfterError()

@@ -8,6 +8,9 @@ const {
 const {
   extractBattleCameraData
 } = require('../ff7-asset-loader/camera-data-loader.js')
+const {
+  extractActionSequences
+} = require('../ff7-asset-loader/action-sequence-loader.js')
 
 const extractBattleData = async config => {
   await extractSceneBinData(
@@ -21,6 +24,7 @@ const extractBattleData = async config => {
     path.join(config.kujataDataDirectory, 'data', 'battle')
   )
   await extractBattleCameraData(config)
+  await extractActionSequences(config)
 }
 module.exports = {
   extractBattleData

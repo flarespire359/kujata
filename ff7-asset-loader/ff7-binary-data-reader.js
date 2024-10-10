@@ -6279,6 +6279,407 @@ class FF7BinaryDataReader {
     throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
   } // end of readOp()
 
+  readBattleActionOp () {
+    const $r = this
+    const offset = this.offset
+    const op = $r.readUByte()
+
+    const getRaw = (from, to) => {
+      // console.log('getRaw', from, to)
+      this.offset = from
+      return this.readUByteArray(to - from)
+        .map(v => stringUtil.dec2hex(v, 2, true).toUpperCase())
+        .join(' ')
+    }
+
+    // 0x00 - 0x8d - animations
+    if (0x00 <= op && op <= 0x8d) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'ANIM',
+        animation: op,
+        raw,
+        js: `playAnimation({animation: ${op}})`
+      }
+    }
+
+    // play some effect 800cdfc4.
+    if (op === 0x91) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EFFPLAY',
+        arg,
+        raw,
+        js: `playEffect({arg: ${arg}})`
+      }
+    }
+    // A9[][00] this increment script pointer by 2 and execute animation on second pointer.
+    if (op === 0xa9) {
+      const arg = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'SKANIM',
+        arg,
+        arg2,
+        raw,
+        js: `skipBy2AndAnim({arg: ${arg}, arg2: ${arg2}})`
+      }
+    }
+    // Unpause camera scripts.
+    if (op === 0xaa) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'UNPAUSE',
+        raw,
+        js: 'unpauseCamera()'
+      }
+    }
+    // set_effect - AD[joint XX][distance XXXX][start XX][end XX] Attach effect (machinegun) to joint 07 with
+    // given distanse from this joint which starts at 01 and ends at 0x0a. Always machingun fire.
+    // If end 0x80 byte is set then we do not add shell effect.
+    if (op === 0xad) {
+      const joint = $r.readUByte()
+      const distance = $r.readUShort()
+      const start = $r.readUByte()
+      const end = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EFFSET',
+        joint,
+        distance,
+        start,
+        end,
+        raw,
+        js: `setEffect({joint: ${joint}, distance: ${distance}, start: ${start}, end: ${end}})`
+      }
+    }
+    // B6[animation XX] pause_camera_finish_animation    - B6[animation XX] pause camera scripts and then continue
+    // to play animation given animation from frame that already set. Used to smoothly finish idle animation
+    // before start of anything else. Camera paused because we want camera be sync with start of action
+    // (this is just finish animation that was already started).
+    if (op === 0xb6) {
+      const animation = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'PCANIM',
+        animation,
+        raw,
+        js: `pauseCameraFinishAnimation({animation: ${animation}})`
+      }
+    }
+    // B9[camera_script_id XX] set camera script id to use
+    if (op === 0xb9) {
+      const id = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'SETCAM',
+        id,
+        raw,
+        js: `setCameraScript({id: ${id}})`
+      }
+    }
+    // execute_hurt - BE[wait XX] after wait time ends execute hurt action, effect, sound.
+    // This will NOT display damage and barriers effect.
+    if (op === 0xbe) {
+      const frames = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'HURT',
+        frames,
+        raw,
+        js: `executeHurt({frames: ${frames}})`
+      }
+    }
+    // 0xc1 - jump - C1 jump to first meet C9 from start of script
+    if (op === 0xc1) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'JUMP',
+        raw,
+        js: `jumpToLabel()`
+      }
+    }
+    // 0xc2 - execute_damage - C2[wait XX] after wait time ends show damage.
+    if (op === 0xc2) {
+      const frames = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'HURT',
+        frames,
+        raw,
+        js: `executeHurt({frames: ${frames}})`
+      }
+    }
+    // 0xc5 - set_unit_fade_wait - C5 set value from 0x800f8374 (unit fade time) as wait time for action script.
+    if (op === 0xc5) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FADEW',
+        raw,
+        js: `setFadeWait()`
+      }
+    }
+    // 0xc6 - set_unit_fade_time - C6[wait XX] set value to 0x800f8374 (unit fade time) for futher use.
+    if (op === 0xc6) {
+      const frames = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FADET',
+        frames,
+        raw,
+        js: `setFadeTime({frames: ${frames}})`
+      }
+    }
+    // 0xc9 - jump_label - C9 do nothing just go to next opcode. Used as marker when jump up.
+    if (op === 0xc9) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'LABEL',
+        raw,
+        js: `setJumpLabel()`
+      }
+    }
+    // 0xca - jump_if_not_loaded - CA jump to first meet C9 at start of this script if something loading in background.
+    if (op === 0xca) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'JUMPL',
+        raw,
+        js: `jumpToLabelIfStillLoading()`
+      }
+    }
+    // 0xd0 - D0[4C04][01] jump to enemy
+    if (op === 0xd0) {
+      const arg = $r.readUShort()
+      const arg2 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'ENEMY',
+        arg,
+        arg2,
+        raw,
+        js: `jumpToEnemy({arg: ${arg}, arg2: ${arg2}})`
+      }
+    }
+    // 0xd1 - move_to_target - D1[distance XXXX][XXXX][steps XX] move to enemy using function 0x800cf5bc by number of steps.
+    // Stop distance is distance to target collision radius.
+    if (op === 0xd1) {
+      const distance = $r.readUShort()
+      const arg2 = $r.readUShort()
+      const steps = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'MOVE',
+        distance,
+        arg2,
+        steps,
+        raw,
+        js: `moveToTarget({distance: ${distance}, arg2: ${arg2}, steps: ${steps}})`
+      }
+    }
+    // 0xd8 - play_sound_for_attacker - D8[wait XX][sound XXXX] play sound using attacker settings after
+    // waiting given number of frames.
+    if (op === 0xd8) {
+      const frames = $r.readUByte()
+      const sound = $r.readUShort()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'SOUND',
+        frames,
+        sound,
+        raw,
+        js: `playSound({frames: ${frames}, sound: ${sound}})`
+      }
+    }
+    // 0xe0 - Unknown
+    if (op === 0xe0) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'E0',
+        raw,
+        js: `unknownE0()`
+      }
+    }
+    // 0xe5 - return_direction - E5 set initial (idle) direction for current unit acording to situation.
+    if (op === 0xe5) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'ROTI',
+        raw,
+        js: `rotateBackToIdleDirection()`
+      }
+    }
+    // 0xe8 - load_additional_effect - E8 start load effect requested during attack (attack type id and attack id
+    // are used to determinate what effect to load).
+    if (op === 0xe8) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'LOAD',
+        raw,
+        js: `loadAdditionalEffect()`
+      }
+    }
+    // 0xea - show_action_name - EA show action name.
+    if (op === 0xea) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'NAME',
+        raw,
+        js: `showActionName()`
+      }
+    }
+    // 0xeb - ????
+    if (op === 0xeb) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EB',
+        raw,
+        js: `unknownEB()`
+      }
+    }
+    // 0xec - execute_additional_effect - EC if effect not loaded we will call this opcode until it does.
+    // For magic, summon, limit, enemy skill and enemy attack we execute loaded effect
+    // All effects are hardcoded so they can do whatever they want (play sounds, display damage,
+    // request hurt for target and so on).
+    if (op === 0xec) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'EFFEXE',
+        raw,
+        js: `executeEffect()`
+      }
+    }
+
+    // 0xed - ????
+    if (op === 0xed) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'ED',
+        raw,
+        js: `unknownED()`
+      }
+    }
+    // 0xee - return_to_idle - EE reset to idle. Script pointer to 0.
+    if (op === 0xee) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'RET',
+        raw,
+        js: `return()`
+      }
+    }
+    // 0xf0 - set_effect - F0 set effect (foot_dust).
+    if (op === 0xf0) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DUST',
+        raw,
+        js: `setDustEffect()`
+      }
+    }
+    // 0xf1 - ???
+    if (op === 0xf1) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'F1',
+        raw,
+        js: `unknownF1()`
+      }
+    }
+    // 0xf3 - wait - F3 repeat reading this opcode until wait time for script not reach 0.
+    // It descrease by 1 each tome this opcode called.
+    if (op === 0xf3) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'WAIT',
+        raw,
+        js: `wait()`
+      }
+    }
+    // 0xf4 - set_wait - F4[wait XX] set frames to wait.
+    if (op === 0xf4) {
+      const frames = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'WAIT',
+        frames,
+        raw,
+        js: `setWait({frames: ${frames}})`
+      }
+    }
+    // 0xf6 - play_die_if_dead - F6 play die effect (depends on die type) if unit is dead. Used in enemy hurt actions.
+    if (op === 0xf6) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'DIE',
+        raw,
+        js: `playDieEffectIfDead()`
+      }
+    }
+    // 0xf7 - execute_attack - F7[wait XX] after wait time ends execute hurt action, effect, sound. This will display damage and barriers effect.
+    if (op === 0xf7) {
+      const frames = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'ATT',
+        frames,
+        raw,
+        js: `executeAttack({frames: ${frames}})`
+      }
+    }
+    // 0xfa - return_position - FA instantly set default position for units.
+    if (op === 0xfa) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'POSI',
+        raw,
+        js: `returnToIdlePosition()`
+      }
+    }
+    // 0xfc - set_direction - FC set direction for targets (delayed) and attacker acording to situation.
+    if (op === 0xfc) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'ROTF',
+        raw,
+        js: `setRotationToActors()`
+      }
+    }
+    // 0xfe - ??? Guess a 3 bytes based on what it looks like it rtab
+    if (op === 0xfe) {
+      const arg1 = $r.readUByte()
+      const arg2 = $r.readUByte()
+      const arg3 = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'FE',
+        arg1,
+        arg2,
+        arg3,
+        raw,
+        js: `unknownFE()`
+      }
+    }
+
+    // TODO - E0 ???
+    // Args for EC ????
+    //   E8 FC 00 E0 EA F4 19 F3 EC 2C 2D 2D 2E FA E5 EE
+
+    const opUpper = stringUtil.dec2hex(op, 2, true).toUpperCase()
+    // console.log('Unknown op', opUpper, $r.offset - 1)
+    return {
+      op: opUpper,
+      raw: opUpper,
+      js: `unknownOp${opUpper}()`
+    }
+    // console.error(
+    //   '    unsupported opCode: 0x' + stringUtil.toHex2(op),
+    //   $r.offset
+    // )
+    // throw new Error('unsupported opCode: 0x' + stringUtil.toHex2(op))
+  }
   printNextBufferDataAsHex (numRows = 30, numCols = 8) {
     console.log()
     const pad5 = stringUtil.pad5

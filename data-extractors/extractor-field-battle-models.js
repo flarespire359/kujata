@@ -83,7 +83,6 @@ const extractFieldBattleModels = async (config, models, all, isBattleModel) => {
       progressBar.update(i, {
         current: `${modelName} (${getName(modelName, isBattleModel)})`
       })
-      // TODO - For some reason, the battle models are HUGE!! Why?! Fix it!
       await gltfTranslator.translateFF7FieldHrcToGltf(
         config,
         modelName,
