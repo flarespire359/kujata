@@ -1,0 +1,158 @@
+[
+    {
+        "name": "Attack", 
+        "commandId": 1, 
+        "actionSequences": [
+            {"id": 20, "name": "Attack"}
+        ]
+    },
+    
+    {
+        "name": "Magic", 
+        "commandId": 2, 
+        "actionSequences": [
+            {"id": 29, "name": "Magic"}
+        ]
+    },
+
+    {
+        "name": "Summon", 
+        "commandId": 3, 
+        "actionSequences": [
+            {"id": 31, "name": "Summon"}
+        ]
+    },
+
+    {
+        "name": "Item", 
+        "commandId": 4, 
+        "actionSequences": [
+            {"id": 32, "name": "Use Item on Single Unit", "target": "single"},
+            {"id": 33, "name": "Use Item on Multiple Units", "target": "multiple"}
+        ]
+    },
+    {
+        "name": "Steal", 
+        "commandId": 5, 
+        "actionSequences": [
+            {"id": 34, "name": "Steal Single", "target": "single"},
+            {"id": 35, "name": "Steal Multiple", "target": "multiple"}
+        ]
+    },
+
+    {
+        "name": "Sense", 
+        "commandId": 6, 
+        "actionSequences": [
+            {"id": 38, "name": "Sense Single", "target": "single"},
+            {"id": 39, "name": "Sense Multiple", "target": "multiple"}
+        ]
+    },
+    {
+        "name": "Coin", 
+        "commandId": 7, 
+        "actionSequences": [] 
+    },
+    {
+        "name": "Throw", 
+        "commandId": 8, 
+        "actionSequences": [] 
+    },
+    {
+        "name": "Morph", 
+        "commandId": 9, 
+        "actionSequences": [
+            {"id": 40, "name": "Morph Single", "target": "single"},
+            {"id": 41, "name": "Morph Multiple ???", "target": "multiple"}
+        ]
+    },
+
+    {
+        "name": "Deathblow", 
+        "commandId": 10, 
+        "actionSequences": [
+            {"id": 42, "name": "Deathblow Single", "target": "single"},
+            {"id": 43, "name": "Deathblow Multiple", "target": "multiple"}
+        ]
+    },
+    {
+        "name": "Manipulate", 
+        "commandId": 11, 
+        "actionSequences": [
+            {"id": 44, "name": "Manipulate Single", "target": "single"},
+            {"id": 45, "name": "Manipulate Multiple", "target": "multiple"}
+        ]
+    },
+    {
+        "name": "Mime", 
+        "commandId": 12, 
+        "actionSequences": [] 
+    },
+    {
+        "name": "Enemy Skill", 
+        "commandId": 13, 
+        "actionSequences": [
+            {"id": 30, "name": "Enemy Skill"}
+        ]
+    },
+    
+    {
+        "name": "Mug", 
+        "commandId": 17, 
+        "actionSequences": [
+            {"id": 36, "name": "Mug Single", "target": "single"},
+            {"id": 37, "name": "Mug Multiple", "target": "multiple"}
+        ]
+    },
+    {
+        "name": "Change", 
+        "commandId": 18, 
+        "actionSequences": [
+            {"id": 3, "name": "Change to Front Row", "target": "front"},
+            {"id": 4, "name": "Change to Back Row", "target": "back"}
+        ]
+    },
+    {
+        "name": "Defend", 
+        "commandId": 19, 
+        "actionSequences": [] 
+    },
+    {
+        "name": "Limit", 
+        "commandId": 20, 
+        "actionSequences": [] 
+    },
+
+    {
+        "name": "Slash-All", 
+        "commandId": 24, 
+        "actionSequences": [
+            {"id": 21, "name": "Slash All"}
+        ]
+    },
+    {
+        "name": "2x Cut", 
+        "commandId": 25, 
+        "actionSequences": [
+            {"id": 22, "name": "2x Cut 1st Attack"},
+            {"id": 23, "name": "2x Cut 2nd Attack"}
+        ]
+    },
+    {
+        "name": "Flash", 
+        "commandId": 26, 
+        "actionSequences": [
+            {"id": 28, "name": "Flash"}
+        ]
+    },
+    {
+        "name": "4x Cut", 
+        "commandId": 27, 
+        "actionSequences": [
+            {"id": 24, "name": "4x Cut 1st Attack"},
+            {"id": 25, "name": "4x Cut 2nd Attack"},
+            {"id": 26, "name": "4x Cut 3rd Attack"},
+            {"id": 27, "name": "4x Cut 4th Attack"}
+        ]
+    }
+]
