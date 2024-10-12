@@ -901,14 +901,16 @@ module.exports = class FF7GltfTranslator {
       const animationData = animationDataList[i]
       const weaponAnimationData = weaponAnimationDataList[i]
 
-      if (!animationData.numBones) {
-        // console.log('WARN: Skipping empty animation')
-        // if (weaponAnimationData.numBones = null)
-        // {
-        // console.log('EMPTY WEAPON ANIM')
-        // }
-        continue
-      }
+      // Remove this, as the animation counts need to match what the game expects,
+      // Even if they are empty
+      // if (!animationData.numBones) {
+      // console.log('WARN: Skipping empty animation')
+      // if (weaponAnimationData.numBones = null)
+      // {
+      // console.log('EMPTY WEAPON ANIM')
+      // }
+      // continue
+      // }
       const animationName = 'body-' + i
       gltf.animations.push({
         name: animationName,
@@ -918,7 +920,7 @@ module.exports = class FF7GltfTranslator {
       // console.log('DEBUG: animationName=' + animationName)
       const animationIndex = gltf.animations.length - 1
 
-      const numFrames = animationData.numFrames
+      const numFrames = animationData.numFrames | 0
 
       // create buffer to store start-time/end-time pair(s)
       // let numTimeMarkers = 2 * numFrames // start time and end time per frame

@@ -6633,7 +6633,7 @@ class FF7BinaryDataReader {
     if (op === 0xfa) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'POSI',
+        op: 'MOVI',
         raw,
         js: `returnToIdlePosition()`
       }
