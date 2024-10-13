@@ -1,0 +1,178 @@
+{
+  "actions": {
+    "name": "Actions",
+    "description": "Actions description",
+    "opCodes": [
+      {
+        "hex": "00 to 8D",
+        "shortName": "ANIM",
+        "description": "playAnimation({animation})"
+      },
+      {
+        "hex": "91",
+        "shortName": "EFFPLAY",
+        "description": "playEffect({arg}) - Play some effect 800cdfc4"
+      },
+      {
+        "hex": "A9",
+        "shortName": "SKANIM",
+        "description": "skipBy2AndAnim({arg, arg2}) - Increment script pointer by 2 and execute animation on second pointer"
+      },
+      {
+        "hex": "AA",
+        "shortName": "UNPAUSE",
+        "description": "unpauseCamera() - Unpause camera scripts"
+      },
+      {
+        "hex": "AD",
+        "shortName": "EFFSET",
+        "description": "setEffect({joint, distance, start, end}) - Attach effect (machinegun) to joint 7 with given distanse from this joint which starts at 01 and ends at 0x0a. Always machingun fire"
+      },
+      {
+        "hex": "B6",
+        "shortName": "PCANIM",
+        "description": "pauseCameraFinishAnimation({animation}) - pause camera scripts and then continue to play animation given animation from frame that already set. Used to smoothly finish idle animation before start of anything else"
+      },
+      {
+        "hex": "B9",
+        "shortName": "SETCAM",
+        "description": "setCameraScript({id}) - Set camera script id to use"
+      },
+      {
+        "hex": "BE",
+        "shortName": "HURT",
+        "description": "executeHurt({frames}) - After wait time ends execute hurt action, effect, sound. This will NOT display damage and barriers effect"
+      },
+      {
+        "hex": "C1",
+        "shortName": "JUMP",
+        "description": "jumpToLabel() - C1 jump to first meet C9 from start of script"
+      },
+      {
+        "hex": "C2",
+        "shortName": "DAMAGE",
+        "description": "executeDamage({frames}) - After wait time ends show damage"
+      },
+      {
+        "hex": "C5",
+        "shortName": "FADEW",
+        "description": "setFadeWait() - Set value from 0x800f8374 (unit fade time) as wait time for action script"
+      },
+      {
+        "hex": "C6",
+        "shortName": "FADET",
+        "description": "setFadeTime({frames}) - Set value to 0x800f8374 (unit fade time) for futher use"
+      },
+      {
+        "hex": "C9",
+        "shortName": "LABEL",
+        "description": "setJumpLabel() - C9 do nothing just go to next opcode. Used as marker when jump up"
+      },
+      {
+        "hex": "CA",
+        "shortName": "JUMPL",
+        "description": "jumpToLabelIfStillLoading() - CA jump to first meet C9 at start of this script if something loading in background"
+      },
+      {
+        "hex": "D0",
+        "shortName": "ENEMY",
+        "description": "jumpToEnemy({arg, arg2}) - Jump to enemy"
+      },
+      {
+        "hex": "D1",
+        "shortName": "MOVE",
+        "description": "moveToTarget({distance, arg2, frames}) - Move to enemy using function 0x800cf5bc by number of frames. Stop distance is distance to target collision radius"
+      },
+      {
+        "hex": "D8",
+        "shortName": "SOUND",
+        "description": "playSound({frame}, sound}) - Play sound using attacker settings after waiting given number of frames"
+      },
+      {
+        "hex": "E0",
+        "shortName": "E0",
+        "description": "unknownE0()"
+      },
+      {
+        "hex": "E5",
+        "shortName": "ROTI",
+        "description": "rotateBackToIdleDirection() - Set initial (idle) direction for current unit acording to situation"
+      },
+      {
+        "hex": "E8",
+        "shortName": "LOAD",
+        "description": "loadAdditionalEffect() - Start load effect requested during attack (attack type id and attack id are used to determinate what effect to load)"
+      },
+      {
+        "hex": "EA",
+        "shortName": "NAME",
+        "description": "showActionName()"
+      },
+      {
+        "hex": "EB",
+        "shortName": "EB",
+        "description": "unknownEB()"
+      },
+      {
+        "hex": "EC",
+        "shortName": "EFFEXE",
+        "description": "executeEffect() - If effect not loaded we will call this opcode until it does. For magic, summon, limit, enemy skill and enemy attack we execute loaded effect All effects are hardcoded so they can do whatever they want (play sounds, display damage, request hurt for target and so on)"
+      },
+      {
+        "hex": "ED",
+        "shortName": "ED",
+        "description": "unknownED()"
+      },
+      {
+        "hex": "EE",
+        "shortName": "RET",
+        "description": "return() - Reset to idle. Script pointer to 0"
+      },
+      {
+        "hex": "F0",
+        "shortName": "DUST",
+        "description": "setDustEffect() - Set effect (foot_dust)"
+      },
+      {
+        "hex": "F1",
+        "shortName": "F1",
+        "description": "unknownF1()"
+      },
+      {
+        "hex": "F3",
+        "shortName": "WAIT",
+        "description": "wait() - Repeat reading this opcode until wait time for script not reach 0. It decreases by 1 each tome this opcode called"
+      },
+      {
+        "hex": "F4",
+        "shortName": "SETWAIT",
+        "description": "setWait({frames}) - Set frames to wait"
+      },
+      {
+        "hex": "F6",
+        "shortName": "DIE",
+        "description": "playDieEffectIfDead() - Play die effect (depends on die type) if unit is dead. Used in enemy hurt actions"
+      },
+      {
+        "hex": "F7",
+        "shortName": "ATT",
+        "description": "executeAttack({frames}) - after wait time ends execute hurt action, effect, sound. This will display damage and barriers effect"
+      },
+      {
+        "hex": "FA",
+        "shortName": "MOVI",
+        "description": "returnToIdlePosition() - Instantly set default position for units"
+      },
+      {
+        "hex": "FC",
+        "shortName": "ROTF",
+        "description": "setRotationToActors() - Set direction for targets (delayed) and attacker acording to situation"
+      },
+      {
+        "hex": "FE",
+        "shortName": "FE",
+        "description": "unknownFE()"
+      }
+    ]
+  }
+}

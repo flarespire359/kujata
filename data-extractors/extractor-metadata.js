@@ -63,7 +63,8 @@ const copyFiles = (config, progress) => {
     'op-categories.json',
     'op-metadata.json',
     'battle-camera-op-metadata.json',
-    'action-sequence-metadata-player.json'
+    'action-sequence-metadata-player.json',
+    'action-sequence-metadata-op.json'
   ]
   progress.start(filesToCopy.length, 0, {
     title: 'Copying files     ',

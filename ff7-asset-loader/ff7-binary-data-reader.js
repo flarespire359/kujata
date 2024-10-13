@@ -6406,10 +6406,10 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'HURT',
+        op: 'DAMAGE',
         frames,
         raw,
-        js: `executeHurt({frames: ${frames}})`
+        js: `executeDamage({frames: ${frames}})`
       }
     }
     // 0xc5 - set_unit_fade_wait - C5 set value from 0x800f8374 (unit fade time) as wait time for action script.
@@ -6468,15 +6468,15 @@ class FF7BinaryDataReader {
     if (op === 0xd1) {
       const distance = $r.readUShort()
       const arg2 = $r.readUShort()
-      const steps = $r.readUByte()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
         op: 'MOVE',
         distance,
         arg2,
-        steps,
+        frames,
         raw,
-        js: `moveToTarget({distance: ${distance}, arg2: ${arg2}, steps: ${steps}})`
+        js: `moveToTarget({distance: ${distance}, arg2: ${arg2}, frames: ${frames}})`
       }
     }
     // 0xd8 - play_sound_for_attacker - D8[wait XX][sound XXXX] play sound using attacker settings after
@@ -6603,7 +6603,7 @@ class FF7BinaryDataReader {
       const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'WAIT',
+        op: 'SETWAIT',
         frames,
         raw,
         js: `setWait({frames: ${frames}})`
