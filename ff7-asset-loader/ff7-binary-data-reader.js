@@ -6452,15 +6452,15 @@ class FF7BinaryDataReader {
     }
     // 0xd0 - D0[4C04][01] jump to enemy
     if (op === 0xd0) {
-      const arg = $r.readUShort()
-      const arg2 = $r.readUByte()
+      const distance = $r.readUShort()
+      const frames = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'ENEMY',
-        arg,
-        arg2,
+        op: 'MOVJ',
+        distance,
+        frames,
         raw,
-        js: `jumpToEnemy({arg: ${arg}, arg2: ${arg2}})`
+        js: `jumpToEnemy({distance: ${distance}, frames: ${frames}})`
       }
     }
     // 0xd1 - move_to_target - D1[distance XXXX][XXXX][steps XX] move to enemy using function 0x800cf5bc by number of steps.

@@ -75,8 +75,8 @@
       },
       {
         "hex": "D0",
-        "shortName": "ENEMY",
-        "description": "jumpToEnemy({arg, arg2}) - Jump to enemy"
+        "shortName": "MOVJ",
+        "description": "jumpToEnemy({distance, frames}) - Jump to enemy"
       },
       {
         "hex": "D1",
