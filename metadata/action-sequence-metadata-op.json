@@ -25,8 +25,8 @@
       },
       {
         "hex": "AD",
-        "shortName": "EFFSET",
-        "description": "setEffect({joint, distance, start, end}) - Attach effect (machinegun) to joint 7 with given distanse from this joint which starts at 01 and ends at 0x0a. Always machingun fire"
+        "shortName": "GUN",
+        "description": "setMachineGunEffect({joint, distance, start, end}) - Attach effect (machinegun) to joint 7 with given distanse from this joint which starts at 01 and ends at 0x0a. Always machingun fire"
       },
       {
         "hex": "B6",

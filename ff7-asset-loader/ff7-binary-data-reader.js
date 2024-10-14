@@ -6346,13 +6346,13 @@ class FF7BinaryDataReader {
       const end = $r.readUByte()
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'EFFSET',
+        op: 'GUN',
         joint,
         distance,
         start,
         end,
         raw,
-        js: `setEffect({joint: ${joint}, distance: ${distance}, start: ${start}, end: ${end}})`
+        js: `setMachineGunEffect({joint: ${joint}, distance: ${distance}, start: ${start}, end: ${end}})`
       }
     }
     // B6[animation XX] pause_camera_finish_animation    - B6[animation XX] pause camera scripts and then continue
