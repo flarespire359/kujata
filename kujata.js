@@ -458,7 +458,7 @@ program
   .description(
     'Extract battle data. ' +
       chalk.cyan(
-        'Includes enemies, scene.bin, mark.dat, camera scripts & battle action scripts'
+        'Includes enemies, scene.bin, mark.dat, camera & action scripts, effect sprites'
       )
   )
   .action(async () => {

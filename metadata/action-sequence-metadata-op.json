@@ -119,7 +119,7 @@
     ]
   },
   "actions": {
-    "name": "Actions",
+    "name": "Actions / Effects",
     "description": "Actions description",
     "opCodes": [
       {

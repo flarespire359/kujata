@@ -11,6 +11,9 @@ const {
 const {
   extractActionSequences
 } = require('../ff7-asset-loader/action-sequence-loader.js')
+const {
+  extractBattleEffectAssets
+} = require('../ff7-asset-loader/battle-effects-assets.js')
 
 const extractBattleData = async config => {
   await extractSceneBinData(
@@ -25,6 +28,7 @@ const extractBattleData = async config => {
   )
   await extractBattleCameraData(config)
   await extractActionSequences(config)
+  await extractBattleEffectAssets(config)
 }
 module.exports = {
   extractBattleData
