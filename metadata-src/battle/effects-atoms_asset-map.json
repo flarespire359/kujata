@@ -5,7 +5,7 @@
         "eff1_3": {"file":"seffect1", "x":0, "y": 64, "count": 8, "palette": 8},
         "eff1_4": {"file":"seffect1", "x":0, "y": 96, "count": 8, "palette": 8},
         "eff1_5": {"file":"seffect1", "x":0, "y": 128, "count": 8, "palette": 8},
-        "dust": {"file":"seffect1", "x":0, "y": 160, "count": 8, "palette": 8},
+        "dust": {"file":"seffect1", "x":0, "y": 160, "count": 8, "palette": 9},
         "eff2_1": {"file":"seffect2", "x":0, "y": 0, "count": 8, "palette": 2},
         "eff2_2": {"file":"seffect2", "x":0, "y": 32, "count": 8, "palette": 2},
         "eff2_3": {"file":"seffect2", "x":0, "y": 64, "count": 8, "palette": 2},

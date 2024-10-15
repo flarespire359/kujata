@@ -11,9 +11,6 @@
   },
   "author": "dangarfielduk@hotmail.com",
   "homepage": "https://dangarfield.github.io/kujata-webapp",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
   "repository": {
     "type": "git",
     "url": "https://github.com/dangarfield/kujata"

@@ -91,10 +91,9 @@ const effects32 = async (config, assets) => {
   const xPos = Array.from({ length: 8 }, (_, i) => i * 32 * 4)
   for (let i = 0; i < Object.keys(assets).length; i++) {
     const type = Object.keys(assets)[i]
-    const asset = assets[type]
     assetsJson[type] = {
-      x: xPos,
-      y: i * 32 * 4,
+      index: i,
+      count: 8,
       file: 'metadata/battle-assets/effects-32.png'
     }
   }
