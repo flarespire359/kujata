@@ -6280,6 +6280,10 @@ class FF7BinaryDataReader {
   } // end of readOp()
 
   readBattleActionOp () {
+    // Still need to complete this:
+    // https://wiki.ffrtt.ru/index.php/FF7/Battle/Battle_Animation/Animation_Script
+    // https://github.com/Akari1982/q-gears_reverse/blob/master/ffvii/documents/battle/models/animation.txt
+
     const $r = this
     const offset = this.offset
     const op = $r.readUByte()
@@ -6312,6 +6316,24 @@ class FF7BinaryDataReader {
         arg,
         raw,
         js: `playEffect({arg: ${arg}})`
+      }
+    }
+    // 0xa4 - E.Skill charge effect (remains stationary on actor's position when called)
+    if (op === 0xa4) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'CHARGEE',
+        raw,
+        js: `enemySkillChargeEffect()`
+      }
+    }
+    // 0xa5 - Summon charge effect (remains stationary on actor's position when called)
+    if (op === 0xa5) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'CHARGES',
+        raw,
+        js: `summonChargeEffect()`
       }
     }
     // A9[][00] this increment script pointer by 2 and execute animation on second pointer.
@@ -6493,13 +6515,13 @@ class FF7BinaryDataReader {
         js: `playSound({frames: ${frames}, sound: ${sound}})`
       }
     }
-    // 0xe0 - Unknown
+    // 0xe0 - Limit charge effect (remains stationary on actor's position when called)
     if (op === 0xe0) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'E0',
+        op: 'CHARGEL',
         raw,
-        js: `unknownE0()`
+        js: `limitChargeEffect()`
       }
     }
     // 0xe5 - return_direction - E5 set initial (idle) direction for current unit acording to situation.
@@ -6509,6 +6531,15 @@ class FF7BinaryDataReader {
         op: 'ROTI',
         raw,
         js: `rotateBackToIdleDirection()`
+      }
+    }
+    // 0xe6 - Magic charge effect (remains stationary on actor's position when called)
+    if (op === 0xe6) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'CHARGEM',
+        raw,
+        js: `magicChargeEffect()`
       }
     }
     // 0xe8 - load_additional_effect - E8 start load effect requested during attack (attack type id and attack id

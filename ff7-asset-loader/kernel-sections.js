@@ -104,7 +104,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
     const accuracyRate = r.readUByte()
     const weaponModelId = r.readUByte() // Upper nybble, attack animation modifier (for Barret & Vincent only). Lower nybble, weapon model index
     const alignment = r.readUByte() // Alignment. Always 0xFF
-    const highSoundId = r.readUByte() // Mask for access high sound id (0x100+)
+    const highSoundMask = r.readUByte() // Mask for access high sound id (0x100+)
     const cameraMovementId = r.readUShort() // Camera movement id, Always 0xFFFF
     const equipableBy = r.readUShort()
     const attackElements = r.readUShort()
@@ -126,12 +126,36 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
       materiaSlots.push(materiaSlot)
     }
 
-    const soundEffectIdNormalHit = r.readUByte() // These seem to match some common sounds, but not others, need to check. This goes to 0-255, but frog attack is 363,364 etc
-    const soundEffectIdNormalCritical = r.readUByte()
-    const soundEffectIdNormalMiss = r.readUByte()
+    const impactSoundRawHit = r.readUByte()
+    const impactSoundRawCritical = r.readUByte()
+    const impactSoundRawMiss = r.readUByte()
     const impactEffectId = r.readUByte()
     const specialAttack = r.readUShort() // Always 0xFFFF
     const restrictions = r.readUShort()
+
+    // High sound id - 3 values:
+    //    248 - 0b11111000 - Do nothing
+    //    249 - 0b11111001 - ??
+    //    251 - 0b11111011 - add 0x1 to beginning, eg 0x24 become 0x124 -> + 256
+
+    const applyHighSoundMask = (soundId, maskValue, mask) => {
+      return (maskValue & mask) === mask ? soundId + 0x100 : soundId
+    }
+    const impactSoundHit = applyHighSoundMask(
+      impactSoundRawHit,
+      highSoundMask,
+      0b1
+    )
+    const impactSoundCritical = applyHighSoundMask(
+      impactSoundRawCritical,
+      highSoundMask,
+      0b10
+    )
+    const impactSoundMiss = applyHighSoundMask(
+      impactSoundRawMiss,
+      highSoundMask,
+      0b100
+    )
 
     const object = {
       index: i,
@@ -147,7 +171,6 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
       criticalRate: criticalRate,
       accuracyRate: accuracyRate,
       weaponModelId: weaponModelId, // Maybe split into nybbles if required
-      highSoundId: highSoundId,
       equipableBy: parseKernelEnums(Enums.EquipableBy, equipableBy),
       elements: parseKernelEnums(Enums.Elements, attackElements), // Is this array of single?
       boostedStats: filterUnneededBoostedStats([
@@ -169,9 +192,13 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
         }
       ]),
       materiaSlots: materiaSlots,
-      soundEffectIdNormalHit: soundEffectIdNormalHit,
-      soundEffectIdNormalCritical: soundEffectIdNormalCritical,
-      soundEffectIdNormalMiss: soundEffectIdNormalMiss,
+      highSoundMask,
+      impactSoundRawHit,
+      impactSoundRawCritical,
+      impactSoundRawMiss,
+      impactSoundHit,
+      impactSoundCritical,
+      impactSoundMiss,
       impactEffectId: impactEffectId,
       restrictions: parseKernelEnums(Enums.Restrictions, restrictions),
       specialAttack: parseKernelEnums(Enums.SpecialEffects, specialAttack)
@@ -424,15 +451,15 @@ const getCommandSectionData = (sectionData, names, descriptions) => {
 }
 const parseAttackData = r => {
   const attackPercent = r.readUByte()
-  const impactAnimation = r.readUByte()
-  const targetAnimation = r.readUByte()
+  const impactEffectId = r.readUByte()
+  const targetHurtAnimation = r.readUByte()
   const unknown = r.readUByte()
   const mpCost = r.readUShort()
   const impactSound = r.readUShort()
   const cameraMovementIdSingleTargets = r.readUShort()
   const cameraMovementIdMultipleTargets = r.readUShort()
   const targetFlags = r.readUByte()
-  const animationID = r.readUByte()
+  const attackEffectId = r.readUByte()
   const damageCalculation = r.readUByte()
   const attackPower = r.readUByte()
   const conditionSubMenu = r.readUByte()
@@ -449,19 +476,19 @@ const parseAttackData = r => {
     // name: names[i],
     // description: descriptions[i],
     attackPercent,
-    impactAnimation,
-    targetAnimation,
-    mp: mpCost,
+    attackPower,
+    attackEffectId,
+    impactEffectId,
     impactSound,
+    targetHurtAnimation,
+    mp: mpCost,
     cameraMovementIdSingleTargets,
     cameraMovementIdMultipleTargets,
     targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
-    animationID,
     damageCalculation: {
       type: (damageCalculation & 0xf0) >> 4, // upper nybble
       formula: damageCalculation & 0x0f // lower nybble
     },
-    attackPower,
     conditionSubMenu: parseKernelEnums(
       Enums.ConditionSubMenu,
       conditionSubMenu

@@ -128,6 +128,16 @@
         "description": "playEffect({arg}) - Play some effect 800cdfc4"
       },
       {
+        "hex": "A4",
+        "shortName": "CHARGEE",
+        "description": "enemySkillChargeEffect() - E.Skill charge effect (remains stationary on actor's position when called)"
+      },
+      {
+        "hex": "A5",
+        "shortName": "CHARGES",
+        "description": "summonSkillChargeEffect() - Summon charge effect (remains stationary on actor's position when called)"
+      },
+      {
         "hex": "AD",
         "shortName": "GUN",
         "description": "setMachineGunEffect({joint, distance, start, end}) - Attach effect (machinegun) to joint 7 with given distanse from this joint which starts at 01 and ends at 0x0a. Always machingun fire"
@@ -149,8 +159,13 @@
       },
       {
         "hex": "E0",
-        "shortName": "E0",
-        "description": "unknownE0()"
+        "shortName": "CHARGEL",
+        "description": "limitSkillChargeEffect() - Limit charge effect (remains stationary on actor's position when called)"
+      },
+      {
+        "hex": "E6",
+        "shortName": "CHARGEM",
+        "description": "magicSkillChargeEffect() - Magic charge effect (remains stationary on actor's position when called)"
       },
       {
         "hex": "E8",
