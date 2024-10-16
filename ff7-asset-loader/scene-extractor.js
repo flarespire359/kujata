@@ -37,7 +37,7 @@ const getEnemyData = r => {
     elementRates: Array(8)
       .fill()
       .map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())), // Not right yet
-    actionAnimationIndex: Array(16)
+    actionSequenceIndex: Array(16)
       .fill()
       .map(a => r.readUByte()),
     attackIds: Array(16)
