@@ -51,12 +51,16 @@
     {
         "name": "Coin", 
         "commandId": 7, 
-        "actionSequences": [] 
+        "actionSequences": [
+            {"id": 32, "name": "Use Item on Single Unit", "target": "single"},
+            {"id": 33, "name": "Use Item on Multiple Units", "target": "multiple"}]
     },
     {
         "name": "Throw", 
         "commandId": 8, 
-        "actionSequences": [] 
+        "actionSequences": [
+            {"id": 32, "name": "Use Item on Single Unit", "target": "single"},
+            {"id": 33, "name": "Use Item on Multiple Units", "target": "multiple"}]
     },
     {
         "name": "Morph", 
@@ -66,7 +70,6 @@
             {"id": 41, "name": "Morph Multiple ???", "target": "multiple"}
         ]
     },
-
     {
         "name": "Deathblow", 
         "commandId": 10, 
@@ -120,7 +123,7 @@
     {
         "name": "Limit", 
         "commandId": 20, 
-        "actionSequences": [] 
+        "actionSequences": []
     },
 
     {

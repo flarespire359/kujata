@@ -76,12 +76,13 @@ const extractOneEntity = async (config, fileName) => {
       .map(() => r.readUInt())
   }
   //   console.log('data', data, r.offset)
-  data.scriptsEnemy = data.scriptOffsetsEnemy.map(offset =>
+  const scriptsEnemy = data.scriptOffsetsEnemy.map(offset =>
     readScript(r, offset)
   )
-  data.scriptsPlayer = data.scriptOffsetsPlayer.map(offset =>
+  const scriptsPlayer = data.scriptOffsetsPlayer.map(offset =>
     readScript(r, offset)
   )
+  data.scripts = [...scriptsEnemy, ...scriptsPlayer]
   // TODO - Some files don't end with EE code, instead, they are filled with zeros and therefore this is bloated with ANIM 0 scripts
   return data
 }
