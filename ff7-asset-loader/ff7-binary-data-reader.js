@@ -6524,6 +6524,15 @@ class FF7BinaryDataReader {
         js: `limitChargeEffect()`
       }
     }
+    // 0xe3 - Move Z instantly - Assuming this is right (E3) - Eg, ensure backrow/normal is applied after anim is finished
+    if (op === 0xe3) {
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'MOVIZ',
+        raw,
+        js: `moveDefaultZPosInstantly()`
+      }
+    }
     // 0xe5 - return_direction - E5 set initial (idle) direction for current unit acording to situation.
     if (op === 0xe5) {
       const raw = getRaw(offset, $r.offset)

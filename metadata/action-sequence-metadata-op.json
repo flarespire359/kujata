@@ -90,6 +90,11 @@
         "hex": "D1",
         "shortName": "MOVE",
         "description": "moveToTarget({distance, arg2, frames}) - Move to enemy using function 0x800cf5bc by number of frames. Stop distance is distance to target collision radius"
+      },  
+      {
+        "hex": "E3",
+        "shortName": "MOVIZ",
+        "description": "moveDefaultZPosInstantly() - Move Z instantly - Assuming this is right - Eg, ensure backrow/normal is applied after anim is finished"
       },
       {
         "hex": "FA",
