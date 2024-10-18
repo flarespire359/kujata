@@ -133,6 +133,11 @@
         "description": "playEffect({arg}) - Play some effect 800cdfc4"
       },
       {
+        "hex": "9D",
+        "shortName": "TIFALIM",
+        "description": "tifaLimit({arg: ${arg}}) - Something to do with Tifa's limits"
+      },
+      {
         "hex": "A4",
         "shortName": "CHARGEE",
         "description": "enemySkillChargeEffect() - E.Skill charge effect (remains stationary on actor's position when called)"

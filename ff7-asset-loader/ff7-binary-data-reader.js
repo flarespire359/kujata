@@ -6318,6 +6318,17 @@ class FF7BinaryDataReader {
         js: `playEffect({arg: ${arg}})`
       }
     }
+    // Something to do with Tifa's limits
+    if (op === 0x9d) {
+      const arg = $r.readUByte()
+      const raw = getRaw(offset, $r.offset)
+      return {
+        op: 'TIFALIM',
+        arg,
+        raw,
+        js: `tifaLimit({arg: ${arg}})`
+      }
+    }
     // 0xa4 - E.Skill charge effect (remains stationary on actor's position when called)
     if (op === 0xa4) {
       const raw = getRaw(offset, $r.offset)
