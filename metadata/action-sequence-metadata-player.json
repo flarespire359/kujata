@@ -125,6 +125,28 @@
         "commandId": 20, 
         "actionSequences": []
     },
+    {
+        "name": "W-Magic", 
+        "commandId": 21, 
+        "actionSequences": [
+            {"id": 29, "name": "Magic"}
+        ]
+    },
+    {
+        "name": "W-Summon", 
+        "commandId": 22, 
+        "actionSequences": [
+            {"id": 31, "name": "Summon"}
+        ]
+    },
+    {
+        "name": "W-Item", 
+        "commandId": 23, 
+        "actionSequences": [
+            {"id": 32, "name": "Use Item on Single Unit", "target": "single"},
+            {"id": 33, "name": "Use Item on Multiple Units", "target": "multiple"}
+        ]
+    },
 
     {
         "name": "Slash-All", 
