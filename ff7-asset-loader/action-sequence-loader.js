@@ -83,6 +83,7 @@ const extractOneEntity = async (config, fileName) => {
     readScript(r, offset)
   )
   data.scripts = [...scriptsEnemy, ...scriptsPlayer]
+  data.type = scriptsPlayer.length > 0 ? 'player' : 'enemy' // Purely just a utility so I don't have to get this elsewhere for kujata webapp
   // TODO - Some files don't end with EE code, instead, they are filled with zeros and therefore this is bloated with ANIM 0 scripts
   return data
 }
