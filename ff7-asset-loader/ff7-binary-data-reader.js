@@ -6570,13 +6570,13 @@ class FF7BinaryDataReader {
         js: `showActionName()`
       }
     }
-    // 0xeb - ????
+    // 0xeb - Assume that this is execute the effect from a item
     if (op === 0xeb) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'EB',
+        op: 'EXEITEM',
         raw,
-        js: `unknownEB()`
+        js: `executeItem()`
       }
     }
     // 0xec - execute_additional_effect - EC if effect not loaded we will call this opcode until it does.
@@ -6586,7 +6586,7 @@ class FF7BinaryDataReader {
     if (op === 0xec) {
       const raw = getRaw(offset, $r.offset)
       return {
-        op: 'EFFEXE',
+        op: 'EXEEFF',
         raw,
         js: `executeEffect()`
       }

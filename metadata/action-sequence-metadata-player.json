@@ -67,7 +67,7 @@
         "commandId": 9, 
         "actionSequences": [
             {"id": 40, "name": "Morph Single", "target": "single"},
-            {"id": 41, "name": "Morph Multiple ???", "target": "multiple"}
+            {"id": 41, "name": "Morph Multiple", "target": "multiple"}
         ]
     },
     {
@@ -156,6 +156,25 @@
             {"id": 25, "name": "4x Cut 2nd Attack"},
             {"id": 26, "name": "4x Cut 3rd Attack"},
             {"id": 27, "name": "4x Cut 4th Attack"}
+        ]
+    },
+    {
+        "name:": "descriptions - not directly in use",
+        "commandId": 99,
+        "actionSequences": [
+            {"id": 5, "name": "Take damage - Quick"},
+            {"id": 6, "name": "Take damage - Sustained"},
+            {"id": 7, "name": "Take damage - Knock Down"},
+            {"id": 8, "name": "Take damage - Block"},
+            {"id": 10, "name": "Learn Enemy Skill"},
+            {"id": 16, "name": "Return after failed action"},
+            {"id": 60, "name": "Limit Break 1-1"},
+            {"id": 61, "name": "Limit Break 1-2"},
+            {"id": 62, "name": "Limit Break 2-1"},
+            {"id": 63, "name": "Limit Break 2-2"},
+            {"id": 64, "name": "Limit Break 3-1"},
+            {"id": 65, "name": "Limit Break 3-2"},
+            {"id": 66, "name": "Limit Break 4-1"}
         ]
     }
 ]
