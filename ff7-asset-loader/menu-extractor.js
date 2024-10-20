@@ -87,10 +87,10 @@ const extractFontElement = async (
       let elementFileExtract
       if (element.compose) {
         const { width, height } = await sharp(elementFile).metadata()
-        const adjustedWidth =
-          element.x + element.w < width ? element.w : width - element.x
-        const adjustedHeight =
-          element.y + element.h < height ? element.h : height - element.y
+        const wC = element.wC ? element.wC : element.w
+        const hC = element.hC ? element.hC : element.h
+        const adjustedWidth = element.x + wC < width ? wC : width - element.x
+        const adjustedHeight = element.y + hC < height ? hC : height - element.y
         elementFileExtract = sharp({
           create: {
             width: element.w,

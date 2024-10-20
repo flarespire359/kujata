@@ -1,4 +1,20 @@
 {
+    "battle-text-damage": [
+        {"id":0,"description":"battle text damage 0","x":48,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"0"},
+        {"id":0,"description":"battle text damage 1","x":64,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"1"},
+        {"id":0,"description":"battle text damage 2","x":80,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"2"},
+        {"id":0,"description":"battle text damage 3","x":96,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"3"},
+        {"id":0,"description":"battle text damage 4","x":112,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"4"},
+        {"id":0,"description":"battle text damage 5","x":128,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"5"},
+        {"id":0,"description":"battle text damage 6","x":144,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"6"},
+        {"id":0,"description":"battle text damage 7","x":160,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"7"},
+        {"id":0,"description":"battle text damage 8","x":176,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"8"},
+        {"id":0,"description":"battle text damage 9","x":192,"y":16,"w":16,"h":22,"colors":[["green",5],["white",8]],"char":"9"}
+    ],
+    "battle-damage": [
+        {"id":1,"description":"miss", "x":0,"y":18,"w":46,"h":20, "palette": 8},
+        {"id":1,"description":"mp", "x":0,"y":38,"w":30,"h":10, "palette": 8}
+    ],
     "menu-text-fixed": [
         {"id":0,"description":"menu text fixed 000","x":0,"y":48,"w":16,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":" "},
         {"id":1,"description":"menu text fixed 001","x":16,"y":48,"w":16,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":"„"},

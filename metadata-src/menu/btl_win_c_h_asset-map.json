@@ -24,5 +24,11 @@
     ],
     "labels": [
         {"id":1, "description":"target", "x":0,"y":172,"w":64,"h":18, "palette": 8}
+    ],
+    "battle-damage": [
+        {"id":1,"description":"death", "x":64,"y":192,"w":64,"h":20, "palette": 8},
+        {"id":1,"description":"recovery", "x":64,"y":212,"w":100,"wC":64,"h":20, "palette": 8,"compose":{
+            "file": "btl_win_c_h_8.png","x":64,"y":232,"w":36,"h":20, "toX":64,"toY":0
+        }}
     ]
 }
