@@ -13,7 +13,9 @@
     ],
     "battle-damage": [
         {"id":1,"description":"miss", "x":0,"y":18,"w":46,"h":20, "palette": 8},
-        {"id":1,"description":"mp", "x":0,"y":38,"w":30,"h":10, "palette": 8}
+        {"id":1,"description":"miss-restorative", "x":0,"y":18,"w":46,"h":20, "palette": 5},
+        {"id":1,"description":"mp", "x":0,"y":38,"w":30,"h":10, "palette": 8},
+        {"id":1,"description":"mp-restorative", "x":0,"y":38,"w":30,"h":10, "palette": 5}
     ],
     "menu-text-fixed": [
         {"id":0,"description":"menu text fixed 000","x":0,"y":48,"w":16,"h":16,"colors":[["gray",1],["blue",2],["red",3],["purple",4],["green",5],["cyan",6],["yellow",7],["white",8]],"char":" "},
