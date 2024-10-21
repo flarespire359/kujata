@@ -41,7 +41,7 @@ const getCharacterRecord = (
   const armor = getArmor(r, armorNames)
   const accessory = getAccessory(r, accessoryNames)
 
-  const statusFlags = parseKernelEnums(Enums.Character.Flags, r.readUByte()) // 0x10-Sadness 0x20-Fury
+  const status = parseKernelEnums(Enums.Statuses, r.readUByte()) // 0x10-Sadness 0x20-Fury
   const battleOrder = parseKernelEnums(Enums.Character.Order, r.readUByte()) // 0xFF-Normal 0xFE-Back row
   const levelProgressBar = r.readUByte() // (0-63) Games Gui Hides Values <4 4-63 are visible as "progress"
   const learnedLimitSkills = parseKernelEnums(
@@ -147,11 +147,9 @@ const getCharacterRecord = (
       armorMateria7,
       armorMateria8
     },
-    status: {
-      statusFlags,
-      battleOrder,
-      noOfKills
-    }
+    status,
+    battleOrder,
+    noOfKills
   }
   // console.log('characterRecord', characterRecord)
   return characterRecord

@@ -249,10 +249,6 @@ const Enums = {
     QuadraMagic: 0x63
   },
   Character: {
-    Flags: {
-      Sadness: 0x10,
-      Fury: 0x20
-    },
     Order: {
       BackRow: 0xfe,
       Normal: 0xff
