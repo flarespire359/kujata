@@ -31,12 +31,12 @@ const getEnemyData = r => {
     defense: r.readUByte(),
     magicAttack: r.readUByte(),
     magicDefense: r.readUByte(),
-    elementTypes: Array(8)
+    elementTypesRaw: Array(8)
       .fill()
-      .map(a => parseKernelEnums(Enums.Elements, r.readUByte())), // Not right yet
+      .map(a => r.readUByte()),
     elementRates: Array(8)
       .fill()
-      .map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())), // Not right yet
+      .map(a => parseKernelEnums(Enums.Battle.ElementRates, r.readUByte())),
     actionSequenceIndex: Array(16)
       .fill()
       .map(a => r.readUByte()),
@@ -64,12 +64,33 @@ const getEnemyData = r => {
     hp: r.readUInt(),
     exp: r.readUInt(),
     gil: r.readUInt(),
-    statusImmunities: parseKernelEnums(Enums.Statuses, r.readUInt()), // TODO: Not sure that this gives the right data
+    statusImmunities: parseKernelEnums(Enums.Statuses, r.readUInt()), // TODO: This appears to be the opposite?!
     unknown2: Array(4)
       .fill()
       .map(a => r.readUByte())
   }
+
+  data.elementTypes = data.elementTypesRaw.map(a => {
+    if (0x20 <= a && a <= 0x3f) {
+      return {
+        type: 'status',
+        value: parseKernelEnums(Enums.EquipmentStatus, a - 0x20)[0]
+      }
+    } else {
+      return {
+        type: 'element',
+        value: parseKernelEnums(Enums.MateriaElements, a)
+      }
+    }
+  })
+  delete data.elementTypesRaw
   r.offset = intialOffset + 184
+  // if (data.name === 'Ghost') {
+  //   console.log('data', data)
+  // }
+  // if (data.elementTypes.find(e => e.type === 'status')) {
+  //   console.log('data', data.name, data.elementTypes)
+  // }
   return data
   //   return r.readUByteArray(184)
 }
