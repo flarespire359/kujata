@@ -49,7 +49,7 @@ const getItemSectionData = (sectionData, names, descriptions) => {
     const restrictions = r.readUShort()
     const targetData = r.readUByte()
     const attackEffectId = r.readUByte()
-    const damageCalculationId = r.readUByte()
+    const damageCalculation = r.readUByte()
     const attackPower = r.readUByte()
     const conditionSubMenu = r.readUByte()
     const statusEffectChance = r.readUByte() // Some calculation required here. 3Fh	Chance to Inflict/Heal status (out of 63). 40h Cure if inflicted. 80h Cure if inflicted, Inflict if not
@@ -67,7 +67,7 @@ const getItemSectionData = (sectionData, names, descriptions) => {
       restrictions: parseKernelEnums(Enums.Restrictions, restrictions),
       targetData: parseKernelEnums(Enums.TargetData, targetData),
       attackEffectId: attackEffectId,
-      damageCalculationId: damageCalculationId,
+      damageCalculation: parseDamageCalculation(damageCalculation),
       attackPower: attackPower,
       conditionSubMenu: conditionSubMenu,
       statusEffectChance: statusEffectChance, // TODO
@@ -95,7 +95,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
   for (let i = 0; i < r.length / objectSize; i++) {
     const targetData = r.readUByte()
     const attackEffectId = r.readUByte() // Attack effect id, always 0xFF. Isn't used for weapon in game
-    const damageCalculationId = r.readUByte()
+    const damageCalculation = r.readUByte()
     const unknown1 = r.readUByte()
     const attackStrength = r.readUByte() // ?
     const status = r.readUByte()
@@ -164,7 +164,7 @@ const getWeaponSectionData = (sectionData, names, descriptions) => {
       description: descriptions[i],
       type: 'Weapon',
       targets: parseKernelEnums(Enums.TargetData, targetData),
-      damageCalculationId: damageCalculationId,
+      damageCalculation: parseDamageCalculation(damageCalculation),
       attackStrength: attackStrength,
       status: parseKernelEnums(Enums.EquipmentStatus, status), // Not sure if this is right, or if it should be inversed
       growthRate: parseKernelEnums(Enums.GrowthRate, growthRate),
@@ -449,6 +449,98 @@ const getCommandSectionData = (sectionData, names, descriptions) => {
   }
   return objects
 }
+const parseDamageCalculation = value => {
+  // https://wiki.ffrtt.ru/index.php/FF7/Battle/Damage_Calculation
+
+  const type = (value & 0xf0) >> 4 // upper nybble
+  const formula = value & 0x0f // lower nybble
+
+  let damageType = Enums.Attack.DamageType.Physical
+  let accuracyCalc = Enums.Attack.AccuracyCalc.NeverMiss
+  let allowCritical = false
+  let damageBoost = null
+  let damageFormula = Enums.Attack.DamageFormula.NoDamage
+
+  // Damage Type
+  if ([0x0, 0x1, 0x3, 0xb, 0x6, 0xa].includes(type)) {
+    damageType = Enums.Attack.DamageType.Physical
+  } else {
+    damageType = Enums.Attack.DamageType.Magical
+  }
+
+  // Accuracy Calc
+  if ([0x1, 0x2, 0xb, 0x6, 0x7, 0xa].includes(type)) {
+    accuracyCalc = Enums.Attack.AccuracyCalc.UseAccuracyStat
+  } else if ([0x9].includes(type)) {
+    accuracyCalc = Enums.Attack.AccuracyCalc.ManipulateFormula
+  } else if ([0x8].includes(type)) {
+    accuracyCalc = Enums.Attack.AccuracyCalc.TargetLevel
+  } else {
+    accuracyCalc = Enums.Attack.AccuracyCalc.NeverMiss
+  }
+
+  // Allow Critical
+  if ([0x1, 0x6, 0xa].includes(type)) {
+    allowCritical = true
+  } else {
+    allowCritical = false
+  }
+
+  // Damage Boost
+  if ([0xa].includes(type)) {
+    switch (formula) {
+      case 0x0: damageBoost = Enums.Attack.DamageBoost.DamageStatus; break // prettier-ignore
+      case 0x1: damageBoost = Enums.Attack.DamageBoost.DamageNearDeath; break // prettier-ignore
+      case 0x2: damageBoost = Enums.Attack.DamageBoost.DamageDeadAllies; break // prettier-ignore
+      case 0x3: damageBoost = Enums.Attack.DamageBoost.PowerTargetLevel; break // prettier-ignore
+      case 0x4: damageBoost = Enums.Attack.DamageBoost.PowerHP; break // prettier-ignore
+      case 0x5: damageBoost = Enums.Attack.DamageBoost.PowerMP; break // prettier-ignore
+      case 0x6: damageBoost = Enums.Attack.DamageBoost.PowerAP; break // prettier-ignore
+      case 0x7: damageBoost = Enums.Attack.DamageBoost.PowerKills; break // prettier-ignore
+      case 0x8: damageBoost = Enums.Attack.DamageBoost.PowerLimit; break // prettier-ignore
+      default: break // prettier-ignore
+    }
+    damageFormula = Enums.Attack.DamageFormula.PowerD16SLSLS
+  } else {
+    // Damage Formula
+    if ([0x6, 0x7].includes(type)) {
+      switch (formula) {
+        case 0x0: damageFormula = Enums.Attack.DamageFormula.CurrentHP; break // prettier-ignore
+        case 0x1: damageFormula = Enums.Attack.DamageFormula.HPDiff; break // prettier-ignore
+        case 0x8: damageFormula = Enums.Attack.DamageFormula.Dice; break // prettier-ignore
+        case 0x9: damageFormula = Enums.Attack.DamageFormula.Escapes; break // prettier-ignore
+        case 0xA: damageFormula = Enums.Attack.DamageFormula.TargetHP; break // prettier-ignore
+        case 0xb: damageFormula = Enums.Attack.DamageFormula.Hours; break // prettier-ignore
+        case 0xc: damageFormula = Enums.Attack.DamageFormula.Kills; break // prettier-ignore
+        case 0xd: damageFormula = Enums.Attack.DamageFormula.Materia; break // prettier-ignore
+        default: break // prettier-ignore
+      }
+    } else {
+      switch (formula) {
+        case 0x0: damageFormula = Enums.Attack.DamageFormula.NoDamage; break // prettier-ignore
+        case 0x1: damageFormula = Enums.Attack.DamageFormula.PowerD16SLSLS; break // prettier-ignore
+        case 0x2: damageFormula = Enums.Attack.DamageFormula.PowerD16LS; break // prettier-ignore
+        case 0x3: damageFormula = Enums.Attack.DamageFormula.PowerCurrentHP; break // prettier-ignore
+        case 0x4: damageFormula = Enums.Attack.DamageFormula.PowerMaxHP; break // prettier-ignore
+        case 0x5: damageFormula = Enums.Attack.DamageFormula.PowerX22LS; break // prettier-ignore
+        case 0x6: damageFormula = Enums.Attack.DamageFormula.PowerX20; break // prettier-ignore
+        case 0x7: damageFormula = Enums.Attack.DamageFormula.PowerD32; break // prettier-ignore
+        case 0x8: damageFormula = Enums.Attack.DamageFormula.Recovery; break // prettier-ignore
+        case 0x9: damageFormula = Enums.Attack.DamageFormula.Throw; break // prettier-ignore
+        case 0xa: damageFormula = Enums.Attack.DamageFormula.Coin; break // prettier-ignore
+        default: break // prettier-ignore
+      }
+    }
+  }
+
+  return {
+    damageType,
+    accuracyCalc,
+    allowCritical,
+    damageBoost,
+    damageFormula
+  }
+}
 const parseAttackData = r => {
   const attackPercent = r.readUByte()
   const impactEffectId = r.readUByte()
@@ -485,10 +577,7 @@ const parseAttackData = r => {
     cameraMovementIdSingleTargets,
     cameraMovementIdMultipleTargets,
     targetFlags: parseKernelEnums(Enums.TargetData, targetFlags),
-    damageCalculation: {
-      type: (damageCalculation & 0xf0) >> 4, // upper nybble
-      formula: damageCalculation & 0x0f // lower nybble
-    },
+    damageCalculation: parseDamageCalculation(damageCalculation),
     conditionSubMenu: parseKernelEnums(
       Enums.ConditionSubMenu,
       conditionSubMenu

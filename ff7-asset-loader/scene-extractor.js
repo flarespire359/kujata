@@ -26,7 +26,7 @@ const getEnemyData = r => {
     level: r.readUByte(),
     dexterity: r.readUByte(),
     luck: r.readUByte(),
-    defensePercent: r.readUByte(),
+    evade: r.readUByte(),
     attack: r.readUByte(),
     defense: r.readUByte(),
     magicAttack: r.readUByte(),
