@@ -50,7 +50,7 @@ const getItemSectionData = (sectionData, names, descriptions) => {
     const targetData = r.readUByte()
     const attackEffectId = r.readUByte()
     const damageCalculation = r.readUByte()
-    const attackPower = r.readUByte()
+    const power = r.readUByte()
     const conditionSubMenu = r.readUByte()
     const statusEffectChance = r.readUByte() // Some calculation required here. 3Fh	Chance to Inflict/Heal status (out of 63). 40h Cure if inflicted. 80h Cure if inflicted, Inflict if not
     const attackSpecialEffects = r.readUByte() // http://wiki.ffrtt.ru/index.php?title=FF7/Battle/Attack_Special_Effects
@@ -68,7 +68,7 @@ const getItemSectionData = (sectionData, names, descriptions) => {
       targetData: parseKernelEnums(Enums.TargetData, targetData),
       attackEffectId: attackEffectId,
       damageCalculation: parseDamageCalculation(damageCalculation),
-      attackPower: attackPower,
+      power: power,
       conditionSubMenu: conditionSubMenu,
       statusEffectChance: statusEffectChance, // TODO
       attackSpecialEffects: attackSpecialEffects, // TODO
@@ -553,7 +553,7 @@ const parseAttackData = r => {
   const targetFlags = r.readUByte()
   const attackEffectId = r.readUByte()
   const damageCalculation = r.readUByte()
-  const attackPower = r.readUByte()
+  const power = r.readUByte()
   const conditionSubMenu = r.readUByte()
   const statusEffectChance = r.readUByte()
   const additionalEffects = r.readUByte()
@@ -568,7 +568,7 @@ const parseAttackData = r => {
     // name: names[i],
     // description: descriptions[i],
     attackPercent,
-    attackPower,
+    power,
     attackEffectId,
     impactEffectId,
     impactSound,
