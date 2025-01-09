@@ -1,4 +1,4 @@
-# kujata
+# kujata (forked from Dangarfield)
 
 > A cli-tool that translates Final Fantasy 7 assets to web-friendly formats like JSON and glTF
 
@@ -41,6 +41,7 @@
 
 
 ## Thanks goes to...
+- dangarfield, for the fork this fork is based on.
 - picklejar76, for his work on creating the initial kujata 
 - qhimm community
 - Aali, for patching FF7, graphics work, lgp/unlgp utility, etc.
